@@ -1,0 +1,100 @@
+import { calculateRelationshipStrength } from '../utils/relationshipStrength';
+
+const companies = [
+  {
+    id: 'co1',
+    name: 'Uber Technologies',
+    category1: 'Internet Services & Retailing',
+    category2: 'Technology',
+    engagementTitle: 'You have a meeting scheduled for 3/21 abou...',
+    recentEngagement: '3 days ago',
+    clientStatus: 'Good',
+    logo: 'uber',
+    revenue: '$1.9M',
+    hierarchy: ['Uber Technologies (Parent)', 'Uber Freight', 'Uber Eats Legal Ops'],
+    relationshipHistory: ['Q1 2025: Growing', 'Q2 2025: Stable', 'Q3 2025: Growing'],
+    keyContacts: ['Jeff Gilberto', 'Molly Hensen'],
+    recentInteractions: ['03/09: Board prep call scheduled', '02/27: Shared compliance summary', '02/20: Finance follow-up thread'],
+    metricsCurrent: {
+      daysSinceLastInteraction: 3,
+      interactionsLast90d: 16,
+      engagementQuality: 4,
+      mattersActive: 3,
+      twoWayRatio: 0.78,
+    },
+    metricsPrevious: {
+      daysSinceLastInteraction: 9,
+      interactionsLast90d: 12,
+      engagementQuality: 4,
+      mattersActive: 2,
+      twoWayRatio: 0.67,
+    },
+  },
+  {
+    id: 'co2',
+    name: 'EdgeTech LLC',
+    category1: 'Internet Communications',
+    category2: 'Technology',
+    engagementTitle: 'Email received 1/11 from...',
+    recentEngagement: '2 days ago',
+    clientStatus: 'Good',
+    logo: 'edgetech',
+    revenue: '$1.2M',
+    hierarchy: ['EdgeTech LLC (Parent)', 'EdgeTech Cloud', 'EdgeTech Security'],
+    relationshipHistory: ['Q1 2025: Stable', 'Q2 2025: Stable', 'Q3 2025: Stable'],
+    keyContacts: ['Molly Hensen', 'Jenny Li'],
+    recentInteractions: ['03/10: Email received from GC office', '03/08: Sent AI regulatory memo', '02/19: Strategy sync with product legal'],
+    metricsCurrent: {
+      daysSinceLastInteraction: 2,
+      interactionsLast90d: 13,
+      engagementQuality: 4,
+      mattersActive: 2,
+      twoWayRatio: 0.7,
+    },
+    metricsPrevious: {
+      daysSinceLastInteraction: 4,
+      interactionsLast90d: 12,
+      engagementQuality: 4,
+      mattersActive: 2,
+      twoWayRatio: 0.66,
+    },
+  },
+  {
+    id: 'co3',
+    name: 'Zoom',
+    category1: 'Computer Software',
+    category2: 'Technology',
+    engagementTitle: 'Email received 1/11 from...',
+    recentEngagement: '2 days ago',
+    clientStatus: 'Good',
+    logo: 'zoom',
+    revenue: '$780K',
+    hierarchy: ['Zoom Video Communications (Parent)', 'Zoom Phone Product Team'],
+    relationshipHistory: ['Q1 2025: Stable', 'Q2 2025: Declining', 'Q3 2025: Stable'],
+    keyContacts: ['Aria Collins'],
+    recentInteractions: ['02/11: Email thread on contract renewal', '01/30: Product counsel check-in', '01/14: Shared litigation briefing'],
+    metricsCurrent: {
+      daysSinceLastInteraction: 29,
+      interactionsLast90d: 3,
+      engagementQuality: 2,
+      mattersActive: 1,
+      twoWayRatio: 0.4,
+    },
+    metricsPrevious: {
+      daysSinceLastInteraction: 10,
+      interactionsLast90d: 9,
+      engagementQuality: 3,
+      mattersActive: 2,
+      twoWayRatio: 0.63,
+    },
+  },
+];
+
+export const companyRows = companies.map((company) => {
+  const relationship = calculateRelationshipStrength(company.metricsCurrent, company.metricsPrevious);
+  return {
+    ...company,
+    relationshipTrend: relationship.trend,
+    relationshipScore: relationship.score,
+  };
+});
