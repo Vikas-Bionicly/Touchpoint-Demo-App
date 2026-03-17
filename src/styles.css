@@ -58,6 +58,18 @@ input {
   margin-bottom: 24px;
 }
 
+.sidebar-logo {
+  margin-bottom: 20px;
+}
+
+.sidebar-logo svg {
+  display: block;
+  width: 140px;
+  max-width: 100%;
+  height: auto;
+  fill: #ffffff;
+}
+
 .role-switcher {
   display: flex;
   flex-direction: column;
