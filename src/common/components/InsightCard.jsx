@@ -28,36 +28,57 @@ export default function InsightCard({
               </span>
             ))}
           </div>
-          <button className="context-btn" aria-label="context" onClick={() => setMenuOpen((p) => !p)}>
-            <Icon name="more" />
-          </button>
+          <div style={{ position: 'relative' }}>
+            <button className="context-btn" aria-label="context" onClick={() => setMenuOpen((p) => !p)}>
+              <Icon name="more" />
+            </button>
+            {menuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 8,
+                  padding: 8,
+                  boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
+                  zIndex: 20,
+                  minWidth: 180,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                }}
+              >
+                <button className="tool-btn" type="button" onClick={() => onReminder?.(card)}>
+                  Set reminder
+                </button>
+                <button
+                  className={`tool-btn ${state?.liked ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => onLike?.(card)}
+                >
+                  {state?.liked ? 'Liked' : 'Like'}
+                </button>
+                <button className="tool-btn" type="button" onClick={() => onAddNote?.(card)}>
+                  Add note
+                </button>
+                <button className="tool-btn" type="button" onClick={() => onAddTag?.(card)}>
+                  Add tag
+                </button>
+                <button className="tool-btn" type="button" onClick={() => onShareContent?.(card)}>
+                  Share content
+                </button>
+                <button className="tool-btn" type="button" onClick={() => onDismiss?.(card)}>
+                  Dismiss
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <h3>{card.title}</h3>
         <p>{card.description}</p>
-
-        {menuOpen && (
-          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="tool-btn" type="button" onClick={() => onReminder?.(card)}>
-              Set reminder
-            </button>
-            <button className={`tool-btn ${state?.liked ? 'active' : ''}`} type="button" onClick={() => onLike?.(card)}>
-              {state?.liked ? 'Liked' : 'Like'}
-            </button>
-            <button className="tool-btn" type="button" onClick={() => onAddNote?.(card)}>
-              Add note
-            </button>
-            <button className="tool-btn" type="button" onClick={() => onAddTag?.(card)}>
-              Add tag
-            </button>
-            <button className="tool-btn" type="button" onClick={() => onShareContent?.(card)}>
-              Share content
-            </button>
-            <button className="tool-btn" type="button" onClick={() => onDismiss?.(card)}>
-              Dismiss
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="ins-body">
@@ -82,7 +103,7 @@ export default function InsightCard({
 
           <div className="actions">
             <button aria-label="firm connections" onClick={() => onViewConnections?.(card)}>
-              <Icon name="users" />
+              <i className="fas fa-user-friends icon" />
             </button>
             <button aria-label="touchpoint" onClick={() => onCreateTouchpoint?.(card)}>
               <Icon name="target" />
