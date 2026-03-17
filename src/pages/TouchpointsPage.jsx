@@ -35,6 +35,7 @@ export default function TouchpointsPage({ view = '' }) {
     contact: true,
     interaction: true,
     status: true,
+    relationship: true,
   });
   const [form, setForm] = useState({
     contactName: contactRows[0]?.name || '',
@@ -45,7 +46,18 @@ export default function TouchpointsPage({ view = '' }) {
     notes: '',
   });
 
-  const touchpoints = useDemoStore((s) => s.touchpoints);
+  const rawTouchpoints = useDemoStore((s) => s.touchpoints);
+  const rawTags = useDemoStore((s) => s.tags);
+  const rawContactTags = useDemoStore((s) => s.contactTags);
+  const rawCompanyTags = useDemoStore((s) => s.companyTags);
+  const touchpoints = rawTouchpoints || [];
+  const tags = rawTags || [];
+  const contactTags = rawContactTags || {};
+  const companyTags = rawCompanyTags || {};
+  const rawTouchpointNotes = useDemoStore((s) => s.touchpointNotes);
+  const touchpointNotes = rawTouchpointNotes || [];
+  const [newNoteText, setNewNoteText] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
 
   const rows = useMemo(() => {
     const q = query.toLowerCase();
@@ -75,6 +87,14 @@ export default function TouchpointsPage({ view = '' }) {
           .includes(q);
       });
 
+    if (tagFilter) {
+      data = data.filter((row) => {
+        const contact = contactRows.find((c) => c.name === row.contactName);
+        const contactTagIds = contact ? contactTags[contact.id] || [] : [];
+        return contactTagIds.includes(tagFilter);
+      });
+    }
+
     if (sort.key && sort.direction) {
       const dir = sort.direction === 'asc' ? 1 : -1;
       data = [...data].sort((a, b) => {
@@ -92,7 +112,43 @@ export default function TouchpointsPage({ view = '' }) {
     }
 
     return data;
-  }, [query, touchpoints, view, sort]);
+  }, [query, touchpoints, view, sort, tagFilter, contactTags, companyTags]);
+
+  const stats = useMemo(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    let open = 0;
+    let overdue = 0;
+    let completedThisMonth = 0;
+
+    touchpoints.forEach((t) => {
+      if (t.status === 'open') {
+        open += 1;
+        if (isOverdue(t)) overdue += 1;
+      } else if (t.status === 'completed' && t.completedAt) {
+        const d = new Date(t.completedAt);
+        if (!Number.isNaN(d.getTime()) && d >= monthStart && d <= now) {
+          completedThisMonth += 1;
+        }
+      }
+    });
+
+    return { open, overdue, completedThisMonth };
+  }, [touchpoints]);
+
+  const overdueTrendLabel =
+    stats.overdue === 0
+      ? 'No overdue touchpoints'
+      : stats.overdue <= 2
+      ? 'Light overdue load'
+      : 'High overdue load';
+
+  const contactParentOn = Boolean(showColumns.contact);
+  const interactionParentOn = Boolean(showColumns.interaction);
+  const statusParentOn = Boolean(showColumns.status) || Boolean(showColumns.relationship);
+  const parentKeys = ['contact', 'interaction', 'statusParent'];
+  const activeParentsCount =
+    (contactParentOn ? 1 : 0) + (interactionParentOn ? 1 : 0) + (statusParentOn ? 1 : 0);
 
   function toggleSort(key) {
     setSort((prev) => {
@@ -190,6 +246,27 @@ export default function TouchpointsPage({ view = '' }) {
         </button>
       </header>
 
+      {!String(view).toLowerCase().includes('missed') && (
+        <section className="touchpoints-summary">
+          <div className="touchpoints-summary-item">
+            <p className="touchpoints-summary-label">Open</p>
+            <p className="touchpoints-summary-value">{stats.open}</p>
+          </div>
+          <div className="touchpoints-summary-item">
+            <p className="touchpoints-summary-label">Overdue</p>
+            <p className="touchpoints-summary-value">{stats.overdue}</p>
+          </div>
+          <div className="touchpoints-summary-item">
+            <p className="touchpoints-summary-label">Completed this month</p>
+            <p className="touchpoints-summary-value">{stats.completedThisMonth}</p>
+          </div>
+          <div className="touchpoints-summary-item touchpoints-summary-trend">
+            <p className="touchpoints-summary-label">Status</p>
+            <p className="touchpoints-summary-trend-text">{overdueTrendLabel}</p>
+          </div>
+        </section>
+      )}
+
       <section className="filterbar touchpoints-filterbar-v2">
         <label className="search touchpoints-search-v2">
           <Icon name="search" />
@@ -202,59 +279,18 @@ export default function TouchpointsPage({ view = '' }) {
           <button className="filter-btn" type="button" onClick={exportCsv}>
             Export CSV
           </button>
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              className="filter-btn"
-              onClick={() =>
-                setShowColumns((prev) => ({
-                  ...prev,
-                  _open: !prev._open,
-                }))
-              }
-            >
-              Columns
-            </button>
-            {showColumns._open && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  background: '#fff',
-                  border: '1px solid #e5e5e5',
-                  borderRadius: 8,
-                  padding: 8,
-                  boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
-                  zIndex: 20,
-                  minWidth: 200,
-                }}
-              >
-                {[
-                  ['contact', 'Contact details'],
-                  ['interaction', 'Interaction'],
-                  ['status', 'Status / Relationship'],
-                ].map(([key, label]) => (
-                  <label
-                    key={key}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, marginBottom: 4 }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={Boolean(showColumns[key])}
-                      onChange={(e) =>
-                        setShowColumns((prev) => ({
-                          ...prev,
-                          [key]: e.target.checked,
-                        }))
-                      }
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
+          <select
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+            className="touchpoints-tag-filter"
+          >
+            <option value="">All Tags</option>
+            {tags.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
         </div>
       </section>
 
@@ -287,10 +323,148 @@ export default function TouchpointsPage({ view = '' }) {
           >
             Contact
           </button>
-          <span>Interaction</span>
-          <button className="contacts-table-settings" aria-label="settings">
-            <Icon name="settings" />
-          </button>
+          <span>Interaction | Status</span>
+          <div style={{ position: 'relative' }}>
+            <button
+              className="contacts-table-settings"
+              type="button"
+              aria-label="settings"
+              onClick={() =>
+                setShowColumns((prev) => ({
+                  ...prev,
+                  _open: !prev._open,
+                }))
+              }
+            >
+              <Icon name="settings" />
+            </button>
+            {showColumns._open && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #e5e5e5',
+                  borderRadius: 8,
+                  padding: 8,
+                  boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
+                  zIndex: 20,
+                  minWidth: 220,
+                }}
+              >
+                {/* Contact parent */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    marginBottom: 4,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={contactParentOn}
+                    disabled={activeParentsCount === 1 && contactParentOn}
+                    onChange={(e) =>
+                      setShowColumns((prev) => ({
+                        ...prev,
+                        contact: e.target.checked,
+                      }))
+                    }
+                  />
+                  <span style={{ fontWeight: 600 }}>Contact</span>
+                </label>
+
+                {/* Interaction parent */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    margin: '8px 0 4px',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={interactionParentOn}
+                    disabled={activeParentsCount === 1 && interactionParentOn}
+                    onChange={(e) =>
+                      setShowColumns((prev) => ({
+                        ...prev,
+                        interaction: e.target.checked,
+                      }))
+                    }
+                  />
+                  <span style={{ fontWeight: 600 }}>Interaction</span>
+                </label>
+
+                {/* Status + Relationship parent + children */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    margin: '8px 0 4px',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={statusParentOn}
+                    disabled={activeParentsCount === 1 && statusParentOn}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setShowColumns((prev) => ({
+                        ...prev,
+                        status: checked,
+                        relationship: checked,
+                      }));
+                    }}
+                  />
+                  <span style={{ fontWeight: 600 }}>Status | Relationship</span>
+                </label>
+
+                {[
+                  ['status', 'Status'],
+                  ['relationship', 'Relationship status'],
+                ].map(([key, label]) => {
+                  const activeStatusChildren =
+                    (showColumns.status ? 1 : 0) + (showColumns.relationship ? 1 : 0);
+                  const isLastStatusChild = statusParentOn && activeStatusChildren === 1 && showColumns[key];
+
+                  return (
+                    <label
+                      key={key}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontSize: 14,
+                        marginBottom: 4,
+                        paddingLeft: 20,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={Boolean(showColumns[key])}
+                        disabled={isLastStatusChild && activeParentsCount === 1}
+                        onChange={(e) =>
+                          setShowColumns((prev) => ({
+                            ...prev,
+                            [key]: e.target.checked,
+                          }))
+                        }
+                      />
+                      <span>{label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="touchpoints-table-body-v2">
@@ -310,7 +484,18 @@ export default function TouchpointsPage({ view = '' }) {
               </label>
 
               <div className="touchpoint-date-v2">
-                {row.kind === 'task' ? formatDueLabel(row.dueAt) : row.completedAt ? formatDueLabel(row.completedAt) : '—'}
+                <span>
+                  {row.kind === 'task'
+                    ? formatDueLabel(row.dueAt)
+                    : row.completedAt
+                    ? formatDueLabel(row.completedAt)
+                    : '—'}
+                </span>
+                {isOverdue(row) && (
+                  <span className="tp-pill tp-pill-overdue" aria-label="Overdue touchpoint">
+                    Overdue
+                  </span>
+                )}
               </div>
 
               {showColumns.contact && (
@@ -323,11 +508,30 @@ export default function TouchpointsPage({ view = '' }) {
                     </div>
                     <p>{row.role}</p>
                     <p>{row.company}</p>
+                    {(() => {
+                      const contact = contactRows.find((c) => c.name === row.contactName);
+                      const tagIds = contact ? contactTags[contact.id] || [] : [];
+                      if (!tagIds.length) return null;
+                      const tagLabels = tags
+                        .filter((t) => tagIds.includes(t.id))
+                        .slice(0, 2)
+                        .map((t) => t.label);
+                      if (!tagLabels.length) return null;
+                      return (
+                        <div className="touchpoint-tags-row">
+                          {tagLabels.map((label) => (
+                            <span key={label} className="tp-tag-chip">
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
 
-              {showColumns.interaction || showColumns.status ? (
+              {showColumns.interaction || showColumns.status || showColumns.relationship ? (
                 <div className="touchpoint-interaction-col-v2">
                   <div className="touchpoint-note-pill-v2">
                     <Icon name="note" />
@@ -338,12 +542,24 @@ export default function TouchpointsPage({ view = '' }) {
                         [{row.interactionType}] {row.title}
                       </p>
                     )}
-                    {showColumns.status && (
+                    {(showColumns.status || showColumns.relationship) && (
                       <p className="touchpoint-interaction-sub-v2">
-                        Status <strong>{row.status}</strong>
-                        <span>
-                          Relationship status <strong>{row.relationshipStatus}</strong>
-                        </span>
+                        {showColumns.status && (
+                          <span className="tp-pill tp-pill-status" data-status={row.status}>
+                            {row.status === 'open'
+                              ? 'Open'
+                              : row.status === 'completed'
+                              ? 'Completed'
+                              : row.status === 'cancelled'
+                              ? 'Cancelled'
+                              : row.status}
+                          </span>
+                        )}
+                        {showColumns.relationship && (
+                          <span className="tp-pill tp-pill-relationship">
+                            Relationship <strong>{row.relationshipStatus}</strong>
+                          </span>
+                        )}
                       </p>
                     )}
                   </div>
@@ -357,11 +573,35 @@ export default function TouchpointsPage({ view = '' }) {
       {selectedRow && (
         <div className="modal-backdrop" onClick={() => setSelectedRow(null)}>
           <div className="company-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head">
-              <h2>{selectedRow.contactName} Touchpoint</h2>
-              <button className="modal-close" onClick={() => setSelectedRow(null)} aria-label="close modal">
-                x
-              </button>
+            <div className="modal-head touchpoint-detail-head">
+              <div className="touchpoint-detail-contact">
+                <img
+                  src={selectedRow.avatarUrl}
+                  alt={selectedRow.contactName}
+                  className={`contact-avatar-v2 tone-${selectedRow.signalTone}`}
+                />
+                <div className="touchpoint-detail-contact-meta">
+                  <h2>{selectedRow.contactName}</h2>
+                  <p>
+                    {selectedRow.role} • {selectedRow.company}
+                  </p>
+                </div>
+              </div>
+              <div className="touchpoint-detail-meta">
+                <div>
+                  <p className="modal-label">Status</p>
+                  <p className="modal-value">{selectedRow.status}</p>
+                </div>
+                <div>
+                  <p className="modal-label">Relationship</p>
+                  <p className="modal-value">
+                    {selectedRow.relationshipStatus} (Score {selectedRow.relationshipScore})
+                  </p>
+                </div>
+                <button className="modal-close" onClick={() => setSelectedRow(null)} aria-label="close modal">
+                  x
+                </button>
+              </div>
             </div>
             <div className="modal-grid">
               <div>
@@ -391,6 +631,13 @@ export default function TouchpointsPage({ view = '' }) {
             </div>
             <div className="modal-stack">
               <div>
+                <p className="modal-label">Next steps</p>
+                <p className="modal-value">
+                  Engage assistant → Outreach. Mark this touchpoint complete when the follow-up is done or reschedule
+                  if timing needs to change.
+                </p>
+              </div>
+              <div>
                 <p className="modal-label">Interaction history</p>
                 <ul className="modal-list">
                   {(selectedRow.history || []).map((item) => (
@@ -400,7 +647,49 @@ export default function TouchpointsPage({ view = '' }) {
               </div>
               <div>
                 <p className="modal-label">Notes</p>
-                <p className="modal-value">{selectedRow.notes}</p>
+                {touchpointNotes.filter((n) => n.touchpointId === selectedRow.id).length === 0 && !selectedRow.notes && (
+                  <p className="modal-value">No notes yet for this touchpoint.</p>
+                )}
+                <ul className="modal-list">
+                  {selectedRow.notes && (
+                    <li key="inline-note">
+                      <strong>Original note</strong> — {selectedRow.notes}
+                    </li>
+                  )}
+                  {touchpointNotes
+                    .filter((n) => n.touchpointId === selectedRow.id)
+                    .map((note) => (
+                      <li key={note.id}>
+                        <strong>{note.author}</strong> — {new Date(note.createdAt).toLocaleDateString()} <br />
+                        {note.text}
+                      </li>
+                    ))}
+                </ul>
+                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <textarea
+                    rows={3}
+                    placeholder="Add a note about this touchpoint..."
+                    value={newNoteText}
+                    onChange={(e) => setNewNoteText(e.target.value)}
+                    style={{ width: '100%', borderRadius: 8, border: '1px solid #d4d4d4', padding: '8px 10px' }}
+                  />
+                  <button
+                    type="button"
+                    className="filter-btn"
+                    disabled={!newNoteText.trim()}
+                    onClick={() => {
+                      const text = newNoteText.trim();
+                      if (!text) return;
+                      demoStore.actions.addTouchpointNote({
+                        touchpointId: selectedRow.id,
+                        text,
+                      });
+                      setNewNoteText('');
+                    }}
+                  >
+                    Add note
+                  </button>
+                </div>
               </div>
             </div>
             {selectedRow.kind === 'task' && (

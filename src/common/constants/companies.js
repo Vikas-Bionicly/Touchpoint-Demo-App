@@ -29,6 +29,78 @@ const companies = [
       mattersActive: 2,
       twoWayRatio: 0.67,
     },
+    revenueHistory: [
+      { period: '2022', value: 1.3 },
+      { period: '2023', value: 1.6 },
+      { period: '2024', value: 1.9 },
+    ],
+    practiceShare: [
+      { practice: 'Corporate', value: 50 },
+      { practice: 'Litigation', value: 30 },
+      { practice: 'Regulatory', value: 20 },
+    ],
+    revenueByPracticeOffice: {
+      Corporate: { Toronto: 1.1, Calgary: 0.4 },
+      Litigation: { Toronto: 0.6, Calgary: 0.2 },
+      Regulatory: { Toronto: 0.4, Calgary: 0.1 },
+    },
+    mattersTrends: [
+      { year: '2022', revenue: 1300000, hours: 8200, realization: 91 },
+      { year: '2023', revenue: 1600000, hours: 9100, realization: 92 },
+      { year: '2024', revenue: 1900000, hours: 9700, realization: 93 },
+    ],
+    opportunityActivity: [
+      { period: '2023 Q1', bdActivity: 8, totalActivities: 20 },
+      { period: '2023 Q2', bdActivity: 10, totalActivities: 24 },
+      { period: '2023 Q3', bdActivity: 12, totalActivities: 28 },
+      { period: '2023 Q4', bdActivity: 15, totalActivities: 32 },
+    ],
+    matters: [
+      {
+        id: 'm-uber-1',
+        openDate: '01/15/23',
+        status: 'Active',
+        name: 'Global Commercial Agreements',
+        practiceArea: 'Corporate',
+      },
+      {
+        id: 'm-uber-2',
+        openDate: '09/02/22',
+        status: 'In Conflicts',
+        name: 'Competition Review – APAC Expansion',
+        practiceArea: 'Regulatory',
+      },
+      {
+        id: 'm-uber-3',
+        openDate: '05/20/21',
+        status: 'Closed',
+        name: 'Driver Classification Litigation',
+        practiceArea: 'Litigation',
+      },
+    ],
+    opportunities: [
+      {
+        id: 'o-uber-1',
+        date: '02/01/24',
+        status: 'Pending',
+        name: 'AI Safety Advisory Panel',
+        type: 'Pitch',
+      },
+      {
+        id: 'o-uber-2',
+        date: '10/15/23',
+        status: 'Won',
+        name: 'Global Mobility Program',
+        type: 'RFP',
+      },
+      {
+        id: 'o-uber-3',
+        date: '07/30/23',
+        status: 'Lost',
+        name: 'Privacy Program Overhaul',
+        type: 'Panel',
+      },
+    ],
   },
   {
     id: 'co2',
@@ -58,6 +130,64 @@ const companies = [
       mattersActive: 2,
       twoWayRatio: 0.66,
     },
+    revenueHistory: [
+      { period: '2022', value: 0.9 },
+      { period: '2023', value: 1.0 },
+      { period: '2024', value: 1.2 },
+    ],
+    practiceShare: [
+      { practice: 'Corporate', value: 40 },
+      { practice: 'Litigation', value: 35 },
+      { practice: 'Regulatory', value: 25 },
+    ],
+    revenueByPracticeOffice: {
+      Corporate: { Toronto: 0.7, Calgary: 0.3 },
+      Litigation: { Toronto: 0.4, Calgary: 0.1 },
+      Regulatory: { Toronto: 0.3, Calgary: 0.1 },
+    },
+    mattersTrends: [
+      { year: '2022', revenue: 900000, hours: 6400, realization: 89 },
+      { year: '2023', revenue: 1000000, hours: 7000, realization: 90 },
+      { year: '2024', revenue: 1200000, hours: 7600, realization: 91 },
+    ],
+    opportunityActivity: [
+      { period: '2023 Q1', bdActivity: 6, totalActivities: 16 },
+      { period: '2023 Q2', bdActivity: 7, totalActivities: 18 },
+      { period: '2023 Q3', bdActivity: 9, totalActivities: 21 },
+      { period: '2023 Q4', bdActivity: 11, totalActivities: 25 },
+    ],
+    matters: [
+      {
+        id: 'm-edge-1',
+        openDate: '03/10/23',
+        status: 'Active',
+        name: 'Cloud Services Commercial Review',
+        practiceArea: 'Corporate',
+      },
+      {
+        id: 'm-edge-2',
+        openDate: '11/05/22',
+        status: 'Closed',
+        name: 'Data Breach Incident Response',
+        practiceArea: 'Privacy & Security',
+      },
+    ],
+    opportunities: [
+      {
+        id: 'o-edge-1',
+        date: '01/20/24',
+        status: 'Pending',
+        name: 'Cross-border Data Transfer Program',
+        type: 'Panel',
+      },
+      {
+        id: 'o-edge-2',
+        date: '08/18/23',
+        status: 'Won',
+        name: 'AI Governance Framework',
+        type: 'Pitch',
+      },
+    ],
   },
   {
     id: 'co3',
@@ -87,6 +217,64 @@ const companies = [
       mattersActive: 2,
       twoWayRatio: 0.63,
     },
+    revenueHistory: [
+      { period: '2022', value: 0.6 },
+      { period: '2023', value: 0.7 },
+      { period: '2024', value: 0.78 },
+    ],
+    practiceShare: [
+      { practice: 'Corporate', value: 35 },
+      { practice: 'Litigation', value: 40 },
+      { practice: 'Regulatory', value: 25 },
+    ],
+    revenueByPracticeOffice: {
+      Corporate: { Toronto: 0.5, Calgary: 0.2 },
+      Litigation: { Toronto: 0.4, Calgary: 0.2 },
+      Regulatory: { Toronto: 0.2, Calgary: 0.08 },
+    },
+    mattersTrends: [
+      { year: '2022', revenue: 600000, hours: 4100, realization: 88 },
+      { year: '2023', revenue: 700000, hours: 4300, realization: 89 },
+      { year: '2024', revenue: 780000, hours: 4500, realization: 90 },
+    ],
+    opportunityActivity: [
+      { period: '2023 Q1', bdActivity: 3, totalActivities: 9 },
+      { period: '2023 Q2', bdActivity: 4, totalActivities: 11 },
+      { period: '2023 Q3', bdActivity: 5, totalActivities: 13 },
+      { period: '2023 Q4', bdActivity: 6, totalActivities: 15 },
+    ],
+    matters: [
+      {
+        id: 'm-zoom-1',
+        openDate: '04/22/22',
+        status: 'Active',
+        name: 'Product Counsel – EMEA Rollout',
+        practiceArea: 'Technology',
+      },
+      {
+        id: 'm-zoom-2',
+        openDate: '09/30/21',
+        status: 'Closed',
+        name: 'Securities Class Action Defence',
+        practiceArea: 'Litigation',
+      },
+    ],
+    opportunities: [
+      {
+        id: 'o-zoom-1',
+        date: '03/05/24',
+        status: 'Pending',
+        name: 'Unified Communications Suite Launch',
+        type: 'Pitch',
+      },
+      {
+        id: 'o-zoom-2',
+        date: '06/14/23',
+        status: 'Lost',
+        name: 'Global Privacy Program',
+        type: 'RFP',
+      },
+    ],
   },
 ];
 

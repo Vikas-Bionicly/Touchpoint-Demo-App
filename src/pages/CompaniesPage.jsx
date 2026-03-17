@@ -5,6 +5,12 @@ import { contactRows } from '../common/constants/contacts';
 import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
 import ManageCompanyTagsModal from '../common/components/ManageCompanyTagsModal';
+import AddCompanyNoteModal from '../common/components/AddCompanyNoteModal';
+import FirmConnectionsModal from '../common/components/FirmConnectionsModal';
+import { CompanyHealthPanel } from '../common/components/CompanyHealthPanel';
+import { OpportunityIdentificationPanel } from '../common/components/OpportunityIdentificationPanel';
+import { CompanyMattersPanel } from '../common/components/CompanyMattersPanel';
+import { CompanyOpportunitiesPanel } from '../common/components/CompanyOpportunitiesPanel';
 
 function CompanyLogo({ type }) {
   if (type === 'uber') {
@@ -31,7 +37,6 @@ function CompanyLogo({ type }) {
 }
 
 export default function CompaniesPage() {
-  const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: '', direction: '' });
   const [showColumns, setShowColumns] = useState({
     categories: true,
@@ -41,8 +46,23 @@ export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [touchpointPreset, setTouchpointPreset] = useState(null);
   const [tagsForCompany, setTagsForCompany] = useState(null);
-  const companyTags = useDemoStore((s) => s.companyTags || {});
-  const tags = useDemoStore((s) => s.tags || []);
+  const [connectionsForContact, setConnectionsForContact] = useState(null);
+  const [noteForCompany, setNoteForCompany] = useState(null);
+  const rawCompanyTags = useDemoStore((s) => s.companyTags);
+  const rawTags = useDemoStore((s) => s.tags);
+  const rawCompanyFilters = useDemoStore((s) => s.companyFilters);
+  const rawSavedViews = useDemoStore((s) => s.savedViews);
+  const currentRole = useDemoStore((s) => s.currentRole || 'Partner');
+  const rawTouchpoints = useDemoStore((s) => s.touchpoints);
+  const rawCompanyNotes = useDemoStore((s) => s.companyNotes);
+  const companyTags = rawCompanyTags || {};
+  const tags = rawTags || [];
+  const companyFilters = rawCompanyFilters || {};
+  const savedViews = rawSavedViews || [];
+  const touchpoints = rawTouchpoints || [];
+  const companyNotes = rawCompanyNotes || [];
+  const [engagementTypeFilter, setEngagementTypeFilter] = useState('All');
+  const [engagementPersonFilter, setEngagementPersonFilter] = useState('All');
 
   function guessContactForCompany(companyName) {
     return contactRows.find((c) => c.company === companyName) || null;
@@ -50,14 +70,23 @@ export default function CompaniesPage() {
 
   const rows = useMemo(() => {
     let data = companyRows;
-    if (query.trim()) {
-      const q = query.toLowerCase();
+
+    if (companyFilters.text?.trim()) {
+      const q = companyFilters.text.toLowerCase();
       data = data.filter((row) =>
         [row.name, row.category1, row.category2, row.engagementTitle, row.recentEngagement, row.clientStatus]
           .join(' ')
           .toLowerCase()
           .includes(q)
       );
+    }
+
+    if (companyFilters.relationshipTrend) {
+      data = data.filter((row) => row.relationshipTrend === companyFilters.relationshipTrend);
+    }
+
+    if (companyFilters.tagId) {
+      data = data.filter((row) => (companyTags[row.id] || []).includes(companyFilters.tagId));
     }
 
     if (sort.key && sort.direction) {
@@ -71,7 +100,83 @@ export default function CompaniesPage() {
     }
 
     return data;
-  }, [query, sort]);
+  }, [companyFilters, companyTags, sort]);
+
+  const nameParentOn = Boolean(showColumns.categories);
+  const engagementParentOn = Boolean(showColumns.recentEngagement) || Boolean(showColumns.clientStatus);
+  const engagementActiveChildren =
+    (showColumns.recentEngagement ? 1 : 0) + (showColumns.clientStatus ? 1 : 0);
+
+  const engagementRows = useMemo(() => {
+    if (!selectedCompany) return [];
+
+    const rows = [];
+
+    // Recent interactions from company seed data
+    (selectedCompany.recentInteractions || []).forEach((text, index) => {
+      const [datePart, rest] = String(text).split(':');
+      const date = datePart ? datePart.trim() : '';
+      const summary = rest ? rest.trim() : text;
+      const lower = summary.toLowerCase();
+      let type = 'Other';
+      if (lower.includes('email')) type = 'Email';
+      else if (lower.includes('meeting')) type = 'Meeting';
+      else if (lower.includes('call')) type = 'Call';
+      else if (lower.includes('event') || lower.includes('webinar')) type = 'Event';
+
+      rows.push({
+        id: `recent-${index}`,
+        date,
+        type,
+        contact: (selectedCompany.keyContacts && selectedCompany.keyContacts[0]) || selectedCompany.name,
+        internal: 'You',
+        summary,
+      });
+    });
+
+    // Touchpoints associated with this company
+    touchpoints
+      .filter((tp) => tp.company === selectedCompany.name)
+      .forEach((tp) => {
+        const isTask = tp.kind === 'task';
+        const rawDate = isTask ? tp.dueAt : tp.completedAt || tp.createdAt;
+        const dateObj = rawDate ? new Date(rawDate) : null;
+        const date = dateObj
+          ? dateObj.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: '2-digit' })
+          : '';
+
+        rows.push({
+          id: tp.id,
+          date,
+          type: tp.interactionType || (isTask ? 'Task' : 'Interaction'),
+          contact: tp.contactName || '',
+          internal: 'You',
+          summary: tp.title || tp.outcome || '',
+        });
+      });
+
+    let filtered = rows;
+    if (engagementTypeFilter !== 'All') {
+      filtered = filtered.filter((r) => r.type === engagementTypeFilter);
+    }
+    if (engagementPersonFilter !== 'All') {
+      filtered = filtered.filter((r) => r.internal === engagementPersonFilter);
+    }
+
+    return filtered;
+  }, [selectedCompany, touchpoints, engagementTypeFilter, engagementPersonFilter]);
+
+  const revenueLabel =
+    selectedCompany && currentRole === 'Partner'
+      ? (() => {
+          const match = String(selectedCompany.revenue || '').match(/([\d.]+)/);
+          const num = match ? parseFloat(match[1]) : null;
+          if (!num || Number.isNaN(num)) return 'Revenue: $500K–$2M range';
+          if (num < 0.8) return 'Revenue: <$1M range';
+          if (num < 1.5) return 'Revenue: $1M–$2M range';
+          return 'Revenue: $2M+ range';
+        })()
+      : selectedCompany?.revenue || '';
 
   function toggleSort(key) {
     setSort((prev) => {
@@ -111,250 +216,382 @@ export default function CompaniesPage() {
     URL.revokeObjectURL(url);
   }
 
-  return (
-    <section className="companies-view-v2">
-      <header className="headbar">
-        <h1>Companies</h1>
-        <button className="context-btn" aria-label="more">
-          <Icon name="more" />
-        </button>
-      </header>
+  const isDetailView = Boolean(selectedCompany);
 
-      <section className="filterbar companies-filterbar-v2">
-        <label className="search companies-search-v2">
-          <Icon name="search" />
-          <input placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
-        </label>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button type="button" className="filter-btn" onClick={exportCsv}>
-            Export CSV
-          </button>
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              className="filter-btn"
-              onClick={() =>
-                setShowColumns((prev) => ({
-                  ...prev,
-                  _open: !prev._open,
-                }))
-              }
-            >
-              Columns
+  return (
+    <section className={`companies-view-v2 ${isDetailView ? 'companies-detail-view' : ''}`}>
+      {!isDetailView && (
+        <>
+          <header className="headbar">
+            <h1>Companies</h1>
+            <button className="context-btn" aria-label="more">
+              <Icon name="more" />
             </button>
-            {showColumns._open && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  background: '#fff',
-                  border: '1px solid #e5e5e5',
-                  borderRadius: 8,
-                  padding: 8,
-                  boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
-                  zIndex: 20,
-                  minWidth: 180,
+          </header>
+
+          <section className="filterbar companies-filterbar-v2">
+            <label className="search companies-search-v2">
+              <Icon name="search" />
+              <input
+                placeholder="Search"
+                value={companyFilters.text || ''}
+                onChange={(e) => demoStore.actions.setCompanyFilters({ text: e.target.value })}
+              />
+            </label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <select
+                value={companyFilters.relationshipTrend || ''}
+                onChange={(e) => demoStore.actions.setCompanyFilters({ relationshipTrend: e.target.value })}
+              >
+                <option value="">Relationship trend</option>
+                <option value="Growing">Growing</option>
+                <option value="Stable">Stable</option>
+                <option value="Declining">Declining</option>
+              </select>
+
+              <select
+                value={companyFilters.tagId || ''}
+                onChange={(e) => demoStore.actions.setCompanyFilters({ tagId: e.target.value })}
+              >
+                <option value="">All Tags</option>
+                {tags.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                className="filter-btn"
+                type="button"
+                onClick={() => {
+                  const name = window.prompt('Save current company filters as view name');
+                  if (name) demoStore.actions.saveCompanyView(name);
                 }}
               >
-                {[
-                  ['categories', 'Categories'],
-                  ['recentEngagement', 'Recent engagement'],
-                  ['clientStatus', 'Client status'],
-                ].map(([key, label]) => (
-                  <label
-                    key={key}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, marginBottom: 4 }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={Boolean(showColumns[key])}
-                      onChange={(e) =>
-                        setShowColumns((prev) => ({
-                          ...prev,
-                          [key]: e.target.checked,
-                        }))
-                      }
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+                Save View
+              </button>
 
-      <section className="companies-table-v2">
-        <div className="companies-table-head-v2">
-          <button type="button" style={{ all: 'unset', cursor: 'pointer' }} onClick={() => toggleSort('name')}>
-            Name
-          </button>
-          <button
-            type="button"
-            style={{ all: 'unset', cursor: 'pointer' }}
-            onClick={() => toggleSort('recentEngagement')}
-          >
-            Recent Engagement
-          </button>
-          <button className="contacts-table-settings" aria-label="settings">
-            <Icon name="settings" />
-          </button>
-        </div>
+              <select
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (!value) return;
+                  demoStore.actions.applyCompanyView(value);
+                }}
+              >
+                <option value="">Views</option>
+                {savedViews
+                  .filter((v) => v.scope === 'companies')
+                  .map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+              </select>
 
-        <div className="companies-table-body-v2">
-          {rows.map((row) => (
-            <div
-              className="company-row-v2"
-              key={row.id}
-              role="button"
-              tabIndex={0}
-              onClick={(event) => {
-                if (event.target.closest('.company-actions-v2 button')) return;
-                setSelectedCompany(row);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setSelectedCompany(row);
-                }
-              }}
-            >
-              <div className="company-name-col-v2">
-                <CompanyLogo type={row.logo} />
-                <div className="company-name-meta-v2">
-                  <strong>{row.name}</strong>
-                  {showColumns.categories && (
-                    <>
-                      <p>{row.category1}</p>
-                      <p>{row.category2}</p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="company-engagement-col-v2">
-                <div className="company-note-pill-v2">
-                  <Icon name="handshake" />
-                </div>
-                <div className="company-engagement-text-v2">
-                  {showColumns.recentEngagement && (
-                    <p className="company-engagement-title-v2">{row.engagementTitle}</p>
-                  )}
-                  {(showColumns.recentEngagement || showColumns.clientStatus) && (
-                    <p className="company-engagement-sub-v2">
-                      {showColumns.recentEngagement && (
-                        <>
-                          Recent engagement <strong>{row.recentEngagement}</strong>
-                        </>
-                      )}
-                      {showColumns.clientStatus && (
-                        <span>
-                          Client status <strong>{row.clientStatus}</strong>
-                        </span>
-                      )}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="company-actions-v2">
-                <button
-                  aria-label="new touchpoint"
-                  onClick={() => {
-                    const contact = guessContactForCompany(row.name);
-                    setTouchpointPreset({
-                      contactName: contact?.name || contactRows[0]?.name || '',
-                      company: row.name,
-                      role: contact?.role || '',
-                      title: `Touchpoint for ${row.name}`,
-                      notes: '',
-                      source: 'companies:row',
-                    });
-                  }}
-                >
-                  <Icon name="docPlus" />
-                </button>
-                <button aria-label="relationship">
-                  <Icon name="target" />
-                </button>
-                <button aria-label="analytics">
-                  <Icon name="chart" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {selectedCompany && (
-        <div className="modal-backdrop" onClick={() => setSelectedCompany(null)}>
-          <div className="company-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head">
-              <h2>{selectedCompany.name}</h2>
-              <button className="modal-close" onClick={() => setSelectedCompany(null)} aria-label="close modal">
-                x
+              <button type="button" className="filter-btn" onClick={exportCsv}>
+                Export CSV
               </button>
             </div>
+          </section>
 
-            <div className="modal-grid">
+          <section className="companies-table-v2">
+            <table className="companies-table-v2-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '50%' }}>
+                    <button
+                      type="button"
+                      style={{ all: 'unset', cursor: 'pointer' }}
+                      onClick={() => toggleSort('name')}
+                    >
+                      Name
+                    </button>
+                  </th>
+                  <th style={{ width: '40%' }}>
+                    <button
+                      type="button"
+                      style={{ all: 'unset', cursor: 'pointer' }}
+                      onClick={() => toggleSort('recentEngagement')}
+                    >
+                      Recent Engagement
+                    </button>
+                  </th>
+                  <th style={{ width: '10%' }}>
+                    <div style={{ position: 'relative', textAlign: 'right' }}>
+                      <button
+                        className="contacts-table-settings"
+                        aria-label="configure columns"
+                        type="button"
+                        onClick={() =>
+                          setShowColumns((prev) => ({
+                            ...prev,
+                            _open: !prev._open,
+                          }))
+                        }
+                      >
+                        <Icon name="settings" />
+                      </button>
+                      {showColumns._open && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '110%',
+                            right: 0,
+                            background: '#fff',
+                            border: '1px solid #e5e5e5',
+                            borderRadius: 8,
+                            padding: 8,
+                            boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
+                            zIndex: 20,
+                            minWidth: 240,
+                          }}
+                        >
+                          {/* Name column (categories only) */}
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              fontSize: 14,
+                              marginBottom: 4,
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={nameParentOn}
+                              onChange={(e) =>
+                                setShowColumns((prev) => ({
+                                  ...prev,
+                                  categories: e.target.checked,
+                                }))
+                              }
+                            />
+                            <span style={{ fontWeight: 600 }}>Name</span>
+                          </label>
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              fontSize: 14,
+                              marginBottom: 4,
+                              paddingLeft: 20,
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={Boolean(showColumns.categories)}
+                              onChange={(e) =>
+                                setShowColumns((prev) => ({
+                                  ...prev,
+                                  categories: e.target.checked,
+                                }))
+                              }
+                            />
+                            <span>Categories</span>
+                          </label>
+
+                          {/* Recent Engagement column + children */}
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              fontSize: 14,
+                              margin: '8px 0 4px',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={engagementParentOn}
+                              disabled={engagementActiveChildren === 1 && engagementParentOn}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                setShowColumns((prev) => ({
+                                  ...prev,
+                                  recentEngagement: checked,
+                                  clientStatus: checked,
+                                }));
+                              }}
+                            />
+                            <span style={{ fontWeight: 600 }}>Recent Engagement</span>
+                          </label>
+
+                          {[
+                            ['recentEngagement', 'Recent engagement'],
+                            ['clientStatus', 'Client status'],
+                          ].map(([key, label]) => (
+                            <label
+                              key={key}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                fontSize: 14,
+                                marginBottom: 4,
+                                paddingLeft: 20,
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={Boolean(showColumns[key])}
+                                disabled={
+                                  engagementParentOn &&
+                                  engagementActiveChildren === 1 &&
+                                  showColumns[key]
+                                }
+                                onChange={(e) =>
+                                  setShowColumns((prev) => ({
+                                    ...prev,
+                                    [key]: e.target.checked,
+                                  }))
+                                }
+                              />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => {
+                      if (event.target.closest('.company-actions-v2 button')) return;
+                      setSelectedCompany(row);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setSelectedCompany(row);
+                      }
+                    }}
+                  >
+                    <td>
+                      <div className="company-name-col-v2">
+                        <CompanyLogo type={row.logo} />
+                        <div className="company-name-meta-v2">
+                          <strong>{row.name}</strong>
+                          {showColumns.categories && (
+                            <>
+                              <p>{row.category1}</p>
+                              <p>{row.category2}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="company-engagement-col-v2">
+                        <div className="company-note-pill-v2">
+                          <Icon name="handshake" />
+                        </div>
+                        <div className="company-engagement-text-v2">
+                          {showColumns.recentEngagement && (
+                            <p className="company-engagement-title-v2">{row.engagementTitle}</p>
+                          )}
+                          {(showColumns.recentEngagement || showColumns.clientStatus) && (
+                            <p className="company-engagement-sub-v2">
+                              {showColumns.recentEngagement && (
+                                <>
+                                  Recent engagement <strong>{row.recentEngagement}</strong>
+                                </>
+                              )}
+                              {showColumns.clientStatus && (
+                                <span>
+                                  Client status <strong>{row.clientStatus}</strong>
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="company-actions-v2">
+                        <button
+                          aria-label="new touchpoint"
+                          onClick={() => {
+                            const contact = guessContactForCompany(row.name);
+                            setTouchpointPreset({
+                              contactName: contact?.name || contactRows[0]?.name || '',
+                              company: row.name,
+                              role: contact?.role || '',
+                              title: `Touchpoint for ${row.name}`,
+                              notes: '',
+                              source: 'companies:row',
+                            });
+                          }}
+                        >
+                          <Icon name="docPlus" />
+                        </button>
+                        <button aria-label="relationship">
+                          <Icon name="target" />
+                        </button>
+                        <button aria-label="analytics">
+                          <Icon name="chart" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </>
+      )}
+
+      {isDetailView && selectedCompany && (
+        <section className="company-detail-page">
+          <header className="company-detail-header">
+            <button
+              type="button"
+              className="filter-btn company-detail-back"
+              onClick={() => setSelectedCompany(null)}
+            >
+              ← Back to companies
+            </button>
+            <div className="company-detail-title">
+              <CompanyLogo type={selectedCompany.logo} />
               <div>
-                <p className="modal-label">Category</p>
-                <p className="modal-value">{selectedCompany.category1}</p>
-              </div>
-              <div>
-                <p className="modal-label">Client Status</p>
-                <p className="modal-value">{selectedCompany.clientStatus}</p>
-              </div>
-              <div>
-                <p className="modal-label">Recent engagement</p>
-                <p className="modal-value">{selectedCompany.recentEngagement}</p>
-              </div>
-              <div>
-                <p className="modal-label">Client revenue</p>
-                <p className="modal-value">{selectedCompany.revenue}</p>
-              </div>
-              <div>
-                <p className="modal-label">Relationship trend</p>
-                <p className="modal-value">
-                  {selectedCompany.relationshipTrend} (Score {selectedCompany.relationshipScore})
+                <h1>{selectedCompany.name}</h1>
+                <p className="company-detail-subtitle">
+                  {selectedCompany.category1}
+                  {selectedCompany.category2 ? ` • ${selectedCompany.category2}` : ''}
                 </p>
               </div>
-              <div>
-                <p className="modal-label">Company hierarchy</p>
-                <p className="modal-value">{selectedCompany.hierarchy.join(' > ')}</p>
-              </div>
             </div>
-
-            <div className="modal-stack">
-              <div>
-                <p className="modal-label">Relationship history</p>
-                <ul className="modal-list">
-                  {selectedCompany.relationshipHistory.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="modal-label">Key internal connections</p>
-                <ul className="modal-list">
-                  {selectedCompany.keyContacts.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="modal-label">Recent interactions</p>
-                <ul className="modal-list">
-                  {selectedCompany.recentInteractions.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button className="tool-btn">Open profile</button>
+            <div className="company-detail-header-actions">
+              <button
+                className="tool-btn"
+                type="button"
+                onClick={() => setNoteForCompany(selectedCompany)}
+              >
+                Add note
+              </button>
+              <button
+                className="tool-btn"
+                type="button"
+                onClick={() => {
+                  const contact = guessContactForCompany(selectedCompany.name);
+                  const fallbackContact = {
+                    id: selectedCompany.id,
+                    name: selectedCompany.name,
+                    company: selectedCompany.name,
+                    role: 'Client contact',
+                  };
+                  setConnectionsForContact(contact || fallbackContact);
+                }}
+              >
+                Firm connections
+              </button>
               <button className="tool-btn" onClick={() => setTagsForCompany(selectedCompany)}>
                 Manage tags
               </button>
@@ -368,15 +605,273 @@ export default function CompaniesPage() {
                     role: contact?.role || '',
                     title: `Touchpoint for ${selectedCompany.name}`,
                     notes: '',
-                    source: 'companies:modal',
+                    source: 'companies:detail',
                   });
                 }}
               >
                 Create touchpoint
               </button>
             </div>
+          </header>
+
+          <div className="company-detail-grid">
+            <section className="company-detail-summary">
+              <div>
+                <p className="modal-label">Client status</p>
+                <p className="modal-value">{selectedCompany.clientStatus}</p>
+              </div>
+              <div>
+                <p className="modal-label">Recent engagement</p>
+                <p className="modal-value">{selectedCompany.recentEngagement}</p>
+              </div>
+              <div>
+                <p className="modal-label">
+                  Client revenue
+                  {currentRole === 'Partner' && <span style={{ marginLeft: 6, fontSize: 12 }}>(range)</span>}
+                </p>
+                <p className="modal-value">{revenueLabel}</p>
+              </div>
+              <div>
+                <p className="modal-label">Relationship trend</p>
+                <p className="modal-value">
+                  {selectedCompany.relationshipTrend} (Score {selectedCompany.relationshipScore})
+                </p>
+              </div>
+              <div className="company-detail-hierarchy">
+                <p className="modal-label">Company hierarchy</p>
+                <p className="modal-value">{selectedCompany.hierarchy.join(' > ')}</p>
+              </div>
+            </section>
+
+            <section className="company-detail-columns">
+              <div className="company-detail-column">
+                <p className="modal-label">Relationship history</p>
+                <ul className="modal-list">
+                  {(currentRole === 'Partner'
+                    ? selectedCompany.relationshipHistory.slice(0, 2)
+                    : selectedCompany.relationshipHistory
+                  ).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                  {currentRole === 'Partner' &&
+                    selectedCompany.relationshipHistory.length > 2 && (
+                      <li style={{ opacity: 0.7 }}>+ more history (BD view)</li>
+                    )}
+                </ul>
+              </div>
+              <div className="company-detail-column">
+                <p className="modal-label">Key internal connections</p>
+                <ul className="modal-list">
+                  {(currentRole === 'Partner'
+                    ? selectedCompany.keyContacts.slice(0, 2)
+                    : selectedCompany.keyContacts
+                  ).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                  {currentRole === 'Partner' && selectedCompany.keyContacts.length > 2 && (
+                    <li style={{ opacity: 0.7 }}>+ more colleagues (BD view)</li>
+                  )}
+                </ul>
+              </div>
+              <div className="company-detail-column">
+                <p className="modal-label">Recent interactions</p>
+                <ul className="modal-list">
+                  {(currentRole === 'Partner'
+                    ? selectedCompany.recentInteractions.slice(0, 2)
+                    : selectedCompany.recentInteractions
+                  ).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                  {currentRole === 'Partner' &&
+                    selectedCompany.recentInteractions.length > 2 && (
+                      <li style={{ opacity: 0.7 }}>+ more interactions (BD view)</li>
+                    )}
+                </ul>
+              </div>
+            </section>
           </div>
-        </div>
+
+          <div className="company-detail-section">
+            <div className="company-detail-section-heading">
+              <p className="modal-label">Company notes</p>
+            </div>
+            <ul className="modal-list">
+              {companyNotes
+                .filter((n) => n.companyId === selectedCompany.id)
+                .slice(0, currentRole === 'Partner' ? 2 : undefined)
+                .map((note) => (
+                  <li key={note.id}>
+                    <strong>{note.type}</strong> ·{' '}
+                    <span style={{ textTransform: 'capitalize' }}>{note.visibility}</span>{' '}
+                    <span style={{ opacity: 0.7, fontSize: 12 }}>
+                      {new Date(note.createdAt).toLocaleDateString()}
+                    </span>
+                    <div>{note.text}</div>
+                  </li>
+                ))}
+              {companyNotes.filter((n) => n.companyId === selectedCompany.id).length === 0 && (
+                <li>No notes yet for this company.</li>
+              )}
+              {currentRole === 'Partner' &&
+                companyNotes.filter((n) => n.companyId === selectedCompany.id).length > 2 && (
+                  <li style={{ opacity: 0.7 }}>+ more notes (BD view)</li>
+                )}
+            </ul>
+          </div>
+
+          <section className="company-engagement-section">
+            <div className="company-engagement-header">
+              <h3>Engagement</h3>
+              <div className="company-engagement-filters">
+                <select
+                  value={engagementTypeFilter}
+                  onChange={(e) => setEngagementTypeFilter(e.target.value)}
+                >
+                  <option value="All">All types</option>
+                  <option value="Email">Email</option>
+                  <option value="Meeting">Meeting</option>
+                  <option value="Call">Call</option>
+                  <option value="Event">Event</option>
+                  <option value="Other">Other</option>
+                </select>
+                <select
+                  value={engagementPersonFilter}
+                  onChange={(e) => setEngagementPersonFilter(e.target.value)}
+                >
+                  <option value="All">All internal</option>
+                  <option value="You">You</option>
+                </select>
+              </div>
+            </div>
+            <table className="company-engagement-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Contact</th>
+                  <th>Internal</th>
+                  <th>Summary</th>
+                </tr>
+              </thead>
+              <tbody>
+                {engagementRows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.date}</td>
+                    <td>{row.type}</td>
+                    <td>{row.contact}</td>
+                    <td>{row.internal}</td>
+                    <td>{row.summary}</td>
+                  </tr>
+                ))}
+                {engagementRows.length === 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>
+                      No engagement found for the current filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </section>
+
+          <div className="company-detail-section">
+            <div className="company-detail-panels">
+              <CompanyHealthPanel company={selectedCompany} />
+              <OpportunityIdentificationPanel company={selectedCompany} />
+            </div>
+          </div>
+
+          <div className="company-detail-section">
+            <div className="company-detail-section-heading">
+              <p className="modal-label">Matters</p>
+            </div>
+            {currentRole === 'Partner' ? (
+              <p className="modal-value">
+                {(selectedCompany.matters || []).length} matters total (
+                {(selectedCompany.matters || []).filter((m) => m.status === 'Active').length} active)
+              </p>
+            ) : (
+              <table className="company-matters-table">
+                <thead>
+                  <tr>
+                    <th>Open date</th>
+                    <th>Status</th>
+                    <th>Matter name</th>
+                    <th>Practice area</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selectedCompany.matters || []).map((matter) => (
+                    <tr key={matter.id}>
+                      <td>{matter.openDate}</td>
+                      <td>{matter.status}</td>
+                      <td>{matter.name}</td>
+                      <td>{matter.practiceArea}</td>
+                    </tr>
+                  ))}
+                  {(!selectedCompany.matters || selectedCompany.matters.length === 0) && (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>
+                        No matters yet for this company.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className="company-detail-section">
+            <div className="company-detail-section-heading">
+              <p className="modal-label">Opportunities pipeline</p>
+            </div>
+            {currentRole === 'Partner' ? (
+              <p className="modal-value">
+                {(selectedCompany.opportunities || []).length} opportunities (
+                {(selectedCompany.opportunities || []).filter((o) => o.status === 'Pending').length} pending,{' '}
+                {(selectedCompany.opportunities || []).filter((o) => o.status === 'Won').length} won)
+              </p>
+            ) : (
+              <table className="company-opportunities-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selectedCompany.opportunities || []).map((opp) => (
+                    <tr key={opp.id}>
+                      <td>{opp.date}</td>
+                      <td>{opp.status}</td>
+                      <td>{opp.name}</td>
+                      <td>{opp.type}</td>
+                    </tr>
+                  ))}
+                  {(!selectedCompany.opportunities || selectedCompany.opportunities.length === 0) && (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>
+                        No opportunities in the pipeline yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className="company-detail-section">
+            <div className="company-detail-section-heading">
+              <p className="modal-label">Financial & BD trends</p>
+            </div>
+            <div className="company-detail-panels company-detail-panels-secondary">
+              <CompanyMattersPanel company={selectedCompany} />
+              <CompanyOpportunitiesPanel company={selectedCompany} />
+            </div>
+          </div>
+        </section>
       )}
 
       <CreateTouchpointTaskModal
@@ -388,6 +883,16 @@ export default function CompaniesPage() {
         company={tagsForCompany}
         isOpen={Boolean(tagsForCompany)}
         onClose={() => setTagsForCompany(null)}
+      />
+      <AddCompanyNoteModal
+        company={noteForCompany}
+        isOpen={Boolean(noteForCompany)}
+        onClose={() => setNoteForCompany(null)}
+      />
+      <FirmConnectionsModal
+        contact={connectionsForContact}
+        isOpen={Boolean(connectionsForContact)}
+        onClose={() => setConnectionsForContact(null)}
       />
     </section>
   );

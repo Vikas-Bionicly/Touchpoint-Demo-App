@@ -47,6 +47,12 @@ function createStore() {
       return () => listeners.delete(listener);
     },
     actions: {
+      setCurrentRole(role) {
+        setState((prev) => ({
+          ...prev,
+          currentRole: role,
+        }));
+      },
       resetToSeed() {
         setState(buildSeedState());
       },
@@ -218,6 +224,28 @@ function createStore() {
         return id;
       },
 
+      addCompanyNote(input) {
+        const nowIso = new Date().toISOString();
+        const id = `company-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const note = {
+          id,
+          companyId: input.companyId,
+          companyName: input.companyName,
+          type: input.type || 'General',
+          visibility: input.visibility || 'private',
+          text: input.text,
+          shareWith: input.shareWith || '',
+          createdAt: nowIso,
+        };
+
+        setState((prev) => ({
+          ...prev,
+          companyNotes: [note, ...(prev.companyNotes || [])],
+        }));
+
+        return id;
+      },
+
       addContactToLists(contactId, listIds) {
         setState((prev) => ({
           ...prev,
@@ -229,11 +257,59 @@ function createStore() {
         }));
       },
 
+      addListNote(input) {
+        const nowIso = new Date().toISOString();
+        const id = `list-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const note = {
+          id,
+          listId: input.listId,
+          text: input.text,
+          createdAt: nowIso,
+          author: input.author || 'BD team',
+        };
+
+        setState((prev) => ({
+          ...prev,
+          listNotes: [note, ...(prev.listNotes || [])],
+        }));
+
+        return id;
+      },
+
+      addTouchpointNote(input) {
+        const nowIso = new Date().toISOString();
+        const id = `tp-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const note = {
+          id,
+          touchpointId: input.touchpointId,
+          text: input.text,
+          createdAt: nowIso,
+          author: input.author || 'You',
+        };
+
+        setState((prev) => ({
+          ...prev,
+          touchpointNotes: [note, ...(prev.touchpointNotes || [])],
+        }));
+
+        return id;
+      },
+
       setContactFilters(partial) {
         setState((prev) => ({
           ...prev,
           contactFilters: {
             ...(prev.contactFilters || {}),
+            ...partial,
+          },
+        }));
+      },
+
+      setCompanyFilters(partial) {
+        setState((prev) => ({
+          ...prev,
+          companyFilters: {
+            ...(prev.companyFilters || {}),
             ...partial,
           },
         }));
@@ -253,6 +329,20 @@ function createStore() {
         return id;
       },
 
+      saveCompanyView(name) {
+        const trimmed = (name || '').trim();
+        if (!trimmed) return null;
+        const id = `view-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        setState((prev) => ({
+          ...prev,
+          savedViews: [
+            ...(prev.savedViews || []),
+            { id, name: trimmed, scope: 'companies', filters: prev.companyFilters || {} },
+          ],
+        }));
+        return id;
+      },
+
       applyContactView(id) {
         setState((prev) => {
           const view = (prev.savedViews || []).find((v) => v.id === id && v.scope === 'contacts');
@@ -260,6 +350,17 @@ function createStore() {
           return {
             ...prev,
             contactFilters: { ...(view.filters || {}) },
+          };
+        });
+      },
+
+      applyCompanyView(id) {
+        setState((prev) => {
+          const view = (prev.savedViews || []).find((v) => v.id === id && v.scope === 'companies');
+          if (!view) return prev;
+          return {
+            ...prev,
+            companyFilters: { ...(view.filters || {}) },
           };
         });
       },

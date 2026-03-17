@@ -6,6 +6,7 @@ import { contactRows } from '../common/constants/contacts';
 import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 import AddContactNoteModal from '../common/components/AddContactNoteModal';
 import ManageContactTagsModal from '../common/components/ManageContactTagsModal';
+import FirmConnectionsModal from '../common/components/FirmConnectionsModal';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
 
 function addDaysIso(days) {
@@ -21,6 +22,7 @@ export default function MyInsightsPage() {
   const [touchpointPreset, setTouchpointPreset] = useState(null);
   const [noteForContact, setNoteForContact] = useState(null);
   const [tagsForContact, setTagsForContact] = useState(null);
+  const [connectionsForContact, setConnectionsForContact] = useState(null);
   const insightState = useDemoStore((s) => s.insightState || {});
 
   const filtered = useMemo(() => {
@@ -113,6 +115,13 @@ export default function MyInsightsPage() {
               if (!chosen) return;
               setTagsForContact(chosen);
             }}
+            onViewConnections={(c) => {
+              const byContact = contactRows.find((x) => x.name === c.subject) || null;
+              const fallback = contactRows.find((x) => x.company === c.subject) || null;
+              const chosen = byContact || fallback || contactRows[0] || null;
+              if (!chosen) return;
+              setConnectionsForContact(chosen);
+            }}
             onShareContent={(c) => {
               const byContact = contactRows.find((x) => x.name === c.subject) || null;
               const fallback = contactRows.find((x) => x.company === c.subject) || null;
@@ -143,6 +152,11 @@ export default function MyInsightsPage() {
         contact={tagsForContact}
         isOpen={Boolean(tagsForContact)}
         onClose={() => setTagsForContact(null)}
+      />
+      <FirmConnectionsModal
+        contact={connectionsForContact}
+        isOpen={Boolean(connectionsForContact)}
+        onClose={() => setConnectionsForContact(null)}
       />
     </section>
   );

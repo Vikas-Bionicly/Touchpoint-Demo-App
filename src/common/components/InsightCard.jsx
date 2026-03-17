@@ -11,6 +11,7 @@ export default function InsightCard({
   onAddNote,
   onAddTag,
   onShareContent,
+  onViewConnections,
 }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -80,8 +81,8 @@ export default function InsightCard({
           </div>
 
           <div className="actions">
-            <button aria-label="note">
-              <Icon name="note" />
+            <button aria-label="firm connections" onClick={() => onViewConnections?.(card)}>
+              <Icon name="users" />
             </button>
             <button aria-label="touchpoint" onClick={() => onCreateTouchpoint?.(card)}>
               <Icon name="target" />

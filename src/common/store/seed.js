@@ -115,20 +115,34 @@ export function buildSeedState() {
     id: list.id,
     name: list.name,
     owner: list.owner,
-    type: index === 0 ? 'Campaign' : index === 1 ? 'Targeting' : index === 2 ? 'Event' : 'Trip Planning',
+    type:
+      index === 0
+        ? 'Practice-based'
+        : index === 1
+        ? 'Initiative-based'
+        : index === 2
+        ? 'Event-based'
+        : 'Event-based',
     tag: list.tag,
     initials: list.initials,
     color: list.color,
     lastEngagement: list.lastEngagement,
+    visibility: index === 3 ? 'Personal' : index === 2 ? 'Shared' : 'Firm-wide',
+    createdAt: '2025-01-15',
+    members: list.members,
     memberIds: contactRows.filter((_, i) => i % (index + 2) === 0).map((c) => c.id),
   }));
 
   return {
     version: 1,
+    currentRole: 'Partner',
     contacts: contactRows,
     companies: companyRows,
     touchpoints,
     notes: [],
+    companyNotes: [],
+    listNotes: [],
+    touchpointNotes: [],
     lists,
     tags: [
       { id: 't-practice-privacy', label: 'Privacy & Security', type: 'Practice' },
@@ -149,6 +163,12 @@ export function buildSeedState() {
       relationship: '',
       listId: '',
       city: '',
+      region: '',
+    },
+    companyFilters: {
+      text: '',
+      relationshipTrend: '',
+      tagId: '',
     },
     insightState: {},
   };
