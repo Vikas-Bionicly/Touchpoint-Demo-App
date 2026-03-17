@@ -1168,6 +1168,15 @@ h1 {
   border-collapse: collapse;
 }
 
+.companies-table-v2-table thead th {
+  padding: 0;
+  text-align: left;
+}
+
+.companies-table-v2-table tbody tr td {
+  padding: 16px 10px;
+}
+
 .companies-table-head-v2 {
   height: 66px;
   padding: 0 16px 0 18px;
