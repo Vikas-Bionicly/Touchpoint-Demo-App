@@ -45,7 +45,7 @@ export default function MyInsightsPage() {
       <PageHeader title="My Insights" showMore={false} />
 
       <FilterBar className="mb-4">
-        <div c="search-with-filter">
+        <div className="search-with-filter">
           <SearchBar value={query} onChange={(value) => setQuery(value)} />
           <FilterViewButton active={highPriorityOnly} onClick={() => setHighPriorityOnly((prev) => !prev)} />
         </div>
