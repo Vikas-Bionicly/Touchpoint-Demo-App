@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
+import PageHeader from '../common/components/PageHeader';
+import SearchBar from '../common/components/SearchBar';
+import FilterBar from '../common/components/FilterBar';
+import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
+import FilterViewButton from '../common/components/FilterViewButton';
 
 export default function ListsPage() {
   const [query, setQuery] = useState('');
@@ -54,20 +59,19 @@ export default function ListsPage() {
     <section className="lists-view-v2">
       {!isDetailView && (
         <>
-          <header className="headbar">
-            <h1>Lists</h1>
-            <button className="context-btn" aria-label="more">
-              <Icon name="more" />
-            </button>
-          </header>
+          <PageHeader title="Lists" showMore={false} />
 
-          <section className="filterbar lists-filterbar-v2">
-            <label className="search lists-search-v2">
-              <Icon name="search" />
-              <input placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
-            </label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <select
+          <FilterBar className="lists-filterbar-v2">
+            <div className="search-with-filter">
+              <SearchBar
+                className="lists-search-v2"
+                value={query}
+                onChange={(value) => setQuery(value)}
+              />
+              <FilterViewButton />
+            </div>
+            <FilterControls>
+              <FilterSelect
                 value={tagFilter}
                 onChange={(e) => setTagFilter(e.target.value)}
                 className="lists-tag-filter"
@@ -78,13 +82,9 @@ export default function ListsPage() {
                     {t.label}
                   </option>
                 ))}
-              </select>
-              <button className="filter-btn">
-                <Icon name="sliders" className="btn-icon" />
-                Filter View
-              </button>
-            </div>
-          </section>
+              </FilterSelect>
+            </FilterControls>
+          </FilterBar>
 
           <section className="lists-table-v2">
             <div className="lists-table-head-v2">
@@ -253,6 +253,70 @@ export default function ListsPage() {
                 );
               })}
             </div>
+          </section>
+
+          <section className="lists-cards">
+            {rows.map((row) => {
+              const memberCount =
+                Array.isArray(row.memberIds) && row.memberIds.length ? row.memberIds.length : row.members || 0;
+
+              return (
+                <article
+                  key={row.id}
+                  className="list-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedListId(row.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelectedListId(row.id);
+                    }
+                  }}
+                >
+                  <div className="list-card-header">
+                    <div className={`list-avatar-v2 ${row.color}`}>{row.initials}</div>
+                    <div className="list-card-main">
+                      <strong>{row.name}</strong>
+                      <div className="list-card-meta">
+                        <span>{row.owner}</span>
+                        {' • '}
+                        <span>{row.tag}</span>
+                      </div>
+                      <div className="list-card-meta">
+                        Members <strong>{memberCount}</strong>
+                        {' • '}
+                        Last engagement <strong>{row.lastEngagement}</strong>
+                      </div>
+                      <div className="list-card-meta">
+                        Visibility <strong>{row.visibility || 'Firm-wide'}</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="list-card-actions">
+                    <button
+                      aria-label="open list"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedListId(row.id);
+                      }}
+                    >
+                      <Icon name="target" />
+                    </button>
+                    <button
+                      aria-label="add note"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedListId(row.id);
+                      }}
+                    >
+                      <Icon name="listPlus" />
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </section>
         </>
       )}

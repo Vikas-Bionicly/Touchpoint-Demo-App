@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
+import PageHeader from '../common/components/PageHeader';
 import { contactRows } from '../common/constants/contacts';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
+import SearchBar from '../common/components/SearchBar';
+import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 
 const interactionTypes = ['Email', 'Meeting', 'Event', 'Call', 'Visit'];
 
@@ -239,12 +242,37 @@ export default function TouchpointsPage({ view = '' }) {
 
   return (
     <section className="touchpoints-view-v2">
-      <header className="headbar">
-        <h1>{String(view).toLowerCase().includes('missed') ? 'Missed Touchpoints' : 'Touchpoints'}</h1>
-        <button className="context-btn" aria-label="more">
-          <Icon name="more" />
-        </button>
-      </header>
+      <PageHeader
+        title={String(view).toLowerCase().includes('missed') ? 'Missed Touchpoints' : 'Touchpoints'}
+        showMore={false}
+      />
+
+      <section className="filterbar touchpoints-filterbar-v2">
+        <SearchBar
+          className="touchpoints-search-v2"
+          value={query}
+          onChange={(value) => setQuery(value)}
+        />
+        <FilterControls className="touchpoints-toolbar-v2">
+          <button className="tool-btn" onClick={() => setIsLogOpen(true)}>
+            Log Interaction
+          </button>
+          <button className="filter-btn" type="button" onClick={exportCsv}>
+            Export CSV
+          </button>
+          <FilterSelect
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+          >
+            <option value="">All Tags</option>
+            {tags.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </FilterSelect>
+        </FilterControls>
+      </section>
 
       {!String(view).toLowerCase().includes('missed') && (
         <section className="touchpoints-summary">
@@ -266,33 +294,6 @@ export default function TouchpointsPage({ view = '' }) {
           </div>
         </section>
       )}
-
-      <section className="filterbar touchpoints-filterbar-v2">
-        <label className="search touchpoints-search-v2">
-          <Icon name="search" />
-          <input placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
-        </label>
-        <div className="touchpoints-toolbar-v2">
-          <button className="tool-btn" onClick={() => setIsLogOpen(true)}>
-            Log Interaction
-          </button>
-          <button className="filter-btn" type="button" onClick={exportCsv}>
-            Export CSV
-          </button>
-          <select
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-            className="touchpoints-tag-filter"
-          >
-            <option value="">All Tags</option>
-            {tags.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </section>
 
       <section className="touchpoints-table-v2">
         <div className="touchpoints-table-head-v2">
@@ -469,8 +470,18 @@ export default function TouchpointsPage({ view = '' }) {
 
         <div className="touchpoints-table-body-v2">
           {rows.map((row) => (
-            <div className="touchpoint-row-v2 is-clickable" key={row.id} onClick={() => setSelectedRow(row)} role="button" tabIndex={0}>
-              <label className="checkbox-cell-v2" aria-label={`Select ${row.contactName}`} onClick={(e) => e.stopPropagation()}>
+            <div
+              className="touchpoint-row-v2 is-clickable"
+              key={row.id}
+              onClick={() => setSelectedRow(row)}
+              role="button"
+              tabIndex={0}
+            >
+              <label
+                className="checkbox-cell-v2"
+                aria-label={`Select ${row.contactName}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <input
                   type="checkbox"
                   checked={Boolean(checkedRows[row.id])}
@@ -500,7 +511,11 @@ export default function TouchpointsPage({ view = '' }) {
 
               {showColumns.contact && (
                 <div className="touchpoint-contact-col-v2">
-                  <img src={row.avatarUrl} alt={row.contactName} className={`contact-avatar-v2 tone-${row.signalTone}`} />
+                  <img
+                    src={row.avatarUrl}
+                    alt={row.contactName}
+                    className={`contact-avatar-v2 tone-${row.signalTone}`}
+                  />
                   <div className="touchpoint-contact-meta-v2">
                     <div className="contact-title-line-v2">
                       <strong>{row.contactName}</strong>
@@ -568,6 +583,100 @@ export default function TouchpointsPage({ view = '' }) {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="touchpoints-cards">
+        {rows.map((row) => (
+          <article
+            key={row.id}
+            className="touchpoint-card"
+            role="button"
+            tabIndex={0}
+            onClick={() => setSelectedRow(row)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                setSelectedRow(row);
+              }
+            }}
+          >
+            <header className="touchpoint-card-header">
+              <div className="touchpoint-card-date">
+                <span className="touchpoint-card-date-label">
+                  {row.kind === 'task' ? 'Due' : 'Date'}
+                </span>
+                <span className="touchpoint-card-date-value">
+                  {row.kind === 'task'
+                    ? formatDueLabel(row.dueAt)
+                    : row.completedAt
+                    ? formatDueLabel(row.completedAt)
+                    : '—'}
+                </span>
+                {isOverdue(row) && (
+                  <span className="tp-pill tp-pill-overdue" aria-label="Overdue touchpoint">
+                    Overdue
+                  </span>
+                )}
+              </div>
+
+              <div className="touchpoint-card-contact">
+                <img
+                  src={row.avatarUrl}
+                  alt={row.contactName}
+                  className={`contact-avatar-v2 tone-${row.signalTone}`}
+                />
+                <div className="touchpoint-card-contact-meta">
+                  <div className="contact-title-line-v2">
+                    <strong>{row.contactName}</strong>
+                    <Icon name="signal" className={`network-icon tone-${row.signalTone}`} />
+                  </div>
+                  <p>{row.role}</p>
+                  <p>{row.company}</p>
+                </div>
+              </div>
+            </header>
+
+            <div className="touchpoint-card-body">
+              <p className="touchpoint-card-title">
+                [{row.interactionType}] {row.title}
+              </p>
+              <p className="touchpoint-card-status-row">
+                <span className="tp-pill tp-pill-status" data-status={row.status}>
+                  {row.status === 'open'
+                    ? 'Open'
+                    : row.status === 'completed'
+                    ? 'Completed'
+                    : row.status === 'cancelled'
+                    ? 'Cancelled'
+                    : row.status}
+                </span>
+                <span className="tp-pill tp-pill-relationship">
+                  Relationship <strong>{row.relationshipStatus}</strong>
+                </span>
+              </p>
+
+              {(() => {
+                const contact = contactRows.find((c) => c.name === row.contactName);
+                const tagIds = contact ? contactTags[contact.id] || [] : [];
+                if (!tagIds.length) return null;
+                const tagLabels = tags
+                  .filter((t) => tagIds.includes(t.id))
+                  .slice(0, 3)
+                  .map((t) => t.label);
+                if (!tagLabels.length) return null;
+                return (
+                  <div className="touchpoint-card-tags">
+                    {tagLabels.map((label) => (
+                      <span key={label} className="tp-tag-chip">
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          </article>
+        ))}
       </section>
 
       {selectedRow && (

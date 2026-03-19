@@ -11,6 +11,11 @@ import { CompanyHealthPanel } from '../common/components/CompanyHealthPanel';
 import { OpportunityIdentificationPanel } from '../common/components/OpportunityIdentificationPanel';
 import { CompanyMattersPanel } from '../common/components/CompanyMattersPanel';
 import { CompanyOpportunitiesPanel } from '../common/components/CompanyOpportunitiesPanel';
+import PageHeader from '../common/components/PageHeader';
+import SearchBar from '../common/components/SearchBar';
+import FilterBar from '../common/components/FilterBar';
+import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
+import DataTable from '../common/components/DataTable';
 
 function CompanyLogo({ type }) {
   if (type === 'uber') {
@@ -106,6 +111,7 @@ export default function CompaniesPage() {
   const engagementParentOn = Boolean(showColumns.recentEngagement) || Boolean(showColumns.clientStatus);
   const engagementActiveChildren =
     (showColumns.recentEngagement ? 1 : 0) + (showColumns.clientStatus ? 1 : 0);
+  const activeParentsCount = (nameParentOn ? 1 : 0) + (engagementParentOn ? 1 : 0);
 
   const engagementRows = useMemo(() => {
     if (!selectedCompany) return [];
@@ -222,24 +228,16 @@ export default function CompaniesPage() {
     <section className={`companies-view-v2 ${isDetailView ? 'companies-detail-view' : ''}`}>
       {!isDetailView && (
         <>
-          <header className="headbar">
-            <h1>Companies</h1>
-            <button className="context-btn" aria-label="more">
-              <Icon name="more" />
-            </button>
-          </header>
+          <PageHeader title="Companies" showMore={false} />
 
-          <section className="filterbar companies-filterbar-v2">
-            <label className="search companies-search-v2">
-              <Icon name="search" />
-              <input
-                placeholder="Search"
-                value={companyFilters.text || ''}
-                onChange={(e) => demoStore.actions.setCompanyFilters({ text: e.target.value })}
-              />
-            </label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <select
+          <FilterBar className="companies-filterbar-v2">
+            <SearchBar
+              className="companies-search-v2"
+              value={companyFilters.text || ''}
+              onChange={(value) => demoStore.actions.setCompanyFilters({ text: value })}
+            />
+            <FilterControls>
+              <FilterSelect
                 value={companyFilters.relationshipTrend || ''}
                 onChange={(e) => demoStore.actions.setCompanyFilters({ relationshipTrend: e.target.value })}
               >
@@ -247,9 +245,9 @@ export default function CompaniesPage() {
                 <option value="Growing">Growing</option>
                 <option value="Stable">Stable</option>
                 <option value="Declining">Declining</option>
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
                 value={companyFilters.tagId || ''}
                 onChange={(e) => demoStore.actions.setCompanyFilters({ tagId: e.target.value })}
               >
@@ -259,20 +257,18 @@ export default function CompaniesPage() {
                     {t.label}
                   </option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <button
-                className="filter-btn"
-                type="button"
+              <FilterButton
                 onClick={() => {
                   const name = window.prompt('Save current company filters as view name');
                   if (name) demoStore.actions.saveCompanyView(name);
                 }}
               >
                 Save View
-              </button>
+              </FilterButton>
 
-              <select
+              <FilterSelect
                 onChange={(e) => {
                   const value = e.target.value;
                   if (!value) return;
@@ -287,38 +283,46 @@ export default function CompaniesPage() {
                       {v.name}
                     </option>
                   ))}
-              </select>
+              </FilterSelect>
 
-              <button type="button" className="filter-btn" onClick={exportCsv}>
+              <FilterButton onClick={exportCsv}>
                 Export CSV
-              </button>
-            </div>
-          </section>
+              </FilterButton>
+            </FilterControls>
+          </FilterBar>
 
-          <section className="companies-table-v2">
-            <table className="companies-table-v2-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '50%' }}>
+          <DataTable
+            className="companies-table-v2"
+            tableClassName="companies-table-v2-table"
+            renderHeader={() => (
+              <tr>
+                <th colSpan={3}>
+                  <div className="companies-table-head-v2">
                     <button
                       type="button"
-                      style={{ all: 'unset', cursor: 'pointer' }}
+                      style={{
+                        all: 'unset',
+                        cursor: 'pointer',
+                        display: nameParentOn ? 'inline-flex' : 'none',
+                      }}
                       onClick={() => toggleSort('name')}
                     >
                       Name
                     </button>
-                  </th>
-                  <th style={{ width: '40%' }}>
+
                     <button
                       type="button"
-                      style={{ all: 'unset', cursor: 'pointer' }}
+                      style={{
+                        all: 'unset',
+                        cursor: 'pointer',
+                        display: engagementParentOn ? 'inline-flex' : 'none',
+                      }}
                       onClick={() => toggleSort('recentEngagement')}
                     >
                       Recent Engagement
                     </button>
-                  </th>
-                  <th style={{ width: '10%' }}>
-                    <div style={{ position: 'relative', textAlign: 'right' }}>
+
+                    <div style={{ position: 'relative', justifySelf: 'end' }}>
                       <button
                         className="contacts-table-settings"
                         aria-label="configure columns"
@@ -332,6 +336,7 @@ export default function CompaniesPage() {
                       >
                         <Icon name="settings" />
                       </button>
+
                       {showColumns._open && (
                         <div
                           style={{
@@ -347,7 +352,7 @@ export default function CompaniesPage() {
                             minWidth: 240,
                           }}
                         >
-                          {/* Name column (categories only) */}
+                          {/* Name parent + Categories child */}
                           <label
                             style={{
                               display: 'flex',
@@ -360,6 +365,7 @@ export default function CompaniesPage() {
                             <input
                               type="checkbox"
                               checked={nameParentOn}
+                              disabled={activeParentsCount === 1 && nameParentOn}
                               onChange={(e) =>
                                 setShowColumns((prev) => ({
                                   ...prev,
@@ -369,6 +375,7 @@ export default function CompaniesPage() {
                             />
                             <span style={{ fontWeight: 600 }}>Name</span>
                           </label>
+
                           <label
                             style={{
                               display: 'flex',
@@ -382,6 +389,7 @@ export default function CompaniesPage() {
                             <input
                               type="checkbox"
                               checked={Boolean(showColumns.categories)}
+                              disabled={activeParentsCount === 1 && nameParentOn}
                               onChange={(e) =>
                                 setShowColumns((prev) => ({
                                   ...prev,
@@ -392,7 +400,7 @@ export default function CompaniesPage() {
                             <span>Categories</span>
                           </label>
 
-                          {/* Recent Engagement column + children */}
+                          {/* Recent engagement parent + children */}
                           <label
                             style={{
                               display: 'flex',
@@ -405,7 +413,7 @@ export default function CompaniesPage() {
                             <input
                               type="checkbox"
                               checked={engagementParentOn}
-                              disabled={engagementActiveChildren === 1 && engagementParentOn}
+                              disabled={activeParentsCount === 1 && engagementParentOn}
                               onChange={(e) => {
                                 const checked = e.target.checked;
                                 setShowColumns((prev) => ({
@@ -421,129 +429,196 @@ export default function CompaniesPage() {
                           {[
                             ['recentEngagement', 'Recent engagement'],
                             ['clientStatus', 'Client status'],
-                          ].map(([key, label]) => (
-                            <label
-                              key={key}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                fontSize: 14,
-                                marginBottom: 4,
-                                paddingLeft: 20,
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={Boolean(showColumns[key])}
-                                disabled={
-                                  engagementParentOn &&
-                                  engagementActiveChildren === 1 &&
-                                  showColumns[key]
-                                }
-                                onChange={(e) =>
-                                  setShowColumns((prev) => ({
-                                    ...prev,
-                                    [key]: e.target.checked,
-                                  }))
-                                }
-                              />
-                              <span>{label}</span>
-                            </label>
-                          ))}
+                          ].map(([key, label]) => {
+                            const isLastActiveChild =
+                              engagementParentOn && engagementActiveChildren === 1 && showColumns[key];
+
+                            return (
+                              <label
+                                key={key}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  fontSize: 14,
+                                  marginBottom: 4,
+                                  paddingLeft: 20,
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(showColumns[key])}
+                                  disabled={isLastActiveChild && activeParentsCount === 1}
+                                  onChange={(e) =>
+                                    setShowColumns((prev) => ({
+                                      ...prev,
+                                      [key]: e.target.checked,
+                                    }))
+                                  }
+                                />
+                                <span>{label}</span>
+                              </label>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={(event) => {
-                      if (event.target.closest('.company-actions-v2 button')) return;
+                  </div>
+                </th>
+              </tr>
+            )}
+            renderBody={() =>
+              rows.map((row) => (
+                <tr
+                  key={row.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={(event) => {
+                    if (event.target.closest('.company-actions-v2 button')) return;
+                    setSelectedCompany(row);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
                       setSelectedCompany(row);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        setSelectedCompany(row);
-                      }
+                    }
+                  }}
+                >
+                  <td style={{ width: '50%' }}>
+                    <div className="company-name-col-v2">
+                      <CompanyLogo type={row.logo} />
+                      <div className="company-name-meta-v2">
+                        <strong>{row.name}</strong>
+                        {showColumns.categories && (
+                          <>
+                            <p>{row.category1}</p>
+                            <p>{row.category2}</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ width: '40%' }}>
+                    <div className="company-engagement-col-v2">
+                      <div className="company-note-pill-v2">
+                        <Icon name="handshake" />
+                      </div>
+                      <div className="company-engagement-text-v2">
+                        {showColumns.recentEngagement && (
+                          <p className="company-engagement-title-v2">{row.engagementTitle}</p>
+                        )}
+                        {(showColumns.recentEngagement || showColumns.clientStatus) && (
+                          <p className="company-engagement-sub-v2">
+                            {showColumns.recentEngagement && (
+                              <>
+                                Recent engagement <strong>{row.recentEngagement}</strong>
+                              </>
+                            )}
+                            {showColumns.clientStatus && (
+                              <span>
+                                Client status <strong>{row.clientStatus}</strong>
+                              </span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ width: '10%' }}>
+                    <div className="company-actions-v2">
+                      <button
+                        aria-label="new touchpoint"
+                        onClick={() => {
+                          const contact = guessContactForCompany(row.name);
+                          setTouchpointPreset({
+                            contactName: contact?.name || contactRows[0]?.name || '',
+                            company: row.name,
+                            role: contact?.role || '',
+                            title: `Touchpoint for ${row.name}`,
+                            notes: '',
+                            source: 'companies:row',
+                          });
+                        }}
+                      >
+                        <Icon name="docPlus" />
+                      </button>
+                      <button aria-label="relationship">
+                        <Icon name="target" />
+                      </button>
+                      <button aria-label="analytics">
+                        <Icon name="chart" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          />
+
+          <section className="companies-cards">
+            {rows.map((row) => (
+              <article
+                key={row.id}
+                className="company-card"
+                role="button"
+                onClick={() => setSelectedCompany(row)}
+              >
+                <div className="company-card-header">
+                  <CompanyLogo type={row.logo} />
+                  <div className="company-card-main">
+                    <strong>{row.name}</strong>
+                    <div className="company-card-meta">
+                      {[row.category1, row.category2].filter(Boolean).join(' • ')}
+                    </div>
+                    <div className="company-card-meta">
+                      Recent engagement <strong>{row.recentEngagement}</strong>
+                      {' · '}
+                      Client status <strong>{row.clientStatus}</strong>
+                    </div>
+                    <div className="company-card-meta">
+                      Relationship trend{' '}
+                      <strong>
+                        {row.relationshipTrend} (Score {row.relationshipScore})
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+                <div className="company-card-actions">
+                  <button
+                    aria-label="new touchpoint"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      const contact = guessContactForCompany(row.name);
+                      setTouchpointPreset({
+                        contactName: contact?.name || contactRows[0]?.name || '',
+                        company: row.name,
+                        role: contact?.role || '',
+                        title: `Touchpoint for ${row.name}`,
+                        notes: '',
+                        source: 'companies:card',
+                      });
                     }}
                   >
-                    <td>
-                      <div className="company-name-col-v2">
-                        <CompanyLogo type={row.logo} />
-                        <div className="company-name-meta-v2">
-                          <strong>{row.name}</strong>
-                          {showColumns.categories && (
-                            <>
-                              <p>{row.category1}</p>
-                              <p>{row.category2}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="company-engagement-col-v2">
-                        <div className="company-note-pill-v2">
-                          <Icon name="handshake" />
-                        </div>
-                        <div className="company-engagement-text-v2">
-                          {showColumns.recentEngagement && (
-                            <p className="company-engagement-title-v2">{row.engagementTitle}</p>
-                          )}
-                          {(showColumns.recentEngagement || showColumns.clientStatus) && (
-                            <p className="company-engagement-sub-v2">
-                              {showColumns.recentEngagement && (
-                                <>
-                                  Recent engagement <strong>{row.recentEngagement}</strong>
-                                </>
-                              )}
-                              {showColumns.clientStatus && (
-                                <span>
-                                  Client status <strong>{row.clientStatus}</strong>
-                                </span>
-                              )}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="company-actions-v2">
-                        <button
-                          aria-label="new touchpoint"
-                          onClick={() => {
-                            const contact = guessContactForCompany(row.name);
-                            setTouchpointPreset({
-                              contactName: contact?.name || contactRows[0]?.name || '',
-                              company: row.name,
-                              role: contact?.role || '',
-                              title: `Touchpoint for ${row.name}`,
-                              notes: '',
-                              source: 'companies:row',
-                            });
-                          }}
-                        >
-                          <Icon name="docPlus" />
-                        </button>
-                        <button aria-label="relationship">
-                          <Icon name="target" />
-                        </button>
-                        <button aria-label="analytics">
-                          <Icon name="chart" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    <Icon name="docPlus" />
+                  </button>
+                  <button
+                    aria-label="firm connections"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      const contact = guessContactForCompany(row.name) || {
+                        id: row.id,
+                        name: row.name,
+                        company: row.name,
+                        role: 'Client contact',
+                      };
+                      setConnectionsForContact(contact);
+                    }}
+                  >
+                    <Icon name="handshake" />
+                  </button>
+                </div>
+              </article>
+            ))}
           </section>
         </>
       )}

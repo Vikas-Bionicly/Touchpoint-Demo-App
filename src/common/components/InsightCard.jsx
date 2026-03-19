@@ -117,7 +117,7 @@ export default function InsightCard({
         {expanded && (
           <div className="suggestion-row">
             <p>{card.suggestion}</p>
-            <button className="primary" onClick={() => onCreateTouchpoint?.(card)}>
+            <button className="primary insights-cta" onClick={() => onCreateTouchpoint?.(card)}>
               <Icon name="send" className="btn-icon" />
               {card.cta}
             </button>

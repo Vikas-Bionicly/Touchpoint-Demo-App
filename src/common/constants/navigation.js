@@ -1,7 +1,7 @@
 export const navItems = [
-  { label: 'My Insights', icon: 'sparkles', children: ['Key Contact', 'Key Client', 'Saved View'] },
+  { label: 'My Insights', icon: 'sparkles' },
   { label: 'Contacts', icon: 'addressCard' },
-  { label: 'Companies', icon: 'buildings', children: ['My Clients', 'Firm Clients', 'Prospective Clients'] },
-  { label: 'Lists', icon: 'list', children: ['My Lists'] },
+  { label: 'Companies', icon: 'buildings' },
+  { label: 'Lists', icon: 'list' },
   { label: 'Touchpoints', icon: 'handshake', children: ['My Touchpoints', 'Missed Touchpoints'] },
 ];

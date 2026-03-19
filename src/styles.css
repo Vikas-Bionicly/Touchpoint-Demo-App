@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --sidebar: #1c2536;
   --main-bg: #fafafa;
@@ -46,21 +50,44 @@ input {
 }
 
 .sidebar {
-  background: var(--sidebar);
+  background: #3d4551; /* match Blakes Figma sidebar */
   padding: 32px 24px 24px;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-top {
   margin-bottom: 24px;
 }
 
-.sidebar-logo {
-  margin-bottom: 20px;
+.sidebar-brand-bar {
+  background: #c8102e;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  margin: -32px -24px 24px;
 }
+
+.sidebar-close {
+  display: none;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+}
+
 
 .sidebar-logo svg {
   display: block;
@@ -85,29 +112,57 @@ input {
   opacity: 0.8;
 }
 
-.role-toggle {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
+.role-card {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
   background: rgba(15, 23, 42, 0.7);
-  gap: 4px;
 }
 
-.role-pill {
-  border: none;
+.role-avatar {
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 13px;
-  font-weight: 500;
-  background: transparent;
-  color: #e5e7eb;
-  cursor: pointer;
+  background: #c8102e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.role-pill.active {
-  background: #e5e7eb;
-  color: #111827;
+.role-meta {
+  display: flex;
+  flex-direction: column;
 }
+
+.role-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.role-title {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.role-toggle-icon {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .nav-group {
   margin-bottom: 6px;
@@ -130,8 +185,8 @@ input {
 }
 
 .nav-item.active {
-  color: #f5f5f5;
-  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04); /* #FFFFFF0A */
   font-weight: 600;
 }
 
@@ -165,6 +220,193 @@ h1 {
   line-height: 36px;
 }
 
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  z-index: 50;
+  padding: 6px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.sidebar-toggle span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #ffffff;
+  z-index: 35;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.mobile-menu-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 20px;
+  background: #f3f3f3;
+  color: #111827;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-topbar-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* =========================
+   Responsive breakpoints
+   - <= 1024px: tablet + small laptop
+   - <= 960px:  legacy mobile sidebar breakpoint (kept for behavior)
+   - <= 768px:  tablet portrait
+   - <= 600px:  large phones
+   - <= 480px:  small phones
+   ========================= */
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 40px 20px 16px;
+  }
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease-out;
+    z-index: 40;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+
+  .main {
+    padding: 76px 16px 16px;
+  }
+
+  .mobile-topbar {
+    display: flex;
+  }
+
+  .headbar {
+    display: none;
+  }
+
+  .sidebar-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-brand-bar {
+    margin: 0 0 32px;
+  }
+
+  .insights-view {
+    max-width: 100%;
+  }
+
+  /* Keep the first row of content below the fixed mobile top bar */
+  .filterbar {
+    margin-top: 46px;
+  }
+
+  .contacts-view .contacts-filterbar {
+    margin-top: 64px !important;
+  }
+
+  /* Ensure modals appear below the fixed mobile top header */
+  .modal-backdrop {
+    z-index: 60;
+    align-items: flex-start;
+    padding-top: 76px;
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-backdrop {
+    /* Preserve offset below fixed header on very small screens */
+    padding-top: 76px;
+    padding-inline: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .company-modal {
+    height: 100%;
+    max-height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .contacts-table-v2-table {
+    min-width: 860px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .main {
+    /* Keep content below fixed mobile top bar */
+    padding: 76px 10px 16px;
+  }
+}
+
 .context-btn,
 .sync-btn,
 .next-step-btn,
@@ -191,15 +433,47 @@ h1 {
 }
 
 .filterbar {
-  margin-top: 32px;
+  margin-top: 46px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
+}
+
+.insights-filterbar {
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.filter-select {
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid #d4d4d4;
+  background: #fff;
+  color: #262626;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+.search-with-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
 }
 
 .search {
-  width: 404px;
+  width: 680px;
+  max-width: 100%;
   height: 44px;
   border: 1px solid #a3a3a3;
   border-radius: 8px;
@@ -234,6 +508,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .filter-btn.active {
@@ -252,9 +527,33 @@ h1 {
   gap: 24px;
 }
 
+/* Generic table styling for DataTable */
+.datatable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.datatable thead {
+  background: #f1f1f1;
+}
+
+.datatable-head-row {
+  height: 56px;
+}
+
+.datatable-head-cell {
+  padding: 12px 10px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #404040;
+  border-bottom: 1px solid #ececec;
+}
+
 .insights-view {
   width: 100%;
-  max-width: none;
+  max-width: 100%;
+  margin: 0;
 }
 
 .ins-card {
@@ -281,6 +580,10 @@ h1 {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+}
+
+.ins-top > * {
+  min-width: 0;
 }
 
 .ins-badges {
@@ -662,6 +965,34 @@ h1 {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .list-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 46px;
+  }
+
+  .list-detail-back {
+    width: auto;
+    max-width: 180px;
+  }
+
+  .list-detail-title {
+    width: 100%;
+  }
+
+  .list-detail-title h1 {
+    font-size: 22px;
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+
+  .list-detail-header-meta {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
   .list-members-head,
   .list-member-row {
     grid-template-columns: minmax(0, 2fr) 100px;
@@ -754,6 +1085,10 @@ h1 {
   gap: 24px;
   align-items: center;
   padding: 10px;
+}
+
+.client-row > * {
+  min-width: 0;
 }
 
 .client-block {
@@ -892,6 +1227,14 @@ h1 {
   flex-shrink: 0;
 }
 
+.insights-cta {
+  background: var(--primary);
+}
+
+.insights-cta:hover {
+  background: #1f2133;
+}
+
 .detail-link {
   margin: 0 auto;
   width: 100%;
@@ -963,11 +1306,152 @@ h1 {
 .contacts-table-v2 {
   margin-top: 22px;
   border-top: 1px solid #ececec;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .contacts-table-v2-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 980px;
+}
+
+.contacts-cards {
+  display: none;
+  margin-top: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-card {
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-card-meta {
+  font-size: 13px;
+  color: #525252;
+}
+
+.contact-card-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.contact-card-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  background: #f3f3f3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #404040;
+}
+
+@media (max-width: 768px) {
+  /* On mobile, lay filters out as a 2-column grid:
+     - each filter gets at least 50% width
+     - if there is an odd one, it spans full width on the last row */
+  .filter-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .filter-controls > * {
+    width: 100%;
+  }
+
+  .filter-controls > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Contacts-specific overrides so min-widths don't force full-width rows */
+  .contacts-filter-actions {
+    min-width: 0;
+  }
+
+  .contacts-filter-input,
+  .contacts-filter-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .contacts-table-v2 {
+    display: none;
+  }
+
+  .contacts-cards {
+    display: flex;
+  }
+
+  .search {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .companies-table-v2 {
+    display: none;
+  }
+
+  .companies-cards {
+    display: flex;
+  }
+
+  .lists-table-v2 {
+    display: none;
+  }
+
+  .lists-cards {
+    display: flex;
+  }
+
+  .touchpoints-table-v2 {
+    display: none;
+  }
+
+  .touchpoints-cards {
+    display: flex;
+  }
+
+  .lists-view-v2 .lists-filterbar-v2 {
+    margin-top: 64px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .companies-cards {
+    display: none;
+  }
+
+  .lists-cards {
+    display: none;
+  }
+
+  .touchpoints-cards {
+    display: none;
+  }
 }
 
 .contacts-table-head-v2 {
@@ -1015,6 +1499,46 @@ h1 {
   align-items: center;
   gap: 8px;
   border-bottom: 1px solid #efefef;
+}
+
+.contacts-filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex: 1;
+  min-width: 260px;
+}
+
+.contacts-filter-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d4d4d4;
+  font-size: 14px;
+  min-width: 160px;
+  max-width: 100%;
+}
+
+.contacts-filter-select {
+  min-width: 150px;
+  max-width: 100%;
+}
+
+.contacts-columns-popover {
+  max-width: calc(100vw - 24px);
+}
+
+@media (max-width: 768px) {
+  .contacts-filter-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .contacts-filter-actions {
+    flex-wrap: wrap;
+  }
 }
 
 .contact-row-v2:nth-child(even) {
@@ -1161,6 +1685,58 @@ h1 {
   border-radius: 0;
   overflow: hidden;
   background: #fff;
+}
+
+.companies-cards {
+  margin-top: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.company-card {
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-card-meta {
+  font-size: 13px;
+  color: #525252;
+}
+
+.company-card-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.company-card-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  background: #f3f3f3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #404040;
 }
 
 .companies-table-v2-table {
@@ -1395,6 +1971,17 @@ h1 {
   color: #374151;
 }
 
+@media (max-width: 768px) {
+  .touchpoints-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 12px;
+  }
+
+  .touchpoints-summary-trend {
+    text-align: left;
+  }
+}
+
 .touchpoints-filterbar-v2 {
   margin-top: 30px;
 }
@@ -1407,6 +1994,84 @@ h1 {
 .touchpoints-toolbar-v2 {
   display: flex;
   gap: 8px;
+}
+
+.touchpoints-cards {
+  display: none;
+  margin-top: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.touchpoint-card {
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.touchpoint-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.touchpoint-card-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted-2);
+}
+
+.touchpoint-card-date-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.touchpoint-card-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.touchpoint-card-contact-meta p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #525252;
+}
+
+.touchpoint-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.touchpoint-card-title {
+  margin: 0;
+  font-size: 15px;
+  color: #111827;
+}
+
+.touchpoint-card-status-row {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.touchpoint-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .touchpoints-table-v2 {
@@ -1467,8 +2132,10 @@ h1 {
   font-size: 16px;
   color: #171717;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
 }
 
 .touchpoint-contact-col-v2 {
@@ -1675,6 +2342,59 @@ h1 {
   margin-top: 22px;
   border: 1px solid #ececec;
   background: #fff;
+}
+
+.lists-cards {
+  display: none;
+  margin-top: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-card {
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list-card-meta {
+  font-size: 13px;
+  color: #525252;
+}
+
+.list-card-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.list-card-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  background: #f3f3f3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #404040;
 }
 
 .lists-table-head-v2 {
@@ -2127,7 +2847,7 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 30;
+  z-index: 70;
 }
 
 .company-modal {
@@ -2225,6 +2945,17 @@ h1 {
   .search,
   .search.compact {
     width: 100%;
+  }
+
+  .company-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-grid,
+  .modal-stack {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .filterbar,
@@ -2335,6 +3066,21 @@ h1 {
 
   .client-row {
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .client-block,
+  .meta-block {
+    min-width: 0;
+  }
+
+  .name-line {
+    flex-wrap: wrap;
+  }
+
+  .meta-block p {
+    overflow-wrap: anywhere;
   }
 
   .contacts-table-head-v2,
@@ -2359,6 +3105,7 @@ h1 {
 
   .actions {
     justify-self: start;
+    flex-wrap: wrap;
   }
 
   .suggestion-row {
@@ -2380,5 +3127,81 @@ h1 {
 
   .modal-actions {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .ins-head {
+    padding: 12px;
+  }
+
+  .ins-body {
+    padding: 12px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  .ins-head h3 {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .client-block {
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
+  .meta-block p {
+    font-size: 15px;
+  }
+
+  .suggestion-row p {
+    font-size: 15px;
+  }
+}
+
+/* Canonical mobile overrides (keep at end to win cascade) */
+@media (max-width: 768px) {
+  .companies-view-v2 .companies-table-v2,
+  .lists-view-v2 .lists-table-v2,
+  .touchpoints-view-v2 .touchpoints-table-v2 {
+    display: none !important;
+  }
+
+  .companies-view-v2 .companies-cards,
+  .lists-view-v2 .lists-cards,
+  .touchpoints-view-v2 .touchpoints-cards {
+    display: flex !important;
+  }
+
+  .companies-view-v2 .companies-filterbar-v2,
+  .lists-view-v2 .lists-filterbar-v2,
+  .touchpoints-view-v2 .touchpoints-filterbar-v2 {
+    margin-top: 64px !important;
+  }
+}
+
+/* Contacts filters: enforce 2-column grid on mobile after all other overrides */
+@media (max-width: 768px) {
+  .contacts-filterbar .filter-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .contacts-filterbar .filter-controls > * {
+    width: 100%;
+  }
+
+  .contacts-filterbar .filter-controls > :last-child {
+    grid-column: 1 / -1;
   }
 }

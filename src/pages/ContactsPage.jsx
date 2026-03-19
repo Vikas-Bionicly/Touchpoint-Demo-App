@@ -7,6 +7,11 @@ import { demoStore, useDemoStore } from '../common/store/demoStore';
 import AddContactToListModal from '../common/components/AddContactToListModal';
 import ManageContactTagsModal from '../common/components/ManageContactTagsModal';
 import FirmConnectionsModal from '../common/components/FirmConnectionsModal';
+import PageHeader from '../common/components/PageHeader';
+import SearchBar from '../common/components/SearchBar';
+import FilterBar from '../common/components/FilterBar';
+import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
+import DataTable from '../common/components/DataTable';
 
 export default function ContactsPage() {
   const [selectedContact, setSelectedContact] = useState(null);
@@ -139,31 +144,24 @@ export default function ContactsPage() {
 
   return (
     <section className="contacts-view">
-      <header className="headbar">
-        <h1>Contacts</h1>
-        <button className="context-btn" aria-label="more">
-          <Icon name="more" />
-        </button>
-      </header>
+      <PageHeader title="Contacts" showMore={false} />
 
-      <section className="filterbar contacts-filterbar">
-        <label className="search contacts-search">
-          <Icon name="search" />
-          <input
-            placeholder="Search"
-            value={filters.text || ''}
-            onChange={(e) => demoStore.actions.setContactFilters({ text: e.target.value })}
-          />
-        </label>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <FilterBar className="contacts-filterbar">
+        <SearchBar
+          className="contacts-search"
+          value={filters.text || ''}
+          onChange={(value) => demoStore.actions.setContactFilters({ text: value })}
+        />
+        <FilterControls className="contacts-filter-actions">
           <input
             placeholder="City"
-            style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid #d4d4d4', fontSize: 14 }}
+            className="contacts-filter-input"
             value={filters.city || ''}
             onChange={(e) => demoStore.actions.setContactFilters({ city: e.target.value })}
           />
 
-          <select
+          <FilterSelect
+            className="contacts-filter-select"
             value={filters.relationship || ''}
             onChange={(e) => demoStore.actions.setContactFilters({ relationship: e.target.value })}
           >
@@ -171,9 +169,10 @@ export default function ContactsPage() {
             <option value="Good">Good</option>
             <option value="Fading">Fading</option>
             <option value="Cold">Cold</option>
-          </select>
+          </FilterSelect>
 
-          <select
+          <FilterSelect
+            className="contacts-filter-select"
             value={filters.listId || ''}
             onChange={(e) => demoStore.actions.setContactFilters({ listId: e.target.value })}
           >
@@ -183,9 +182,10 @@ export default function ContactsPage() {
                 {l.name}
               </option>
             ))}
-          </select>
+          </FilterSelect>
 
-          <select
+          <FilterSelect
+            className="contacts-filter-select"
             value={filters.tagId || ''}
             onChange={(e) => demoStore.actions.setContactFilters({ tagId: e.target.value })}
           >
@@ -195,20 +195,18 @@ export default function ContactsPage() {
                 {t.label}
               </option>
             ))}
-          </select>
+          </FilterSelect>
 
-          <button
-            className="filter-btn"
-            type="button"
+          <FilterButton
             onClick={() => {
               const name = window.prompt('Save current filters as view name');
               if (name) demoStore.actions.saveContactView(name);
             }}
           >
             Save View
-          </button>
+          </FilterButton>
 
-          <select
+          <FilterSelect
             onChange={(e) => {
               const value = e.target.value;
               if (!value) return;
@@ -234,294 +232,353 @@ export default function ContactsPage() {
                   Delete: {v.name}
                 </option>
               ))}
-          </select>
+          </FilterSelect>
 
-          <button type="button" className="filter-btn" onClick={exportCsv}>
+          <FilterButton onClick={exportCsv}>
             Export CSV
-          </button>
-        </div>
-      </section>
+          </FilterButton>
+        </FilterControls>
+      </FilterBar>
 
-      <section className="contacts-table-v2">
-        <table className="contacts-table-v2-table">
-          <thead>
-            <tr>
-              <th>
-                <div className="contacts-table-head-v2">
+      <DataTable
+        className="contacts-table-v2"
+        tableClassName="contacts-table-v2-table"
+        renderHeader={() => (
+          <tr>
+            <th>
+              <div className="contacts-table-head-v2">
+                <button
+                  type="button"
+                  style={{ all: 'unset', cursor: 'pointer', display: nameParentOn ? 'inline-flex' : 'none' }}
+                  onClick={() => toggleSort('name')}
+                >
+                  {nameParentOn && 'Name'}
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    display: engagementParentOn ? 'inline-flex' : 'none',
+                  }}
+                  onClick={() => toggleSort('lastInteracted')}
+                >
+                  {engagementParentOn && 'Last interaction | Relationship status'}
+                </button>
+                <div style={{ position: 'relative', justifySelf: 'end' }}>
                   <button
+                    className="contacts-table-settings"
+                    aria-label="configure columns"
                     type="button"
-                    style={{ all: 'unset', cursor: 'pointer', display: nameParentOn ? 'inline-flex' : 'none' }}
-                    onClick={() => toggleSort('name')}
+                    onClick={() =>
+                      setShowColumns((prev) => ({
+                        ...prev,
+                        _open: !prev._open,
+                      }))
+                    }
                   >
-                    {nameParentOn && 'Name'}
+                    <Icon name="settings" />
                   </button>
-                  <button
-                    type="button"
-                    style={{
-                      all: 'unset',
-                      cursor: 'pointer',
-                      display: engagementParentOn ? 'inline-flex' : 'none',
-                    }}
-                    onClick={() => toggleSort('lastInteracted')}
-                  >
-                    {engagementParentOn && 'Last interaction | Relationship status'}
-                  </button>
-                  <div style={{ position: 'relative', justifySelf: 'end' }}>
-                    <button
-                      className="contacts-table-settings"
-                      aria-label="configure columns"
-                      type="button"
-                      onClick={() =>
-                        setShowColumns((prev) => ({
-                          ...prev,
-                          _open: !prev._open,
-                        }))
-                      }
+                  {showColumns._open && (
+                    <div
+                      className="contacts-columns-popover"
+                      style={{
+                        position: 'absolute',
+                        top: '110%',
+                        right: 0,
+                        background: '#fff',
+                        border: '1px solid #e5e5e5',
+                        borderRadius: 8,
+                        padding: 8,
+                        boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
+                        zIndex: 20,
+                        minWidth: 260,
+                      }}
                     >
-                      <Icon name="settings" />
-                    </button>
-                    {showColumns._open && (
-                      <div
+                      {/* Name column + children */}
+                      <label
                         style={{
-                          position: 'absolute',
-                          top: '110%',
-                          right: 0,
-                          background: '#fff',
-                          border: '1px solid #e5e5e5',
-                          borderRadius: 8,
-                          padding: 8,
-                          boxShadow: '0 10px 15px -5px rgba(0,0,0,0.1)',
-                          zIndex: 20,
-                          minWidth: 260,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontSize: 14,
+                          marginBottom: 4,
                         }}
                       >
-                        {/* Name column + children */}
+                        <input
+                          type="checkbox"
+                          checked={nameParentOn}
+                          disabled={activeParents === 1 && nameParentOn}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setShowColumns((prev) => ({
+                              ...prev,
+                              role: checked,
+                              company: checked,
+                            }));
+                          }}
+                        />
+                        <span style={{ fontWeight: 600 }}>Name</span>
+                      </label>
+
+                      {[
+                        ['role', 'Role'],
+                        ['company', 'Company'],
+                      ].map(([key, label]) => (
                         <label
+                          key={key}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
                             fontSize: 14,
                             marginBottom: 4,
+                            paddingLeft: 20,
                           }}
                         >
                           <input
                             type="checkbox"
-                            checked={nameParentOn}
-                            disabled={activeParents === 1 && nameParentOn}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
+                            checked={Boolean(showColumns[key])}
+                            disabled={
+                              activeParents === 1 &&
+                              nameParentOn &&
+                              nameActiveChildren === 1 &&
+                              showColumns[key]
+                            }
+                            onChange={(e) =>
                               setShowColumns((prev) => ({
                                 ...prev,
-                                role: checked,
-                                company: checked,
-                              }));
-                            }}
+                                [key]: e.target.checked,
+                              }))
+                            }
                           />
-                          <span style={{ fontWeight: 600 }}>Name</span>
+                          <span>{label}</span>
                         </label>
+                      ))}
 
-                        {[
-                          ['role', 'Role'],
-                          ['company', 'Company'],
-                        ].map(([key, label]) => (
-                          <label
-                            key={key}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              fontSize: 14,
-                              marginBottom: 4,
-                              paddingLeft: 20,
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={Boolean(showColumns[key])}
-                              disabled={
-                                activeParents === 1 &&
-                                nameParentOn &&
-                                nameActiveChildren === 1 &&
-                                showColumns[key]
-                              }
-                              onChange={(e) =>
-                                setShowColumns((prev) => ({
-                                  ...prev,
-                                  [key]: e.target.checked,
-                                }))
-                              }
-                            />
-                            <span>{label}</span>
-                          </label>
-                        ))}
+                      {/* Last interaction | Relationship Status column + children */}
+                      <label
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontSize: 14,
+                          margin: '8px 0 4px',
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={engagementParentOn}
+                          disabled={activeParents === 1 && engagementParentOn}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setShowColumns((prev) => ({
+                              ...prev,
+                              lastInteraction: checked,
+                              relationship: checked,
+                            }));
+                          }}
+                        />
+                        <span style={{ fontWeight: 600 }}>Last interaction | Relationship status</span>
+                      </label>
 
-                        {/* Last interaction | Relationship Status column + children */}
+                      {[
+                        ['lastInteraction', 'Last interaction'],
+                        ['relationship', 'Relationship status'],
+                      ].map(([key, label]) => (
                         <label
+                          key={key}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
                             fontSize: 14,
-                            margin: '8px 0 4px',
+                            marginBottom: 4,
+                            paddingLeft: 20,
                           }}
                         >
                           <input
                             type="checkbox"
-                            checked={engagementParentOn}
-                            disabled={activeParents === 1 && engagementParentOn}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
+                            checked={Boolean(showColumns[key])}
+                            disabled={
+                              activeParents === 1 &&
+                              engagementParentOn &&
+                              engagementActiveChildren === 1 &&
+                              showColumns[key]
+                            }
+                            onChange={(e) =>
                               setShowColumns((prev) => ({
                                 ...prev,
-                                lastInteraction: checked,
-                                relationship: checked,
-                              }));
-                            }}
+                                [key]: e.target.checked,
+                              }))
+                            }
                           />
-                          <span style={{ fontWeight: 600 }}>Last interaction | Relationship status</span>
+                          <span>{label}</span>
                         </label>
-
-                        {[
-                          ['lastInteraction', 'Last interaction'],
-                          ['relationship', 'Relationship status'],
-                        ].map(([key, label]) => (
-                          <label
-                            key={key}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              fontSize: 14,
-                              marginBottom: 4,
-                              paddingLeft: 20,
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={Boolean(showColumns[key])}
-                              disabled={
-                                activeParents === 1 &&
-                                engagementParentOn &&
-                                engagementActiveChildren === 1 &&
-                                showColumns[key]
-                              }
-                              onChange={(e) =>
-                                setShowColumns((prev) => ({
-                                  ...prev,
-                                  [key]: e.target.checked,
-                                }))
-                              }
-                            />
-                            <span>{label}</span>
-                          </label>
-                        ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </th>
+          </tr>
+        )}
+        renderBody={() =>
+          rows.map((row) => (
+            <tr key={row.id}>
+              <td>
+                <div
+                  className="contact-row-v2 is-clickable"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(event) => {
+                    if (event.target.closest('.contact-actions-v2 button')) return;
+                    setSelectedContact(row);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelectedContact(row);
+                    }
+                  }}
+                >
+                  <div className="contact-name-col-v2">
+                    <div style={{ display: nameParentOn ? 'flex' : 'none', alignItems: 'center', gap: 16 }}>
+                      <img
+                        src={row.avatarUrl}
+                        alt={row.name}
+                        className={`contact-avatar-v2 tone-${row.signalTone}`}
+                      />
+                      <div className="contact-name-meta-v2">
+                        <div className="contact-title-line-v2">
+                          <strong>{row.name}</strong>
+                          <Icon name="signal" className={`network-icon tone-${row.signalTone}`} />
+                        </div>
+                        {showColumns.role && <p>{row.role}</p>}
+                        {showColumns.company && <p>{row.company}</p>}
                       </div>
-                    )}
+                    </div>
+                  </div>
+
+                  <div className="contact-interaction-col-v2">
+                    <div
+                      style={{
+                        display: engagementParentOn ? 'flex' : 'none',
+                        alignItems: 'center',
+                        gap: 12,
+                      }}
+                    >
+                      <div className="contact-note-pill-v2">
+                        <Icon name="note" />
+                      </div>
+                      <div className="contact-interaction-text-v2">
+                        {showColumns.lastInteraction && (
+                          <p className="contact-interaction-title-v2">{row.lastInteraction}</p>
+                        )}
+                        {(showColumns.lastInteraction || showColumns.relationship) && (
+                          <p className="contact-interaction-sub-v2">
+                            {showColumns.lastInteraction && (
+                              <>
+                                Last interacted <strong>{row.lastInteracted}</strong>
+                              </>
+                            )}
+                            {showColumns.relationship && (
+                              <span>
+                                Relationship status <strong>{row.relationship}</strong>
+                              </span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="contact-actions-v2">
+                    <button
+                      aria-label="new touchpoint"
+                      onClick={() =>
+                        setTouchpointPreset({
+                          contactName: row.name,
+                          company: row.company,
+                          role: row.role,
+                          title: `Follow up with ${row.name}`,
+                          notes: '',
+                          source: 'contacts:row',
+                        })
+                      }
+                    >
+                      <Icon name="docPlus" />
+                    </button>
+                    <button aria-label="relationship">
+                      <Icon name="target" />
+                    </button>
+                    <button aria-label="more actions" onClick={() => setNoteForContact(row)}>
+                      <Icon name="listPlus" />
+                    </button>
                   </div>
                 </div>
-              </th>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <div
-                    className="contact-row-v2 is-clickable"
-                    role="button"
-                    tabIndex={0}
-                    onClick={(event) => {
-                      if (event.target.closest('.contact-actions-v2 button')) return;
-                      setSelectedContact(row);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        setSelectedContact(row);
-                      }
-                    }}
-                  >
-                    <div className="contact-name-col-v2">
-                      <div style={{ display: nameParentOn ? 'flex' : 'none', alignItems: 'center', gap: 16 }}>
-                        <img
-                          src={row.avatarUrl}
-                          alt={row.name}
-                          className={`contact-avatar-v2 tone-${row.signalTone}`}
-                        />
-                        <div className="contact-name-meta-v2">
-                          <div className="contact-title-line-v2">
-                            <strong>{row.name}</strong>
-                            <Icon name="signal" className={`network-icon tone-${row.signalTone}`} />
-                          </div>
-                          {showColumns.role && <p>{row.role}</p>}
-                          {showColumns.company && <p>{row.company}</p>}
-                        </div>
-                      </div>
-                    </div>
+          ))
+        }
+      />
 
-                    <div className="contact-interaction-col-v2">
-                      <div
-                        style={{
-                          display: engagementParentOn ? 'flex' : 'none',
-                          alignItems: 'center',
-                          gap: 12,
-                        }}
-                      >
-                        <div className="contact-note-pill-v2">
-                          <Icon name="note" />
-                        </div>
-                        <div className="contact-interaction-text-v2">
-                          {showColumns.lastInteraction && (
-                            <p className="contact-interaction-title-v2">{row.lastInteraction}</p>
-                          )}
-                          {(showColumns.lastInteraction || showColumns.relationship) && (
-                            <p className="contact-interaction-sub-v2">
-                              {showColumns.lastInteraction && (
-                                <>
-                                  Last interacted <strong>{row.lastInteracted}</strong>
-                                </>
-                              )}
-                              {showColumns.relationship && (
-                                <span>
-                                  Relationship status <strong>{row.relationship}</strong>
-                                </span>
-                              )}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="contact-actions-v2">
-                      <button
-                        aria-label="new touchpoint"
-                        onClick={() =>
-                          setTouchpointPreset({
-                            contactName: row.name,
-                            company: row.company,
-                            role: row.role,
-                            title: `Follow up with ${row.name}`,
-                            notes: '',
-                            source: 'contacts:row',
-                          })
-                        }
-                      >
-                        <Icon name="docPlus" />
-                      </button>
-                      <button aria-label="relationship">
-                        <Icon name="target" />
-                      </button>
-                      <button aria-label="more actions" onClick={() => setNoteForContact(row)}>
-                        <Icon name="listPlus" />
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="contacts-cards">
+        {rows.map((row) => (
+          <article
+            key={row.id}
+            className="contact-card"
+            onClick={() => setSelectedContact(row)}
+            role="button"
+          >
+            <div className="contact-card-header">
+              <img
+                src={row.avatarUrl}
+                alt={row.name}
+                className={`contact-avatar-v2 tone-${row.signalTone}`}
+              />
+              <div className="contact-card-main">
+                <strong>{row.name}</strong>
+                <div className="contact-card-meta">
+                  <span>{row.role}</span>
+                  {' • '}
+                  <span>{row.company}</span>
+                </div>
+                <div className="contact-card-meta">
+                  Last interacted <strong>{row.lastInteracted}</strong> · Relationship{' '}
+                  <strong>{row.relationship}</strong>
+                </div>
+              </div>
+            </div>
+            <div className="contact-card-actions">
+              <button
+                aria-label="new touchpoint"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setTouchpointPreset({
+                    contactName: row.name,
+                    company: row.company,
+                    role: row.role,
+                    title: `Follow up with ${row.name}`,
+                    notes: '',
+                    source: 'contacts:card',
+                  });
+                }}
+              >
+                <Icon name="docPlus" />
+              </button>
+              <button
+                aria-label="relationship"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setNoteForContact(row);
+                }}
+              >
+                <Icon name="listPlus" />
+              </button>
+            </div>
+          </article>
+        ))}
       </section>
 
       {selectedContact && (

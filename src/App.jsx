@@ -12,6 +12,7 @@ import TouchpointsPage from './pages/TouchpointsPage';
 export default function App() {
   const [activePage, setActivePage] = useState('My Insights');
   const [activeSubPage, setActiveSubPage] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const role = useDemoStore((s) => s.currentRole || 'Partner');
   const actions = demoStore.actions;
 
@@ -37,6 +38,7 @@ export default function App() {
   function navigate(page, subPage = '') {
     setActivePage(page);
     setActiveSubPage(subPage);
+    setIsSidebarOpen(false);
     if (typeof window !== 'undefined') {
       const hash = subPage ? `${page}/${subPage}` : page;
       window.location.hash = encodeURIComponent(hash);
@@ -45,53 +47,107 @@ export default function App() {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <button
+        type="button"
+        className="sidebar-toggle"
+        aria-label="Toggle navigation"
+        onClick={() => setIsSidebarOpen((prev) => !prev)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      {/* Mobile top header (hamburger + page title) */}
+      {!isSidebarOpen && (
+        <div className="mobile-topbar">
+          <button
+            type="button"
+            className="mobile-menu-btn"
+            aria-label="Open navigation"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <Icon name="menu" />
+          </button>
+          <h1 className="mobile-topbar-title">{activePage}</h1>
+          <div className="mobile-topbar-right" />
+        </div>
+      )}
+
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-top">
-          <BlakesLogo />
+          <div className="sidebar-brand-bar">
+            <BlakesLogo />
+
+            {/* Mobile close icon inside the red header */}
+            <button
+              type="button"
+              className="sidebar-close"
+              aria-label="Close navigation"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Icon name="x" />
+            </button>
+          </div>
+
           <div className="role-switcher">
             <span className="role-label">Viewing as</span>
-            <div className="role-toggle">
-              {['Partner', 'BD'].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`role-pill ${role === r ? 'active' : ''}`}
-                  onClick={() => actions.setCurrentRole(r)}
-                >
-                  {r}
-                </button>
-              ))}
+            <div className="role-card">
+              <div className="role-avatar">JD</div>
+              <div className="role-meta">
+                <span className="role-name">John Doe</span>
+                <span className="role-title">{role}</span>
+              </div>
+              <button
+                type="button"
+                className="role-toggle-icon"
+                onClick={() => actions.setCurrentRole(role === 'Partner' ? 'BD' : 'Partner')}
+                aria-label="Toggle role"
+              >
+                <Icon name="switch" />
+              </button>
             </div>
           </div>
         </div>
+
         <nav>
-          {navItems.map((item) => (
-            <div key={item.label} className="nav-group">
-              <button
-                className={`nav-item ${activePage === item.label ? 'active' : ''}`}
-                onClick={() => {
-                  navigate(item.label);
-                }}
-              >
-                <Icon name={item.icon} className="nav-icon" />
-                {item.label}
-              </button>
-              {item.children && activePage === item.label && (
-                <div className="submenu">
-                  {item.children.map((child) => (
-                    <button
-                      key={child}
-                      className="sub-item"
-                      onClick={() => navigate(item.label, child)}
-                      aria-current={activeSubPage === child ? 'page' : undefined}
-                    >
-                      {child}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activePage === item.label;
+            return (
+              <div key={item.label} className="nav-group">
+                <button
+                  type="button"
+                  className={`nav-item ${isActive ? 'active' : ''}`}
+                  onClick={() => {
+                    navigate(item.label);
+                  }}
+                >
+                  <Icon name={item.icon} className="nav-icon" />
+                  <span>{item.label}</span>
+                  {item.children && (
+                    <span className="nav-chevron">
+                      <Icon name="chevron" />
+                    </span>
+                  )}
+                </button>
+
+                {item.children && isActive && (
+                  <div className="submenu">
+                    {item.children.map((child) => (
+                      <button
+                        key={child}
+                        className="sub-item"
+                        onClick={() => navigate(item.label, child)}
+                        aria-current={activeSubPage === child ? 'page' : undefined}
+                      >
+                        {child}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
       </aside>
 

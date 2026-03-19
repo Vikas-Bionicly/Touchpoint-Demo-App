@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import Icon from '../common/components/Icon';
 import InsightCard from '../common/components/InsightCard';
 import { insightCards } from '../common/constants/insights';
 import { contactRows } from '../common/constants/contacts';
@@ -8,6 +7,10 @@ import AddContactNoteModal from '../common/components/AddContactNoteModal';
 import ManageContactTagsModal from '../common/components/ManageContactTagsModal';
 import FirmConnectionsModal from '../common/components/FirmConnectionsModal';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
+import PageHeader from '../common/components/PageHeader';
+import SearchBar from '../common/components/SearchBar';
+import FilterBar from '../common/components/FilterBar';
+import FilterViewButton from '../common/components/FilterViewButton';
 
 function addDaysIso(days) {
   const d = new Date();
@@ -39,23 +42,14 @@ export default function MyInsightsPage() {
 
   return (
     <section className="insights-view">
-      <header className="headbar">
-        <h1>My Insights</h1>
-        <button className="context-btn" aria-label="more">
-          <Icon name="more" />
-        </button>
-      </header>
+      <PageHeader title="My Insights" showMore={false} />
 
-      <section className="filterbar">
-        <label className="search">
-          <Icon name="search" />
-          <input placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
-        </label>
-        <button className={`filter-btn ${highPriorityOnly ? 'active' : ''}`} onClick={() => setHighPriorityOnly((prev) => !prev)}>
-          <Icon name="sliders" className="btn-icon" />
-          {highPriorityOnly ? 'High Priority' : 'Filter View'}
-        </button>
-      </section>
+      <FilterBar className="mb-4">
+        <div c="search-with-filter">
+          <SearchBar value={query} onChange={(value) => setQuery(value)} />
+          <FilterViewButton active={highPriorityOnly} onClick={() => setHighPriorityOnly((prev) => !prev)} />
+        </div>
+      </FilterBar>
 
       <section className="card-list">
         {filtered.map((card) => (

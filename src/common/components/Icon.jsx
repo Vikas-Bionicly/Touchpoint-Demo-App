@@ -75,6 +75,12 @@ export default function Icon({ name, className = '' }) {
           <path d="M6 9l6 6 6-6" />
         </svg>
       ),
+      switch: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 7h10l-3-3" />
+          <path d="M17 17H7l3 3" />
+        </svg>
+      ),
       signal: (
         <svg viewBox="0 0 24 24" fill="currentColor">
           <rect x="3" y="14" width="3" height="7" rx="1" />
@@ -99,6 +105,19 @@ export default function Icon({ name, className = '' }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 6h10M4 12h10M4 18h10" />
           <path d="M18 12h4M20 10v4" />
+        </svg>
+      ),
+      menu: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 6h18" />
+          <path d="M3 12h18" />
+          <path d="M3 18h18" />
+        </svg>
+      ),
+      x: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 6l12 12" />
+          <path d="M18 6l-12 12" />
         </svg>
       ),
     }),
