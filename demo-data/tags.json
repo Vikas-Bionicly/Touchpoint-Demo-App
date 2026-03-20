@@ -1,0 +1,307 @@
+[
+  {
+    "tagName": "Aerospace",
+    "tagType": "Industry",
+    "description": "Aerospace industry"
+  },
+  {
+    "tagName": "AI Hardware",
+    "tagType": "Industry",
+    "description": "AI hardware"
+  },
+  {
+    "tagName": "Asia",
+    "tagType": "Region",
+    "description": "Asia"
+  },
+  {
+    "tagName": "Biotech",
+    "tagType": "Industry",
+    "description": "Biotechnology companies"
+  },
+  {
+    "tagName": "Business Development",
+    "tagType": "Initiative",
+    "description": "Business development initiatives"
+  },
+  {
+    "tagName": "Business Intelligence",
+    "tagType": "Initiative",
+    "description": "Business intelligence projects"
+  },
+  {
+    "tagName": "C-Suite",
+    "tagType": "Interest",
+    "description": "C-suite executives"
+  },
+  {
+    "tagName": "Client Acquisition",
+    "tagType": "Initiative",
+    "description": "Client acquisition initiatives"
+  },
+  {
+    "tagName": "Client Engagement",
+    "tagType": "Initiative",
+    "description": "Client engagement initiatives"
+  },
+  {
+    "tagName": "Client Retention",
+    "tagType": "Initiative",
+    "description": "Client retention initiatives"
+  },
+  {
+    "tagName": "Cloud",
+    "tagType": "Other",
+    "description": "Cloud"
+  },
+  {
+    "tagName": "Consumer Electronics",
+    "tagType": "Industry",
+    "description": "Consumer electronics"
+  },
+  {
+    "tagName": "Contract Management",
+    "tagType": "Initiative",
+    "description": "Contract management services"
+  },
+  {
+    "tagName": "Corporate Legal",
+    "tagType": "Practice",
+    "description": "Corporate legal services"
+  },
+  {
+    "tagName": "Data Analytics",
+    "tagType": "Initiative",
+    "description": "Data analytics projects"
+  },
+  {
+    "tagName": "Data Privacy",
+    "tagType": "Other",
+    "description": "Data privacy services"
+  },
+  {
+    "tagName": "Database",
+    "tagType": "Other",
+    "description": "Database"
+  },
+  {
+    "tagName": "Decision Maker",
+    "tagType": "Interest",
+    "description": "Key decision makers"
+  },
+  {
+    "tagName": "Defense",
+    "tagType": "Industry",
+    "description": "Defense industry"
+  },
+  {
+    "tagName": "Digital Transformation",
+    "tagType": "Initiative",
+    "description": "Digital transformation projects"
+  },
+  {
+    "tagName": "East Coast",
+    "tagType": "Region",
+    "description": "East Coast operations"
+  },
+  {
+    "tagName": "Enterprise Software",
+    "tagType": "Industry",
+    "description": "Enterprise software"
+  },
+  {
+    "tagName": "Financial Services",
+    "tagType": "Industry",
+    "description": "Banking and financial services"
+  },
+  {
+    "tagName": "Follow-up Required",
+    "tagType": "Other",
+    "description": "Requires follow-up action"
+  },
+  {
+    "tagName": "Fortune 500",
+    "tagType": "List",
+    "description": "Fortune 500 companies"
+  },
+  {
+    "tagName": "GDPR Compliance",
+    "tagType": "Other",
+    "description": "GDPR compliance services"
+  },
+  {
+    "tagName": "Global Practice",
+    "tagType": "Practice",
+    "description": "Global practice areas"
+  },
+  {
+    "tagName": "Healthcare",
+    "tagType": "Industry",
+    "description": "Healthcare and life sciences"
+  },
+  {
+    "tagName": "High Growth Startup",
+    "tagType": "Interest",
+    "description": "High growth startup companies"
+  },
+  {
+    "tagName": "High Priority",
+    "tagType": "Other",
+    "description": "High priority items"
+  },
+  {
+    "tagName": "Important",
+    "tagType": "Other",
+    "description": "Important touchpoints"
+  },
+  {
+    "tagName": "Infrastructure Software",
+    "tagType": "Other",
+    "description": "Infrastructure software"
+  },
+  {
+    "tagName": "Innovation Management",
+    "tagType": "Initiative",
+    "description": "Innovation management projects"
+  },
+  {
+    "tagName": "International Trade",
+    "tagType": "Interest",
+    "description": "International trade law"
+  },
+  {
+    "tagName": "Japan",
+    "tagType": "Region",
+    "description": "Japan"
+  },
+  {
+    "tagName": "Lead Generation",
+    "tagType": "Initiative",
+    "description": "Lead generation initiatives"
+  },
+  {
+    "tagName": "Legal Compliance",
+    "tagType": "Practice",
+    "description": "Legal compliance services"
+  },
+  {
+    "tagName": "Legal Consulting",
+    "tagType": "Practice",
+    "description": "Legal consulting services"
+  },
+  {
+    "tagName": "Legal Research",
+    "tagType": "Practice",
+    "description": "Legal research services"
+  },
+  {
+    "tagName": "Litigation",
+    "tagType": "Practice",
+    "description": "Litigation practice"
+  },
+  {
+    "tagName": "M&A",
+    "tagType": "Other",
+    "description": "Mergers and acquisitions"
+  },
+  {
+    "tagName": "Market Analysis",
+    "tagType": "Initiative",
+    "description": "Market analysis projects"
+  },
+  {
+    "tagName": "Midwest",
+    "tagType": "Region",
+    "description": "Midwest region operations"
+  },
+  {
+    "tagName": "North America",
+    "tagType": "Region",
+    "description": "North American operations"
+  },
+  {
+    "tagName": "Northeast",
+    "tagType": "Region",
+    "description": "Northeast region operations"
+  },
+  {
+    "tagName": "Policy Advocacy",
+    "tagType": "Initiative",
+    "description": "Policy advocacy services"
+  },
+  {
+    "tagName": "Privacy Compliance",
+    "tagType": "Other",
+    "description": "Privacy compliance services"
+  },
+  {
+    "tagName": "Regulatory Compliance",
+    "tagType": "Other",
+    "description": "Regulatory compliance services"
+  },
+  {
+    "tagName": "Retail",
+    "tagType": "Industry",
+    "description": "Retail industry"
+  },
+  {
+    "tagName": "Risk Management",
+    "tagType": "Other",
+    "description": "Risk management services"
+  },
+  {
+    "tagName": "Sales Strategy",
+    "tagType": "Initiative",
+    "description": "Sales strategy initiatives"
+  },
+  {
+    "tagName": "Semiconductors",
+    "tagType": "Industry",
+    "description": "Semiconductors"
+  },
+  {
+    "tagName": "Software",
+    "tagType": "Industry",
+    "description": "Software"
+  },
+  {
+    "tagName": "Software Solutions",
+    "tagType": "Initiative",
+    "description": "Software solutions projects"
+  },
+  {
+    "tagName": "Southern",
+    "tagType": "Region",
+    "description": "Southern region operations"
+  },
+  {
+    "tagName": "Strategic Partnerships",
+    "tagType": "Initiative",
+    "description": "Strategic partnership initiatives"
+  },
+  {
+    "tagName": "Strategic Target",
+    "tagType": "Interest",
+    "description": "Strategic target companies"
+  },
+  {
+    "tagName": "Technology",
+    "tagType": "Industry",
+    "description": "Technology companies"
+  },
+  {
+    "tagName": "VIP Clients",
+    "tagType": "Interest",
+    "description": "Very important clients"
+  },
+  {
+    "tagName": "Virtual Law Firms",
+    "tagType": "Practice",
+    "description": "Virtual law firms"
+  },
+  {
+    "tagName": "West Coast",
+    "tagType": "Region",
+    "description": "West Coast operations"
+  }
+]

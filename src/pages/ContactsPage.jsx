@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
-import { contactRows } from '../common/constants/contacts';
 import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 import AddContactNoteModal from '../common/components/AddContactNoteModal';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
@@ -28,6 +27,7 @@ export default function ContactsPage() {
     relationship: true,
   });
   const notes = useDemoStore((s) => s.notes || []);
+  const contacts = useDemoStore((s) => s.contacts || []);
   const filters = useDemoStore((s) => s.contactFilters || {});
   const lists = useDemoStore((s) => s.lists || []);
   const contactTags = useDemoStore((s) => s.contactTags || {});
@@ -35,7 +35,7 @@ export default function ContactsPage() {
   const savedViews = useDemoStore((s) => s.savedViews || []);
 
   const rows = useMemo(() => {
-    let data = contactRows;
+    let data = contacts;
 
     if (filters.text?.trim()) {
       const q = filters.text.toLowerCase();
@@ -92,7 +92,7 @@ export default function ContactsPage() {
     }
 
     return data;
-  }, [filters, lists, contactTags, sort]);
+  }, [contacts, filters, lists, contactTags, sort]);
 
   const nameParentOn = Boolean(showColumns.role) || Boolean(showColumns.company);
   const engagementParentOn = Boolean(showColumns.lastInteraction) || Boolean(showColumns.relationship);

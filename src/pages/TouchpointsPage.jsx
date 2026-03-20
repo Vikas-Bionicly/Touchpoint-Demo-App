@@ -1,15 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
 import PageHeader from '../common/components/PageHeader';
-import { contactRows } from '../common/constants/contacts';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
 import SearchBar from '../common/components/SearchBar';
 import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 
 const interactionTypes = ['Email', 'Meeting', 'Event', 'Call', 'Visit'];
 
-function contactByName(name) {
-  return contactRows.find((contact) => contact.name === name);
+function contactByName(contacts, name) {
+  return contacts.find((contact) => contact.name === name);
 }
 
 function formatDueLabel(dueAtIso) {
@@ -40,8 +39,9 @@ export default function TouchpointsPage({ view = '' }) {
     status: true,
     relationship: true,
   });
+  const contacts = useDemoStore((s) => s.contacts || []);
   const [form, setForm] = useState({
-    contactName: contactRows[0]?.name || '',
+    contactName: contacts[0]?.name || '',
     interactionType: 'Email',
     date: '',
     outcome: '',
@@ -61,6 +61,12 @@ export default function TouchpointsPage({ view = '' }) {
   const touchpointNotes = rawTouchpointNotes || [];
   const [newNoteText, setNewNoteText] = useState('');
   const [tagFilter, setTagFilter] = useState('');
+
+  useEffect(() => {
+    // If seed/state loads after the first render, ensure the modal default is populated.
+    if (!contacts.length) return;
+    setForm((prev) => (prev.contactName ? prev : { ...prev, contactName: contacts[0].name }));
+  }, [contacts]);
 
   const rows = useMemo(() => {
     const q = query.toLowerCase();
@@ -92,7 +98,7 @@ export default function TouchpointsPage({ view = '' }) {
 
     if (tagFilter) {
       data = data.filter((row) => {
-        const contact = contactRows.find((c) => c.name === row.contactName);
+        const contact = contacts.find((c) => c.name === row.contactName);
         const contactTagIds = contact ? contactTags[contact.id] || [] : [];
         return contactTagIds.includes(tagFilter);
       });
@@ -115,7 +121,7 @@ export default function TouchpointsPage({ view = '' }) {
     }
 
     return data;
-  }, [query, touchpoints, view, sort, tagFilter, contactTags, companyTags]);
+  }, [query, touchpoints, view, sort, tagFilter, contacts, contactTags, companyTags]);
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -207,7 +213,7 @@ export default function TouchpointsPage({ view = '' }) {
     event.preventDefault();
     if (!form.contactName || !form.date || !form.outcome) return;
 
-    const selectedContact = contactByName(form.contactName);
+    const selectedContact = contactByName(contacts, form.contactName);
     demoStore.actions.logInteraction({
       contactName: form.contactName,
       interactionType: form.interactionType,
@@ -231,7 +237,7 @@ export default function TouchpointsPage({ view = '' }) {
 
     setIsLogOpen(false);
     setForm({
-      contactName: contactRows[0]?.name || '',
+      contactName: contacts[0]?.name || '',
       interactionType: 'Email',
       date: '',
       outcome: '',
@@ -524,7 +530,7 @@ export default function TouchpointsPage({ view = '' }) {
                     <p>{row.role}</p>
                     <p>{row.company}</p>
                     {(() => {
-                      const contact = contactRows.find((c) => c.name === row.contactName);
+                      const contact = contacts.find((c) => c.name === row.contactName);
                       const tagIds = contact ? contactTags[contact.id] || [] : [];
                       if (!tagIds.length) return null;
                       const tagLabels = tags
@@ -656,7 +662,7 @@ export default function TouchpointsPage({ view = '' }) {
               </p>
 
               {(() => {
-                const contact = contactRows.find((c) => c.name === row.contactName);
+                const contact = contacts.find((c) => c.name === row.contactName);
                 const tagIds = contact ? contactTags[contact.id] || [] : [];
                 if (!tagIds.length) return null;
                 const tagLabels = tags
@@ -864,7 +870,7 @@ export default function TouchpointsPage({ view = '' }) {
               <label>
                 Contact
                 <select value={form.contactName} onChange={(e) => setForm((prev) => ({ ...prev, contactName: e.target.value }))}>
-                  {contactRows.map((contact) => (
+                  {contacts.map((contact) => (
                     <option key={contact.id} value={contact.name}>
                       {contact.name}
                     </option>

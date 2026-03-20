@@ -1,0 +1,3682 @@
+[
+  {
+    "firstName": "Jackson",
+    "lastName": "May",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "jackson.may@oracle.com",
+    "phoneNumber": "(511) 709-9526",
+    "avatarUrl": "jackson-may-y2ula53cxtn.jpg",
+    "address": {
+      "zipCode": "77661",
+      "country": "USA",
+      "city": "Greensboro",
+      "addressType": "Business",
+      "street": "6031 James St",
+      "coordinates": {
+        "latitude": "26.628",
+        "longitude": "126.2456"
+      },
+      "state": "Washington"
+    }
+  },
+  {
+    "firstName": "Savannah",
+    "lastName": "Foster",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "savannah.foster@oracle.com",
+    "phoneNumber": "(869) 720-8977",
+    "avatarUrl": "savannah-foster-ok4as8clw2.jpg",
+    "address": {
+      "zipCode": "11747",
+      "country": "USA",
+      "city": "Pembroke Pines",
+      "addressType": "Business",
+      "street": "4023 Photinia Ave",
+      "coordinates": {
+        "latitude": "-8.783",
+        "longitude": "80.3275"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Terry",
+    "lastName": "Gray",
+    "jobTitle": "Chief Operating Officer",
+    "contactEmail": "terry.gray@oracle.com",
+    "phoneNumber": "(254) 968-6351",
+    "avatarUrl": "terry-gray-locimj0y49.jpg",
+    "address": {
+      "zipCode": "68377",
+      "country": "USA",
+      "city": "Pasadena",
+      "addressType": "Business",
+      "street": "9897 Mockingbird Ln",
+      "coordinates": {
+        "latitude": "-66.0151",
+        "longitude": "-56.8063"
+      },
+      "state": "Massachusetts"
+    }
+  },
+  {
+    "firstName": "Sophia",
+    "lastName": "Johnston",
+    "jobTitle": "Corporate Development Director",
+    "contactEmail": "sophia.johnston@oracle.com",
+    "phoneNumber": "(945) 438-6068",
+    "avatarUrl": "sophia-johnston-s6uojf38lta.jpg",
+    "address": {
+      "zipCode": "62582",
+      "country": "USA",
+      "city": "Belen",
+      "addressType": "Business",
+      "street": "8029 W Gray St",
+      "coordinates": {
+        "latitude": "-44.2868",
+        "longitude": "31.7019"
+      },
+      "state": "New Mexico"
+    }
+  },
+  {
+    "firstName": "Arlene",
+    "lastName": "Elliott",
+    "jobTitle": "VP of Corporate Development",
+    "contactEmail": "arlene.elliott@oracle.com",
+    "phoneNumber": "(997) 932-4674",
+    "avatarUrl": "arlene-elliott-s6sxsj612e.jpg",
+    "address": {
+      "zipCode": "91707",
+      "country": "USA",
+      "city": "Frisco",
+      "addressType": "Business",
+      "street": "5881 Pecan Acres Ln",
+      "coordinates": {
+        "latitude": "74.5549",
+        "longitude": "96.3286"
+      },
+      "state": "Mississippi"
+    }
+  },
+  {
+    "firstName": "Annie",
+    "lastName": "Johnston",
+    "jobTitle": "Chief Legal Officer",
+    "contactEmail": "annie.johnston@oracle.com",
+    "phoneNumber": "(887) 549-6864",
+    "avatarUrl": "annie-johnston-0cm9kl8nop56.jpg",
+    "address": {
+      "zipCode": "38083",
+      "country": "USA",
+      "city": "St. Petersburg",
+      "addressType": "Business",
+      "street": "1034 Samaritan Dr",
+      "coordinates": {
+        "latitude": "39.3357",
+        "longitude": "35.0554"
+      },
+      "state": "New Mexico"
+    }
+  },
+  {
+    "firstName": "Shane",
+    "lastName": "Lawson",
+    "jobTitle": "Director of Strategic Alliances",
+    "contactEmail": "shane.lawson@oracle.com",
+    "phoneNumber": "(430) 908-7103",
+    "avatarUrl": "shane-lawson-ggrd0h2y0y.jpg",
+    "address": {
+      "zipCode": "99801",
+      "country": "USA",
+      "city": "Chicago",
+      "addressType": "Business",
+      "street": "4701 Lakeview St",
+      "coordinates": {
+        "latitude": "-45.7852",
+        "longitude": "58.6905"
+      },
+      "state": "Vermont"
+    }
+  },
+  {
+    "firstName": "Terrence",
+    "lastName": "Rose",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "terrence.rose@oracle.com",
+    "phoneNumber": "(281) 987-2725",
+    "avatarUrl": "terrence-rose-aemxtkywm5u.jpg",
+    "address": {
+      "zipCode": "61060",
+      "country": "USA",
+      "city": "Murfreesboro",
+      "addressType": "Business",
+      "street": "2812 Wycliff Ave",
+      "coordinates": {
+        "latitude": "31.9063",
+        "longitude": "179.2902"
+      },
+      "state": "Oregon"
+    }
+  },
+  {
+    "firstName": "Carrie",
+    "lastName": "Wells",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "carrie.wells@oracle.com",
+    "phoneNumber": "(864) 694-5466",
+    "avatarUrl": "carrie-wells-sl10r4kyb9d.jpg",
+    "address": {
+      "zipCode": "54127",
+      "country": "USA",
+      "city": "Miami",
+      "addressType": "Business",
+      "street": "7785 Daisy Dr",
+      "coordinates": {
+        "latitude": "-15.4961",
+        "longitude": "69.1987"
+      },
+      "state": "New Jersey"
+    }
+  },
+  {
+    "firstName": "Eduardo",
+    "lastName": "Reynolds",
+    "jobTitle": "Legal Director",
+    "contactEmail": "eduardo.reynolds@oracle.com",
+    "phoneNumber": "(265) 992-7280",
+    "avatarUrl": "eduardo-reynolds-1x2pjo4mb8y.jpg",
+    "address": {
+      "zipCode": "51122",
+      "country": "USA",
+      "city": "Bozeman",
+      "addressType": "Business",
+      "street": "3903 Lovers Ln",
+      "coordinates": {
+        "latitude": "59.002",
+        "longitude": "129.2167"
+      },
+      "state": "New Mexico"
+    }
+  },
+  {
+    "firstName": "Marc",
+    "lastName": "Steward",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "marc.steward@oracle.com",
+    "phoneNumber": "(722) 959-7304",
+    "avatarUrl": "marc-steward-gw9ntx63byg.jpg",
+    "address": {
+      "zipCode": "87678",
+      "country": "USA",
+      "city": "New Haven",
+      "addressType": "Business",
+      "street": "9817 Northaven Rd",
+      "coordinates": {
+        "latitude": "27.2262",
+        "longitude": "160.5431"
+      },
+      "state": "Illinois"
+    }
+  },
+  {
+    "firstName": "Javier",
+    "lastName": "Freeman",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "javier.freeman@oracle.com",
+    "phoneNumber": "(283) 369-4407",
+    "avatarUrl": "javier-freeman-20gr0x1bu4u.jpg",
+    "address": {
+      "zipCode": "63234",
+      "country": "USA",
+      "city": "Worcester",
+      "addressType": "Business",
+      "street": "862 E Sandy Lake Rd",
+      "coordinates": {
+        "latitude": "21.065",
+        "longitude": "-29.3593"
+      },
+      "state": "Kansas"
+    }
+  },
+  {
+    "firstName": "Ray",
+    "lastName": "Kelley",
+    "jobTitle": "Intellectual Property Counsel",
+    "contactEmail": "ray.kelley@oracle.com",
+    "phoneNumber": "(375) 952-5929",
+    "avatarUrl": "ray-kelley-mur8fvxqwqn.jpg",
+    "address": {
+      "zipCode": "94739",
+      "country": "USA",
+      "city": "West Palm Beach",
+      "addressType": "Business",
+      "street": "8970 Central St",
+      "coordinates": {
+        "latitude": "86.7228",
+        "longitude": "15.8454"
+      },
+      "state": "Mississippi"
+    }
+  },
+  {
+    "firstName": "Kathy",
+    "lastName": "Fox",
+    "jobTitle": "Senior Corporate Counsel",
+    "contactEmail": "kathy.fox@oracle.com",
+    "phoneNumber": "(978) 783-2551",
+    "avatarUrl": "kathy-fox-rktknn6x3bs.jpg",
+    "address": {
+      "zipCode": "17172",
+      "country": "USA",
+      "city": "Los Lunas",
+      "addressType": "Business",
+      "street": "9538 W Belt Line Rd",
+      "coordinates": {
+        "latitude": "-86.505",
+        "longitude": "-52.618"
+      },
+      "state": "Oklahoma"
+    }
+  },
+  {
+    "firstName": "Tracy",
+    "lastName": "Woods",
+    "jobTitle": "Legal Advisor",
+    "contactEmail": "tracy.woods@oracle.com",
+    "phoneNumber": "(353) 301-9838",
+    "avatarUrl": "tracy-woods-rv163mkm39k.jpg",
+    "address": {
+      "zipCode": "47660",
+      "country": "USA",
+      "city": "Detroit",
+      "addressType": "Business",
+      "street": "1490 Oak Lawn Ave",
+      "coordinates": {
+        "latitude": "-79.6",
+        "longitude": "74.4679"
+      },
+      "state": "New Mexico"
+    }
+  },
+  {
+    "firstName": "Francisco",
+    "lastName": "Oliver",
+    "jobTitle": "Chief Technology Officer",
+    "contactEmail": "francisco.oliver@oracle.com",
+    "phoneNumber": "(441) 669-8169",
+    "avatarUrl": "francisco-oliver-skttfay0rml.jpg",
+    "address": {
+      "zipCode": "62908",
+      "country": "USA",
+      "city": "Provo",
+      "addressType": "Business",
+      "street": "1802 Mockingbird Hill",
+      "coordinates": {
+        "latitude": "67.1209",
+        "longitude": "-179.6662"
+      },
+      "state": "Tennessee"
+    }
+  },
+  {
+    "firstName": "Leo",
+    "lastName": "Simmmons",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "leo.simmmons@oracle.com",
+    "phoneNumber": "(290) 776-9745",
+    "avatarUrl": "leo-simmmons-rhctn1hyaj.jpg",
+    "address": {
+      "zipCode": "33193",
+      "country": "USA",
+      "city": "Pearland",
+      "addressType": "Business",
+      "street": "7155 Prospect Rd",
+      "coordinates": {
+        "latitude": "65.8385",
+        "longitude": "147.9522"
+      },
+      "state": "Michigan"
+    }
+  },
+  {
+    "firstName": "Charlie",
+    "lastName": "Mason",
+    "jobTitle": "General Counsel",
+    "contactEmail": "charlie.mason@oracle.com",
+    "phoneNumber": "(468) 500-6323",
+    "avatarUrl": "charlie-mason-e4baxrpt7np.jpg",
+    "address": {
+      "zipCode": "58176",
+      "country": "USA",
+      "city": "Denton",
+      "addressType": "Business",
+      "street": "3753 W Campbell Ave",
+      "coordinates": {
+        "latitude": "-29.362",
+        "longitude": "109.3978"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Francis",
+    "lastName": "Ellis",
+    "jobTitle": "Senior Legal Counsel",
+    "contactEmail": "francis.ellis@oracle.com",
+    "phoneNumber": "(743) 323-1152",
+    "avatarUrl": "francis-ellis-dj4osr5qjkt.jpg",
+    "address": {
+      "zipCode": "25288",
+      "country": "USA",
+      "city": "Mesa",
+      "addressType": "Business",
+      "street": "2612 Walnut Hill Ln",
+      "coordinates": {
+        "latitude": "-50.051",
+        "longitude": "95.5523"
+      },
+      "state": "Arkansas"
+    }
+  },
+  {
+    "firstName": "Walter",
+    "lastName": "Scott",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "walter.scott@microsoft.com",
+    "phoneNumber": "(922) 826-4328",
+    "avatarUrl": "walter-scott-5kcwrtejlka.jpg",
+    "address": {
+      "zipCode": "44208",
+      "country": "USA",
+      "city": "West Jordan",
+      "addressType": "Business",
+      "street": "4625 Miller Ave",
+      "coordinates": {
+        "latitude": "-48.3331",
+        "longitude": "133.2854"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Zack",
+    "lastName": "Bradley",
+    "jobTitle": "Business Development Lead",
+    "contactEmail": "zack.bradley@microsoft.com",
+    "phoneNumber": "(588) 587-6772",
+    "avatarUrl": "zack-bradley-j372v6to95l.jpg",
+    "address": {
+      "zipCode": "52846",
+      "country": "USA",
+      "city": "Irving",
+      "addressType": "Business",
+      "street": "878 E Pecan St",
+      "coordinates": {
+        "latitude": "-68.2985",
+        "longitude": "-120.6773"
+      },
+      "state": "Kansas"
+    }
+  },
+  {
+    "firstName": "Anthony",
+    "lastName": "Anderson",
+    "jobTitle": "Business Development Manager",
+    "contactEmail": "anthony.anderson@microsoft.com",
+    "phoneNumber": "(809) 442-5273",
+    "avatarUrl": "anthony-anderson-lrrcsf9j4m.jpg",
+    "address": {
+      "zipCode": "50375",
+      "country": "USA",
+      "city": "Naperville",
+      "addressType": "Business",
+      "street": "1272 Poplar Dr",
+      "coordinates": {
+        "latitude": "-88.5783",
+        "longitude": "-106.1361"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Reginald",
+    "lastName": "Davidson",
+    "jobTitle": "Regulatory Affairs Director",
+    "contactEmail": "reginald.davidson@microsoft.com",
+    "phoneNumber": "(277) 796-3619",
+    "avatarUrl": "reginald-davidson-rwwxe7dvos8.jpg",
+    "address": {
+      "zipCode": "56715",
+      "country": "USA",
+      "city": "Surrey",
+      "addressType": "Business",
+      "street": "8254 Walnut Hill Ln",
+      "coordinates": {
+        "latitude": "-82.9495",
+        "longitude": "-160.0559"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Eduardo",
+    "lastName": "Williamson",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "eduardo.williamson@microsoft.com",
+    "phoneNumber": "(898) 363-7575",
+    "avatarUrl": "eduardo-williamson-w90o0nayflr.jpg",
+    "address": {
+      "zipCode": "57571",
+      "country": "USA",
+      "city": "Toledo",
+      "addressType": "Business",
+      "street": "877 Stevens Creek Blvd",
+      "coordinates": {
+        "latitude": "-67.7507",
+        "longitude": "-86.421"
+      },
+      "state": "West Virginia"
+    }
+  },
+  {
+    "firstName": "Clyde",
+    "lastName": "Taylor",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "clyde.taylor@microsoft.com",
+    "phoneNumber": "(265) 624-8366",
+    "avatarUrl": "clyde-taylor-wb0jd7tjmwg.jpg",
+    "address": {
+      "zipCode": "51876",
+      "country": "USA",
+      "city": "Salt Lake City",
+      "addressType": "Business",
+      "street": "4300 Bruce St",
+      "coordinates": {
+        "latitude": "50.3598",
+        "longitude": "-40.978"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Leslie",
+    "lastName": "Perkins",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "leslie.perkins@microsoft.com",
+    "phoneNumber": "(838) 498-3613",
+    "avatarUrl": "leslie-perkins-3zrhe02hg0m.jpg",
+    "address": {
+      "zipCode": "46971",
+      "country": "USA",
+      "city": "Buffalo",
+      "addressType": "Business",
+      "street": "9549 Smokey Ln",
+      "coordinates": {
+        "latitude": "68.1831",
+        "longitude": "98.7461"
+      },
+      "state": "Vermont"
+    }
+  },
+  {
+    "firstName": "Warren",
+    "lastName": "Pena",
+    "jobTitle": "VP of Corporate Development",
+    "contactEmail": "warren.pena@microsoft.com",
+    "phoneNumber": "(388) 822-0978",
+    "avatarUrl": "warren-pena-8nhduukxskq.jpg",
+    "address": {
+      "zipCode": "49431",
+      "country": "USA",
+      "city": "Memphis",
+      "addressType": "Business",
+      "street": "1347 Pockrus Page Rd",
+      "coordinates": {
+        "latitude": "44.5708",
+        "longitude": "13.889"
+      },
+      "state": "Ohio"
+    }
+  },
+  {
+    "firstName": "Marion",
+    "lastName": "Howell",
+    "jobTitle": "Associate General Counsel",
+    "contactEmail": "marion.howell@microsoft.com",
+    "phoneNumber": "(710) 831-4032",
+    "avatarUrl": "marion-howell-jrjw8dhrccf.jpg",
+    "address": {
+      "zipCode": "61631",
+      "country": "USA",
+      "city": "Ironville",
+      "addressType": "Business",
+      "street": "9562 James St",
+      "coordinates": {
+        "latitude": "-25.6948",
+        "longitude": "-7.7156"
+      },
+      "state": "Kentucky"
+    }
+  },
+  {
+    "firstName": "Micheal",
+    "lastName": "Holland",
+    "jobTitle": "Strategic Partnerships Director",
+    "contactEmail": "micheal.holland@microsoft.com",
+    "phoneNumber": "(983) 261-6177",
+    "avatarUrl": "micheal-holland-z8lbxr86ffb.jpg",
+    "address": {
+      "zipCode": "95801",
+      "country": "USA",
+      "city": "San Francisco",
+      "addressType": "Business",
+      "street": "7296 W 6th St",
+      "coordinates": {
+        "latitude": "75.7364",
+        "longitude": "-21.6429"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Hector",
+    "lastName": "Gray",
+    "jobTitle": "Director of Operations",
+    "contactEmail": "hector.gray@microsoft.com",
+    "phoneNumber": "(579) 926-7274",
+    "avatarUrl": "hector-gray-adgpi0nayy.jpg",
+    "address": {
+      "zipCode": "97606",
+      "country": "USA",
+      "city": "Buffalo",
+      "addressType": "Business",
+      "street": "1410 W Campbell Ave",
+      "coordinates": {
+        "latitude": "-6.7428",
+        "longitude": "1.019"
+      },
+      "state": "Illinois"
+    }
+  },
+  {
+    "firstName": "Willie",
+    "lastName": "Murray",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "willie.murray@microsoft.com",
+    "phoneNumber": "(471) 769-1323",
+    "avatarUrl": "willie-murray-99qmbra84cs.jpg",
+    "address": {
+      "zipCode": "24782",
+      "country": "USA",
+      "city": "Medford",
+      "addressType": "Business",
+      "street": "8299 Wheeler Ridge Dr",
+      "coordinates": {
+        "latitude": "-0.8518",
+        "longitude": "-148.2881"
+      },
+      "state": "Florida"
+    }
+  },
+  {
+    "firstName": "Arlene",
+    "lastName": "Lowe",
+    "jobTitle": "Senior Vice President",
+    "contactEmail": "arlene.lowe@microsoft.com",
+    "phoneNumber": "(739) 528-7732",
+    "avatarUrl": "arlene-lowe-bzdih571gw.jpg",
+    "address": {
+      "zipCode": "68563",
+      "country": "USA",
+      "city": "Minneapolis",
+      "addressType": "Business",
+      "street": "1490 Mcclellan Rd",
+      "coordinates": {
+        "latitude": "-60.4353",
+        "longitude": "179.5577"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Jerry",
+    "lastName": "Wells",
+    "jobTitle": "Contract Manager",
+    "contactEmail": "jerry.wells@sony.com",
+    "phoneNumber": "(495) 561-8119",
+    "avatarUrl": "jerry-wells-li6xu16iyhh.jpg",
+    "address": {
+      "zipCode": "27805",
+      "country": "USA",
+      "city": "Grand Prairie",
+      "addressType": "Business",
+      "street": "1677 Prospect Rd",
+      "coordinates": {
+        "latitude": "-27.0672",
+        "longitude": "-111.9641"
+      },
+      "state": "Nevada"
+    }
+  },
+  {
+    "firstName": "Clinton",
+    "lastName": "Cruz",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "clinton.cruz@sony.com",
+    "phoneNumber": "(754) 369-1232",
+    "avatarUrl": "clinton-cruz-nperracpad.jpg",
+    "address": {
+      "zipCode": "51852",
+      "country": "USA",
+      "city": "Red Oak",
+      "addressType": "Business",
+      "street": "2953 College St",
+      "coordinates": {
+        "latitude": "40.7095",
+        "longitude": "156.4411"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Elaine",
+    "lastName": "Kuhn",
+    "jobTitle": "Chief Business Development Officer",
+    "contactEmail": "elaine.kuhn@sony.com",
+    "phoneNumber": "(247) 993-7256",
+    "avatarUrl": "elaine-kuhn-kgd6x3zx2f.jpg",
+    "address": {
+      "zipCode": "55231",
+      "country": "USA",
+      "city": "Winston–Salem",
+      "addressType": "Business",
+      "street": "8206 W 6th St",
+      "coordinates": {
+        "latitude": "-49.6252",
+        "longitude": "112.0668"
+      },
+      "state": "Virginia"
+    }
+  },
+  {
+    "firstName": "Myrtle",
+    "lastName": "Ruiz",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "myrtle.ruiz@sony.com",
+    "phoneNumber": "(416) 701-0499",
+    "avatarUrl": "myrtle-ruiz-j9thbvak7r.jpg",
+    "address": {
+      "zipCode": "32382",
+      "country": "USA",
+      "city": "Elk Grove",
+      "addressType": "Business",
+      "street": "5382 Paddock Way",
+      "coordinates": {
+        "latitude": "-64.6944",
+        "longitude": "73.4437"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Jeffery",
+    "lastName": "Pierce",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "jeffery.pierce@sony.com",
+    "phoneNumber": "(460) 581-5345",
+    "avatarUrl": "jeffery-pierce-owtybfdb53c.jpg",
+    "address": {
+      "zipCode": "78636",
+      "country": "USA",
+      "city": "Celina",
+      "addressType": "Business",
+      "street": "5774 Marsh Ln",
+      "coordinates": {
+        "latitude": "72.8813",
+        "longitude": "-176.3554"
+      },
+      "state": "Alaska"
+    }
+  },
+  {
+    "firstName": "Theodore",
+    "lastName": "Edwards",
+    "jobTitle": "Director of Marketing",
+    "contactEmail": "theodore.edwards@sony.com",
+    "phoneNumber": "(488) 460-8349",
+    "avatarUrl": "theodore-edwards-m1j0uh094g.jpg",
+    "address": {
+      "zipCode": "75427",
+      "country": "USA",
+      "city": "Escondido",
+      "addressType": "Business",
+      "street": "8907 Cherry St",
+      "coordinates": {
+        "latitude": "35.0536",
+        "longitude": "24.802"
+      },
+      "state": "Georgia"
+    }
+  },
+  {
+    "firstName": "Brad",
+    "lastName": "Meyer",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "brad.meyer@sony.com",
+    "phoneNumber": "(318) 848-7844",
+    "avatarUrl": "brad-meyer-k4dgfyo338.jpg",
+    "address": {
+      "zipCode": "50997",
+      "country": "USA",
+      "city": "Victorville",
+      "addressType": "Business",
+      "street": "928 Ash Dr",
+      "coordinates": {
+        "latitude": "45.7723",
+        "longitude": "-167.051"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Rebecca",
+    "lastName": "Weaver",
+    "jobTitle": "VP of Product",
+    "contactEmail": "rebecca.weaver@sony.com",
+    "phoneNumber": "(651) 714-3536",
+    "avatarUrl": "rebecca-weaver-orovil7bvlr.jpg",
+    "address": {
+      "zipCode": "29204",
+      "country": "USA",
+      "city": "Baton Rouge",
+      "addressType": "Business",
+      "street": "2205 James St",
+      "coordinates": {
+        "latitude": "-69.1277",
+        "longitude": "-90.321"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Beatrice",
+    "lastName": "Riley",
+    "jobTitle": "Corporate Development Director",
+    "contactEmail": "beatrice.riley@sony.com",
+    "phoneNumber": "(475) 890-0839",
+    "avatarUrl": "beatrice-riley-a2be8izi8d.jpg",
+    "address": {
+      "zipCode": "21403",
+      "country": "USA",
+      "city": "High Point",
+      "addressType": "Business",
+      "street": "5158 Wycliff Ave",
+      "coordinates": {
+        "latitude": "-13.0955",
+        "longitude": "-0.8166"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Sarah",
+    "lastName": "West",
+    "jobTitle": "Director of Strategic Alliances",
+    "contactEmail": "sarah.west@sony.com",
+    "phoneNumber": "(328) 591-6240",
+    "avatarUrl": "sarah-west-ze2gpzll48.jpg",
+    "address": {
+      "zipCode": "64065",
+      "country": "USA",
+      "city": "Carrollton",
+      "addressType": "Business",
+      "street": "8188 Wheeler Ridge Dr",
+      "coordinates": {
+        "latitude": "-60.3184",
+        "longitude": "162.2444"
+      },
+      "state": "Ohio"
+    }
+  },
+  {
+    "firstName": "Jackie",
+    "lastName": "Lewis",
+    "jobTitle": "VP of Product",
+    "contactEmail": "jackie.lewis@sony.com",
+    "phoneNumber": "(673) 771-3174",
+    "avatarUrl": "jackie-lewis-9rlhy2c8tf.jpg",
+    "address": {
+      "zipCode": "82505",
+      "country": "USA",
+      "city": "Sunnyvale",
+      "addressType": "Business",
+      "street": "6753 Woodland St",
+      "coordinates": {
+        "latitude": "-5.498",
+        "longitude": "-5.4601"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Rose",
+    "lastName": "Peters",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "rose.peters@sony.com",
+    "phoneNumber": "(756) 840-6173",
+    "avatarUrl": "rose-peters-qnv2ggeo0b.jpg",
+    "address": {
+      "zipCode": "60273",
+      "country": "USA",
+      "city": "Bridgeport",
+      "addressType": "Business",
+      "street": "3608 Spring St",
+      "coordinates": {
+        "latitude": "-14.3772",
+        "longitude": "-129.918"
+      },
+      "state": "North Dakota"
+    }
+  },
+  {
+    "firstName": "Ellen",
+    "lastName": "George",
+    "jobTitle": "Director of Sales",
+    "contactEmail": "ellen.george@sony.com",
+    "phoneNumber": "(926) 382-7384",
+    "avatarUrl": "ellen-george-1zqmjqa09dq.jpg",
+    "address": {
+      "zipCode": "73100",
+      "country": "USA",
+      "city": "Santa Rosa",
+      "addressType": "Business",
+      "street": "8370 Mcclellan Rd",
+      "coordinates": {
+        "latitude": "-20.9713",
+        "longitude": "-63.7014"
+      },
+      "state": "Wisconsin"
+    }
+  },
+  {
+    "firstName": "Ricky",
+    "lastName": "Andrews",
+    "jobTitle": "Corporate Development Director",
+    "contactEmail": "ricky.andrews@sony.com",
+    "phoneNumber": "(529) 924-8700",
+    "avatarUrl": "ricky-andrews-3oobkbhv21s.jpg",
+    "address": {
+      "zipCode": "39074",
+      "country": "USA",
+      "city": "Cincinnati",
+      "addressType": "Business",
+      "street": "8450 Oak Lawn Ave",
+      "coordinates": {
+        "latitude": "35.3198",
+        "longitude": "-111.7732"
+      },
+      "state": "Maryland"
+    }
+  },
+  {
+    "firstName": "Arnold",
+    "lastName": "Montgomery",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "arnold.montgomery@palantir.com",
+    "phoneNumber": "(809) 435-9350",
+    "avatarUrl": "arnold-montgomery-a3u0t7ygnx5.jpg",
+    "address": {
+      "zipCode": "49294",
+      "country": "USA",
+      "city": "Elizabeth",
+      "addressType": "Business",
+      "street": "7652 Mcclellan Rd",
+      "coordinates": {
+        "latitude": "-59.4603",
+        "longitude": "54.1576"
+      },
+      "state": "Minnesota"
+    }
+  },
+  {
+    "firstName": "Clifton",
+    "lastName": "Allen",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "clifton.allen@palantir.com",
+    "phoneNumber": "(498) 770-8566",
+    "avatarUrl": "clifton-allen-1clrx1hlxyj.jpg",
+    "address": {
+      "zipCode": "17320",
+      "country": "USA",
+      "city": "Kansas City",
+      "addressType": "Business",
+      "street": "8021 Adams St",
+      "coordinates": {
+        "latitude": "14.2809",
+        "longitude": "-43.4798"
+      },
+      "state": "New York"
+    }
+  },
+  {
+    "firstName": "Dawn",
+    "lastName": "Morrison",
+    "jobTitle": "Legal Advisor",
+    "contactEmail": "dawn.morrison@palantir.com",
+    "phoneNumber": "(632) 956-5639",
+    "avatarUrl": "dawn-morrison-zoiqlgnecn.jpg",
+    "address": {
+      "zipCode": "74534",
+      "country": "USA",
+      "city": "Thornton",
+      "addressType": "Business",
+      "street": "121 W Pecan St",
+      "coordinates": {
+        "latitude": "-28.9425",
+        "longitude": "-136.2509"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Dwight",
+    "lastName": "Black",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "dwight.black@palantir.com",
+    "phoneNumber": "(704) 943-8218",
+    "avatarUrl": "dwight-black-khfs1md256.jpg",
+    "address": {
+      "zipCode": "52947",
+      "country": "USA",
+      "city": "Alexandria",
+      "addressType": "Business",
+      "street": "3386 Prospect Rd",
+      "coordinates": {
+        "latitude": "29.94",
+        "longitude": "-21.2502"
+      },
+      "state": "Colorado"
+    }
+  },
+  {
+    "firstName": "Chloe",
+    "lastName": "Lawrence",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "chloe.lawrence@palantir.com",
+    "phoneNumber": "(895) 766-3926",
+    "avatarUrl": "chloe-lawrence-805620x6dho.jpg",
+    "address": {
+      "zipCode": "30641",
+      "country": "USA",
+      "city": "Victorville",
+      "addressType": "Business",
+      "street": "7466 Oak Ridge Ln",
+      "coordinates": {
+        "latitude": "59.0919",
+        "longitude": "-122.1582"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Vivan",
+    "lastName": "Ryan",
+    "jobTitle": "Director of Sales",
+    "contactEmail": "vivan.ryan@palantir.com",
+    "phoneNumber": "(841) 261-8391",
+    "avatarUrl": "vivan-ryan-zmzbtap97tf.jpg",
+    "address": {
+      "zipCode": "33311",
+      "country": "USA",
+      "city": "Pasadena",
+      "addressType": "Business",
+      "street": "3672 Prospect Rd",
+      "coordinates": {
+        "latitude": "50.331",
+        "longitude": "-90.7849"
+      },
+      "state": "New Jersey"
+    }
+  },
+  {
+    "firstName": "Adrian",
+    "lastName": "Jennings",
+    "jobTitle": "Legal Advisor",
+    "contactEmail": "adrian.jennings@palantir.com",
+    "phoneNumber": "(762) 495-3055",
+    "avatarUrl": "adrian-jennings-jh9k2h06gvg.jpg",
+    "address": {
+      "zipCode": "65307",
+      "country": "USA",
+      "city": "Gresham",
+      "addressType": "Business",
+      "street": "2054 Smokey Ln",
+      "coordinates": {
+        "latitude": "65.5264",
+        "longitude": "-24.7106"
+      },
+      "state": "West Virginia"
+    }
+  },
+  {
+    "firstName": "Lance",
+    "lastName": "Nelson",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "lance.nelson@palantir.com",
+    "phoneNumber": "(916) 716-5277",
+    "avatarUrl": "lance-nelson-nndhoqd0ovk.jpg",
+    "address": {
+      "zipCode": "59626",
+      "country": "USA",
+      "city": "Santa Clara",
+      "addressType": "Business",
+      "street": "7040 Stevens Creek Blvd",
+      "coordinates": {
+        "latitude": "26.861",
+        "longitude": "-95.2623"
+      },
+      "state": "Florida"
+    }
+  },
+  {
+    "firstName": "Paul",
+    "lastName": "Simmons",
+    "jobTitle": "Chief Legal Officer",
+    "contactEmail": "paul.simmons@palantir.com",
+    "phoneNumber": "(317) 418-0534",
+    "avatarUrl": "paul-simmons-iqrdczsiwkd.jpg",
+    "address": {
+      "zipCode": "63975",
+      "country": "USA",
+      "city": "Norfolk",
+      "addressType": "Business",
+      "street": "8086 Valley View Ln",
+      "coordinates": {
+        "latitude": "29.2296",
+        "longitude": "33.7813"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Maxine",
+    "lastName": "Horton",
+    "jobTitle": "Chief Legal Officer",
+    "contactEmail": "maxine.horton@palantir.com",
+    "phoneNumber": "(792) 638-7053",
+    "avatarUrl": "maxine-horton-4sar0n644i5.jpg",
+    "address": {
+      "zipCode": "64796",
+      "country": "USA",
+      "city": "New York",
+      "addressType": "Business",
+      "street": "4212 Lakeview St",
+      "coordinates": {
+        "latitude": "6.6276",
+        "longitude": "35.8502"
+      },
+      "state": "New York"
+    }
+  },
+  {
+    "firstName": "Louella",
+    "lastName": "Sims",
+    "jobTitle": "VP of Marketing",
+    "contactEmail": "louella.sims@palantir.com",
+    "phoneNumber": "(512) 275-1575",
+    "avatarUrl": "louella-sims-48vg0gswv6l.jpg",
+    "address": {
+      "zipCode": "12972",
+      "country": "USA",
+      "city": "Las Vegas",
+      "addressType": "Business",
+      "street": "157 Pecan Acres Ln",
+      "coordinates": {
+        "latitude": "46.7005",
+        "longitude": "-132.486"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Marshall",
+    "lastName": "Mccoy",
+    "jobTitle": "Chief Compliance Officer",
+    "contactEmail": "marshall.mccoy@palantir.com",
+    "phoneNumber": "(992) 221-2955",
+    "avatarUrl": "marshall-mccoy-lbis4awp4e.jpg",
+    "address": {
+      "zipCode": "44858",
+      "country": "USA",
+      "city": "Fountain Valley",
+      "addressType": "Business",
+      "street": "6858 Miller Ave",
+      "coordinates": {
+        "latitude": "-16.4823",
+        "longitude": "162.0803"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Wanda",
+    "lastName": "Vasquez",
+    "jobTitle": "Senior Director",
+    "contactEmail": "wanda.vasquez@samsung.com",
+    "phoneNumber": "(975) 516-7960",
+    "avatarUrl": "wanda-vasquez-yfaridhfp.jpg",
+    "address": {
+      "zipCode": "63608",
+      "country": "USA",
+      "city": "Columbia",
+      "addressType": "Business",
+      "street": "8990 Wycliff Ave",
+      "coordinates": {
+        "latitude": "-14.7295",
+        "longitude": "5.8389"
+      },
+      "state": "South Carolina"
+    }
+  },
+  {
+    "firstName": "Anita",
+    "lastName": "Foster",
+    "jobTitle": "Senior Corporate Counsel",
+    "contactEmail": "anita.foster@samsung.com",
+    "phoneNumber": "(926) 347-4035",
+    "avatarUrl": "anita-foster-jy65zpi1baj.jpg",
+    "address": {
+      "zipCode": "76907",
+      "country": "USA",
+      "city": "Antioch",
+      "addressType": "Business",
+      "street": "4300 James St",
+      "coordinates": {
+        "latitude": "37.8567",
+        "longitude": "-80.2299"
+      },
+      "state": "Oregon"
+    }
+  },
+  {
+    "firstName": "Jeanette",
+    "lastName": "Lopez",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "jeanette.lopez@samsung.com",
+    "phoneNumber": "(695) 988-4193",
+    "avatarUrl": "jeanette-lopez-05vpzefddt1h.jpg",
+    "address": {
+      "zipCode": "10403",
+      "country": "USA",
+      "city": "Seymour",
+      "addressType": "Business",
+      "street": "5281 Taylor St",
+      "coordinates": {
+        "latitude": "-7.7878",
+        "longitude": "-80.5199"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Clifford",
+    "lastName": "Reid",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "clifford.reid@samsung.com",
+    "phoneNumber": "(507) 848-0311",
+    "avatarUrl": "clifford-reid-bbymbl2bd0l.jpg",
+    "address": {
+      "zipCode": "28827",
+      "country": "USA",
+      "city": "Virginia Beach",
+      "addressType": "Business",
+      "street": "8000 Smokey Ln",
+      "coordinates": {
+        "latitude": "73.4255",
+        "longitude": "-3.8509"
+      },
+      "state": "Colorado"
+    }
+  },
+  {
+    "firstName": "Ricky",
+    "lastName": "Harvey",
+    "jobTitle": "Legal Advisor",
+    "contactEmail": "ricky.harvey@samsung.com",
+    "phoneNumber": "(202) 616-2951",
+    "avatarUrl": "ricky-harvey-6xvq4bxu6rs.jpg",
+    "address": {
+      "zipCode": "62331",
+      "country": "USA",
+      "city": "Aurora",
+      "addressType": "Business",
+      "street": "3031 Hamilton Ave",
+      "coordinates": {
+        "latitude": "-49.4901",
+        "longitude": "-4.6825"
+      },
+      "state": "Vermont"
+    }
+  },
+  {
+    "firstName": "Eli",
+    "lastName": "George",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "eli.george@samsung.com",
+    "phoneNumber": "(952) 312-1787",
+    "avatarUrl": "eli-george-nu0gkcgswll.jpg",
+    "address": {
+      "zipCode": "96529",
+      "country": "USA",
+      "city": "Torrance",
+      "addressType": "Business",
+      "street": "1241 Nowlin Rd",
+      "coordinates": {
+        "latitude": "53.447",
+        "longitude": "34.4345"
+      },
+      "state": "Virginia"
+    }
+  },
+  {
+    "firstName": "Scarlett",
+    "lastName": "Reyes",
+    "jobTitle": "Director of Strategic Alliances",
+    "contactEmail": "scarlett.reyes@samsung.com",
+    "phoneNumber": "(935) 515-3252",
+    "avatarUrl": "scarlett-reyes-1g5d1edhar7.jpg",
+    "address": {
+      "zipCode": "57965",
+      "country": "USA",
+      "city": "Washington",
+      "addressType": "Business",
+      "street": "8996 Karen Dr",
+      "coordinates": {
+        "latitude": "40.3806",
+        "longitude": "50.853"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Nathaniel",
+    "lastName": "Simpson",
+    "jobTitle": "Chief Strategy Officer",
+    "contactEmail": "nathaniel.simpson@samsung.com",
+    "phoneNumber": "(423) 339-9599",
+    "avatarUrl": "nathaniel-simpson-h8ghjhwlkkc.jpg",
+    "address": {
+      "zipCode": "66775",
+      "country": "USA",
+      "city": "Hayward",
+      "addressType": "Business",
+      "street": "1056 Mockingbird Hill",
+      "coordinates": {
+        "latitude": "1.7378",
+        "longitude": "137.7089"
+      },
+      "state": "New Hampshire"
+    }
+  },
+  {
+    "firstName": "Tomothy",
+    "lastName": "Sullivan",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "tomothy.sullivan@samsung.com",
+    "phoneNumber": "(273) 576-7230",
+    "avatarUrl": "tomothy-sullivan-4211f6fiu92.jpg",
+    "address": {
+      "zipCode": "62422",
+      "country": "USA",
+      "city": "Red Oak",
+      "addressType": "Business",
+      "street": "10 Shady Ln Dr",
+      "coordinates": {
+        "latitude": "48.8933",
+        "longitude": "-70.907"
+      },
+      "state": "Delaware"
+    }
+  },
+  {
+    "firstName": "Floyd",
+    "lastName": "Edwards",
+    "jobTitle": "Senior Director Business Development",
+    "contactEmail": "floyd.edwards@samsung.com",
+    "phoneNumber": "(353) 379-6337",
+    "avatarUrl": "floyd-edwards-zkm7zxvonq9.jpg",
+    "address": {
+      "zipCode": "11096",
+      "country": "USA",
+      "city": "Pasadena",
+      "addressType": "Business",
+      "street": "8426 Ash Dr",
+      "coordinates": {
+        "latitude": "-55.616",
+        "longitude": "137.8687"
+      },
+      "state": "North Dakota"
+    }
+  },
+  {
+    "firstName": "Renee",
+    "lastName": "Weaver",
+    "jobTitle": "Legal Affairs Director",
+    "contactEmail": "renee.weaver@samsung.com",
+    "phoneNumber": "(783) 686-8778",
+    "avatarUrl": "renee-weaver-ch4fkvutg2g.jpg",
+    "address": {
+      "zipCode": "31083",
+      "country": "USA",
+      "city": "San Bernardino",
+      "addressType": "Business",
+      "street": "1321 Royal Ln",
+      "coordinates": {
+        "latitude": "-65.2156",
+        "longitude": "50.0169"
+      },
+      "state": "Illinois"
+    }
+  },
+  {
+    "firstName": "Jimmy",
+    "lastName": "Davis",
+    "jobTitle": "Senior Legal Counsel",
+    "contactEmail": "jimmy.davis@samsung.com",
+    "phoneNumber": "(991) 828-1142",
+    "avatarUrl": "jimmy-davis-ivmow1ytw4d.jpg",
+    "address": {
+      "zipCode": "17134",
+      "country": "USA",
+      "city": "West Palm Beach",
+      "addressType": "Business",
+      "street": "3104 Timber Wolf Trail",
+      "coordinates": {
+        "latitude": "46.9584",
+        "longitude": "114.8506"
+      },
+      "state": "Virginia"
+    }
+  },
+  {
+    "firstName": "Harold",
+    "lastName": "Steward",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "harold.steward@samsung.com",
+    "phoneNumber": "(998) 346-2305",
+    "avatarUrl": "harold-steward-w95t4y3rmre.jpg",
+    "address": {
+      "zipCode": "70184",
+      "country": "USA",
+      "city": "Irvine",
+      "addressType": "Business",
+      "street": "746 W Dallas St",
+      "coordinates": {
+        "latitude": "89.3889",
+        "longitude": "-149.6589"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Leah",
+    "lastName": "Lucas",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "leah.lucas@samsung.com",
+    "phoneNumber": "(329) 356-6042",
+    "avatarUrl": "leah-lucas-rzd3fwgympr.jpg",
+    "address": {
+      "zipCode": "52299",
+      "country": "USA",
+      "city": "Shelby",
+      "addressType": "Business",
+      "street": "6815 Hogan St",
+      "coordinates": {
+        "latitude": "-8.6798",
+        "longitude": "123.9366"
+      },
+      "state": "Maryland"
+    }
+  },
+  {
+    "firstName": "Marilyn",
+    "lastName": "Harrison",
+    "jobTitle": "Deputy General Counsel",
+    "contactEmail": "marilyn.harrison@samsung.com",
+    "phoneNumber": "(442) 862-5597",
+    "avatarUrl": "marilyn-harrison-95uw3zsd4ea.jpg",
+    "address": {
+      "zipCode": "34942",
+      "country": "USA",
+      "city": "Caldwell",
+      "addressType": "Business",
+      "street": "7987 Westheimer Rd",
+      "coordinates": {
+        "latitude": "-26.6509",
+        "longitude": "39.3124"
+      },
+      "state": "Oklahoma"
+    }
+  },
+  {
+    "firstName": "Irma",
+    "lastName": "Austin",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "irma.austin@samsung.com",
+    "phoneNumber": "(897) 904-9137",
+    "avatarUrl": "irma-austin-oq4ltywi1d.jpg",
+    "address": {
+      "zipCode": "67014",
+      "country": "USA",
+      "city": "Lexington",
+      "addressType": "Business",
+      "street": "3790 Lovers Ln",
+      "coordinates": {
+        "latitude": "-6.9464",
+        "longitude": "-132.4487"
+      },
+      "state": "South Dakota"
+    }
+  },
+  {
+    "firstName": "Terry",
+    "lastName": "Russell",
+    "jobTitle": "Senior Director",
+    "contactEmail": "terry.russell@samsung.com",
+    "phoneNumber": "(766) 917-2758",
+    "avatarUrl": "terry-russell-y1gh8ym6bp.jpg",
+    "address": {
+      "zipCode": "96980",
+      "country": "USA",
+      "city": "Anaheim",
+      "addressType": "Business",
+      "street": "940 Lovers Ln",
+      "coordinates": {
+        "latitude": "58.7064",
+        "longitude": "-127.6426"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Ernest",
+    "lastName": "Richards",
+    "jobTitle": "Executive Director",
+    "contactEmail": "ernest.richards@samsung.com",
+    "phoneNumber": "(972) 791-1823",
+    "avatarUrl": "ernest-richards-60vjg9rrfi6.jpg",
+    "address": {
+      "zipCode": "65799",
+      "country": "USA",
+      "city": "Billings",
+      "addressType": "Business",
+      "street": "6132 Westheimer Rd",
+      "coordinates": {
+        "latitude": "-54.6156",
+        "longitude": "13.7061"
+      },
+      "state": "West Virginia"
+    }
+  },
+  {
+    "firstName": "Jared",
+    "lastName": "Morrison",
+    "jobTitle": "Strategic Partnerships Director",
+    "contactEmail": "jared.morrison@samsung.com",
+    "phoneNumber": "(578) 407-3990",
+    "avatarUrl": "jared-morrison-69ziy0ds5mq.jpg",
+    "address": {
+      "zipCode": "81885",
+      "country": "USA",
+      "city": "Santa Ana",
+      "addressType": "Business",
+      "street": "3497 Saddle Dr",
+      "coordinates": {
+        "latitude": "-71.2189",
+        "longitude": "133.8916"
+      },
+      "state": "Georgia"
+    }
+  },
+  {
+    "firstName": "Abigail",
+    "lastName": "Horton",
+    "jobTitle": "VP of Engineering",
+    "contactEmail": "abigail.horton@apple.com",
+    "phoneNumber": "(403) 966-7315",
+    "avatarUrl": "abigail-horton-kfsi5cdoohj.jpg",
+    "address": {
+      "zipCode": "82653",
+      "country": "USA",
+      "city": "Spokane",
+      "addressType": "Business",
+      "street": "4411 Eason Rd",
+      "coordinates": {
+        "latitude": "-35.1216",
+        "longitude": "-52.054"
+      },
+      "state": "Mississippi"
+    }
+  },
+  {
+    "firstName": "Antonio",
+    "lastName": "Peck",
+    "jobTitle": "VP of Strategic Partnerships",
+    "contactEmail": "antonio.peck@apple.com",
+    "phoneNumber": "(816) 952-2950",
+    "avatarUrl": "antonio-peck-198e4fg4ifk.jpg",
+    "address": {
+      "zipCode": "23048",
+      "country": "USA",
+      "city": "Shiloh",
+      "addressType": "Business",
+      "street": "2473 Fincher Rd",
+      "coordinates": {
+        "latitude": "-77.2345",
+        "longitude": "166.5408"
+      },
+      "state": "Tennessee"
+    }
+  },
+  {
+    "firstName": "Sebastian",
+    "lastName": "Hanson",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "sebastian.hanson@apple.com",
+    "phoneNumber": "(314) 720-5969",
+    "avatarUrl": "sebastian-hanson-3ycee56ygaa.jpg",
+    "address": {
+      "zipCode": "30787",
+      "country": "USA",
+      "city": "Fullerton",
+      "addressType": "Business",
+      "street": "6568 Spring St",
+      "coordinates": {
+        "latitude": "-17.2561",
+        "longitude": "160.7265"
+      },
+      "state": "West Virginia"
+    }
+  },
+  {
+    "firstName": "Nevaeh",
+    "lastName": "Steeves ",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "nevaeh.steeves@apple.com",
+    "phoneNumber": "(877) 281-1698",
+    "avatarUrl": "nevaeh-steeves -oy03pqnznhl.jpg",
+    "address": {
+      "zipCode": "37048",
+      "country": "USA",
+      "city": "Roanoke",
+      "addressType": "Business",
+      "street": "1085 Marsh Ln",
+      "coordinates": {
+        "latitude": "-15.2104",
+        "longitude": "99.1456"
+      },
+      "state": "Maryland"
+    }
+  },
+  {
+    "firstName": "Sebastian",
+    "lastName": "Hunt",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "sebastian.hunt@apple.com",
+    "phoneNumber": "(818) 263-8418",
+    "avatarUrl": "sebastian-hunt-nrzexv2gkq.jpg",
+    "address": {
+      "zipCode": "36782",
+      "country": "USA",
+      "city": "Nampa",
+      "addressType": "Business",
+      "street": "5095 Brown Terrace",
+      "coordinates": {
+        "latitude": "-53.3318",
+        "longitude": "-155.328"
+      },
+      "state": "Oregon"
+    }
+  },
+  {
+    "firstName": "Leonard",
+    "lastName": "Stevens",
+    "jobTitle": "Director of Strategic Alliances",
+    "contactEmail": "leonard.stevens@apple.com",
+    "phoneNumber": "(602) 382-2279",
+    "avatarUrl": "leonard-stevens-idyph52atjp.jpg",
+    "address": {
+      "zipCode": "83154",
+      "country": "USA",
+      "city": "Raleigh",
+      "addressType": "Business",
+      "street": "8248 Stevens Creek Blvd",
+      "coordinates": {
+        "latitude": "-38.2334",
+        "longitude": "-131.0484"
+      },
+      "state": "Arkansas"
+    }
+  },
+  {
+    "firstName": "Irene",
+    "lastName": "Vargas",
+    "jobTitle": "Director of Strategy",
+    "contactEmail": "irene.vargas@apple.com",
+    "phoneNumber": "(854) 731-6587",
+    "avatarUrl": "irene-vargas-x8n1k96cd1n.jpg",
+    "address": {
+      "zipCode": "29680",
+      "country": "USA",
+      "city": "Broken Arrow",
+      "addressType": "Business",
+      "street": "8841 Fincher Rd",
+      "coordinates": {
+        "latitude": "19.5324",
+        "longitude": "-24.5269"
+      },
+      "state": "Montana"
+    }
+  },
+  {
+    "firstName": "Mario",
+    "lastName": "Stanley",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "mario.stanley@apple.com",
+    "phoneNumber": "(260) 666-1207",
+    "avatarUrl": "mario-stanley-9ei2sg0n57t.jpg",
+    "address": {
+      "zipCode": "89668",
+      "country": "USA",
+      "city": "West Covina",
+      "addressType": "Business",
+      "street": "4633 W Gray St",
+      "coordinates": {
+        "latitude": "-8.4477",
+        "longitude": "125.4347"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Allen",
+    "lastName": "Reed",
+    "jobTitle": "Chief Strategy Officer",
+    "contactEmail": "allen.reed@apple.com",
+    "phoneNumber": "(489) 425-3117",
+    "avatarUrl": "allen-reed-uqioh67xxp.jpg",
+    "address": {
+      "zipCode": "77647",
+      "country": "USA",
+      "city": "York",
+      "addressType": "Business",
+      "street": "8987 Timber Wolf Trail",
+      "coordinates": {
+        "latitude": "-89.5662",
+        "longitude": "31.6107"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Russell",
+    "lastName": "Dixon",
+    "jobTitle": "Senior Legal Counsel",
+    "contactEmail": "russell.dixon@apple.com",
+    "phoneNumber": "(638) 921-6409",
+    "avatarUrl": "russell-dixon-hsrl22yhqf.jpg",
+    "address": {
+      "zipCode": "12353",
+      "country": "USA",
+      "city": "Des Moines",
+      "addressType": "Business",
+      "street": "5439 Miller Ave",
+      "coordinates": {
+        "latitude": "-87.4407",
+        "longitude": "80.8197"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Michele",
+    "lastName": "Ramirez",
+    "jobTitle": "VP of Marketing",
+    "contactEmail": "michele.ramirez@apple.com",
+    "phoneNumber": "(209) 824-3528",
+    "avatarUrl": "michele-ramirez-1rou4i0ac7z.jpg",
+    "address": {
+      "zipCode": "83191",
+      "country": "USA",
+      "city": "Lewisville",
+      "addressType": "Business",
+      "street": "7941 Hickory Creek Dr",
+      "coordinates": {
+        "latitude": "8.217",
+        "longitude": "-114.3485"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Freddie",
+    "lastName": "Medina",
+    "jobTitle": "VP of Strategic Partnerships",
+    "contactEmail": "freddie.medina@apple.com",
+    "phoneNumber": "(208) 398-3674",
+    "avatarUrl": "freddie-medina-muyqn900iaa.jpg",
+    "address": {
+      "zipCode": "85151",
+      "country": "USA",
+      "city": "Winston–Salem",
+      "addressType": "Business",
+      "street": "3605 Washington Ave",
+      "coordinates": {
+        "latitude": "62.7555",
+        "longitude": "136.1775"
+      },
+      "state": "New Hampshire"
+    }
+  },
+  {
+    "firstName": "Meghan",
+    "lastName": "Mckinney",
+    "jobTitle": "VP of Marketing",
+    "contactEmail": "meghan.mckinney@apple.com",
+    "phoneNumber": "(780) 739-3166",
+    "avatarUrl": "meghan-mckinney-ktsdnabmhlr.jpg",
+    "address": {
+      "zipCode": "72819",
+      "country": "USA",
+      "city": "Providence",
+      "addressType": "Business",
+      "street": "3250 Spring Hill Rd",
+      "coordinates": {
+        "latitude": "39.7251",
+        "longitude": "159.5937"
+      },
+      "state": "Maine"
+    }
+  },
+  {
+    "firstName": "Sally",
+    "lastName": "Gibson",
+    "jobTitle": "Senior Corporate Counsel",
+    "contactEmail": "sally.gibson@apple.com",
+    "phoneNumber": "(912) 363-0641",
+    "avatarUrl": "sally-gibson-dxflcafqgth.jpg",
+    "address": {
+      "zipCode": "76761",
+      "country": "USA",
+      "city": "Vancouver",
+      "addressType": "Business",
+      "street": "8275 Daisy Dr",
+      "coordinates": {
+        "latitude": "-33.1033",
+        "longitude": "43.6962"
+      },
+      "state": "South Carolina"
+    }
+  },
+  {
+    "firstName": "Mark",
+    "lastName": "Spencer",
+    "jobTitle": "General Counsel",
+    "contactEmail": "mark.spencer@apple.com",
+    "phoneNumber": "(265) 922-5736",
+    "avatarUrl": "mark-spencer-n6r8aip4lf.jpg",
+    "address": {
+      "zipCode": "40358",
+      "country": "USA",
+      "city": "Erie",
+      "addressType": "Business",
+      "street": "4901 Preston Rd",
+      "coordinates": {
+        "latitude": "-60.9891",
+        "longitude": "84.1672"
+      },
+      "state": "New Jersey"
+    }
+  },
+  {
+    "firstName": "Vickie",
+    "lastName": "Knight",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "vickie.knight@apple.com",
+    "phoneNumber": "(400) 446-5456",
+    "avatarUrl": "vickie-knight-kjuywy5pqqr.jpg",
+    "address": {
+      "zipCode": "50133",
+      "country": "USA",
+      "city": "North Valley",
+      "addressType": "Business",
+      "street": "8561 Green Rd",
+      "coordinates": {
+        "latitude": "69.3511",
+        "longitude": "-15.9021"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Taylor",
+    "lastName": "Marshall",
+    "jobTitle": "Senior Director",
+    "contactEmail": "taylor.marshall@apple.com",
+    "phoneNumber": "(527) 571-8978",
+    "avatarUrl": "taylor-marshall-5zg0x5nrn3b.jpg",
+    "address": {
+      "zipCode": "44993",
+      "country": "USA",
+      "city": "Akron",
+      "addressType": "Business",
+      "street": "156 Marsh Ln",
+      "coordinates": {
+        "latitude": "16.65",
+        "longitude": "-58.565"
+      },
+      "state": "Kansas"
+    }
+  },
+  {
+    "firstName": "Morris",
+    "lastName": "Matthews",
+    "jobTitle": "VP of Corporate Development",
+    "contactEmail": "morris.matthews@salesforce.com",
+    "phoneNumber": "(330) 660-3208",
+    "avatarUrl": "morris-matthews-0ol8jx2l1c5.jpg",
+    "address": {
+      "zipCode": "33074",
+      "country": "USA",
+      "city": "Lowell",
+      "addressType": "Business",
+      "street": "6800 James St",
+      "coordinates": {
+        "latitude": "-41.8941",
+        "longitude": "1.5161"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Lauren",
+    "lastName": "Hansen",
+    "jobTitle": "Senior Vice President",
+    "contactEmail": "lauren.hansen@salesforce.com",
+    "phoneNumber": "(666) 338-6676",
+    "avatarUrl": "lauren-hansen-82bbappmdrg.jpg",
+    "address": {
+      "zipCode": "63011",
+      "country": "USA",
+      "city": "Oklahoma City",
+      "addressType": "Business",
+      "street": "7422 Saddle Dr",
+      "coordinates": {
+        "latitude": "16.4374",
+        "longitude": "-43.3326"
+      },
+      "state": "Colorado"
+    }
+  },
+  {
+    "firstName": "Marion",
+    "lastName": "Thomas",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "marion.thomas@salesforce.com",
+    "phoneNumber": "(267) 422-6244",
+    "avatarUrl": "marion-thomas-xqwld7198c.jpg",
+    "address": {
+      "zipCode": "46994",
+      "country": "USA",
+      "city": "Dumas",
+      "addressType": "Business",
+      "street": "4273 Hogan St",
+      "coordinates": {
+        "latitude": "-80.1007",
+        "longitude": "-76.3546"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Sharlene",
+    "lastName": "Pearson",
+    "jobTitle": "Chief Financial Officer",
+    "contactEmail": "sharlene.pearson@salesforce.com",
+    "phoneNumber": "(671) 836-6621",
+    "avatarUrl": "sharlene-pearson-si4p9m7f71.jpg",
+    "address": {
+      "zipCode": "64727",
+      "country": "USA",
+      "city": "Louisville",
+      "addressType": "Business",
+      "street": "7661 Locust Rd",
+      "coordinates": {
+        "latitude": "3.3088",
+        "longitude": "-112.955"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Olivia",
+    "lastName": "Kelly",
+    "jobTitle": "VP of Product",
+    "contactEmail": "olivia.kelly@salesforce.com",
+    "phoneNumber": "(456) 435-9086",
+    "avatarUrl": "olivia-kelly-mf1uksaf4z9.jpg",
+    "address": {
+      "zipCode": "58995",
+      "country": "USA",
+      "city": "Norwalk",
+      "addressType": "Business",
+      "street": "2337 Harrison Ct",
+      "coordinates": {
+        "latitude": "-48.2586",
+        "longitude": "1.3156"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Ryan",
+    "lastName": "Sutton",
+    "jobTitle": "VP of Product",
+    "contactEmail": "ryan.sutton@salesforce.com",
+    "phoneNumber": "(526) 564-2539",
+    "avatarUrl": "ryan-sutton-tvdebe2d4xr.jpg",
+    "address": {
+      "zipCode": "80347",
+      "country": "USA",
+      "city": "Torrance",
+      "addressType": "Business",
+      "street": "6583 Royal Ln",
+      "coordinates": {
+        "latitude": "48.0692",
+        "longitude": "-44.5026"
+      },
+      "state": "New Mexico"
+    }
+  },
+  {
+    "firstName": "Liam",
+    "lastName": "Fowler",
+    "jobTitle": "Chief Technology Officer",
+    "contactEmail": "liam.fowler@salesforce.com",
+    "phoneNumber": "(276) 217-0194",
+    "avatarUrl": "liam-fowler-bufe3h9m5sw.jpg",
+    "address": {
+      "zipCode": "95751",
+      "country": "USA",
+      "city": "Odessa",
+      "addressType": "Business",
+      "street": "9422 Preston Rd",
+      "coordinates": {
+        "latitude": "-88.6157",
+        "longitude": "71.8677"
+      },
+      "state": "Alaska"
+    }
+  },
+  {
+    "firstName": "Zoe",
+    "lastName": "Perez",
+    "jobTitle": "Director of Marketing",
+    "contactEmail": "zoe.perez@salesforce.com",
+    "phoneNumber": "(728) 492-7706",
+    "avatarUrl": "zoe-perez-8iawksrhidk.jpg",
+    "address": {
+      "zipCode": "59103",
+      "country": "USA",
+      "city": "Sterling Heights",
+      "addressType": "Business",
+      "street": "711 Westheimer Rd",
+      "coordinates": {
+        "latitude": "-80.4946",
+        "longitude": "-138.1682"
+      },
+      "state": "Michigan"
+    }
+  },
+  {
+    "firstName": "Jerome",
+    "lastName": "Carroll",
+    "jobTitle": "Director of Operations",
+    "contactEmail": "jerome.carroll@salesforce.com",
+    "phoneNumber": "(402) 206-0300",
+    "avatarUrl": "jerome-carroll-n6kqm1sy7yl.jpg",
+    "address": {
+      "zipCode": "60847",
+      "country": "USA",
+      "city": "Ann Arbor",
+      "addressType": "Business",
+      "street": "806 Wheeler Ridge Dr",
+      "coordinates": {
+        "latitude": "82.6507",
+        "longitude": "-128.4482"
+      },
+      "state": "South Dakota"
+    }
+  },
+  {
+    "firstName": "Ritthy",
+    "lastName": "Welch",
+    "jobTitle": "Chief Compliance Officer",
+    "contactEmail": "ritthy.welch@salesforce.com",
+    "phoneNumber": "(633) 743-8440",
+    "avatarUrl": "ritthy-welch-5m1fwncqzc3.jpg",
+    "address": {
+      "zipCode": "14747",
+      "country": "USA",
+      "city": "Palmdale",
+      "addressType": "Business",
+      "street": "9092 James St",
+      "coordinates": {
+        "latitude": "53.9757",
+        "longitude": "-26.1677"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Riley",
+    "lastName": "Carr",
+    "jobTitle": "Chief Executive Officer",
+    "contactEmail": "riley.carr@salesforce.com",
+    "phoneNumber": "(737) 761-2567",
+    "avatarUrl": "riley-carr-ahy1zn3f44a.jpg",
+    "address": {
+      "zipCode": "96432",
+      "country": "USA",
+      "city": "Lewiston",
+      "addressType": "Business",
+      "street": "6934 W Sherman Dr",
+      "coordinates": {
+        "latitude": "15.2508",
+        "longitude": "53.5893"
+      },
+      "state": "Nevada"
+    }
+  },
+  {
+    "firstName": "Andy",
+    "lastName": "Black",
+    "jobTitle": "Executive Director",
+    "contactEmail": "andy.black@salesforce.com",
+    "phoneNumber": "(761) 486-1773",
+    "avatarUrl": "andy-black-91rzdy57v0v.jpg",
+    "address": {
+      "zipCode": "96997",
+      "country": "USA",
+      "city": "Riverside",
+      "addressType": "Business",
+      "street": "1136 Oak Lawn Ave",
+      "coordinates": {
+        "latitude": "18.0407",
+        "longitude": "-149.4451"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Pat",
+    "lastName": "Sullivan",
+    "jobTitle": "General Counsel",
+    "contactEmail": "pat.sullivan@salesforce.com",
+    "phoneNumber": "(864) 253-1942",
+    "avatarUrl": "pat-sullivan-b60h03ozcy.jpg",
+    "address": {
+      "zipCode": "63602",
+      "country": "USA",
+      "city": "Fontana",
+      "addressType": "Business",
+      "street": "6134 E Center St",
+      "coordinates": {
+        "latitude": "52.4912",
+        "longitude": "-169.563"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Lynn",
+    "lastName": "Smith",
+    "jobTitle": "Chief Financial Officer",
+    "contactEmail": "lynn.smith@salesforce.com",
+    "phoneNumber": "(795) 867-7554",
+    "avatarUrl": "lynn-smith-t486nzlp4v.jpg",
+    "address": {
+      "zipCode": "91235",
+      "country": "USA",
+      "city": "Pearland",
+      "addressType": "Business",
+      "street": "4460 Cherry St",
+      "coordinates": {
+        "latitude": "79.5958",
+        "longitude": "56.9175"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Vicki",
+    "lastName": "Brown",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "vicki.brown@salesforce.com",
+    "phoneNumber": "(906) 799-0967",
+    "avatarUrl": "vicki-brown-fsmyhojybkj.jpg",
+    "address": {
+      "zipCode": "78008",
+      "country": "USA",
+      "city": "Garland",
+      "addressType": "Business",
+      "street": "1481 Spring St",
+      "coordinates": {
+        "latitude": "82.2483",
+        "longitude": "120.7525"
+      },
+      "state": "Maine"
+    }
+  },
+  {
+    "firstName": "Marlene",
+    "lastName": "Lowe",
+    "jobTitle": "Legal Operations Manager",
+    "contactEmail": "marlene.lowe@salesforce.com",
+    "phoneNumber": "(589) 513-6610",
+    "avatarUrl": "marlene-lowe-964wcl1l24f.jpg",
+    "address": {
+      "zipCode": "74963",
+      "country": "USA",
+      "city": "Coral Springs",
+      "addressType": "Business",
+      "street": "9110 Brown Terrace",
+      "coordinates": {
+        "latitude": "66.4285",
+        "longitude": "-87.3774"
+      },
+      "state": "Alaska"
+    }
+  },
+  {
+    "firstName": "Randall",
+    "lastName": "Fisher",
+    "jobTitle": "Business Development Manager",
+    "contactEmail": "randall.fisher@salesforce.com",
+    "phoneNumber": "(461) 890-5986",
+    "avatarUrl": "randall-fisher-ibbun4bj1n.jpg",
+    "address": {
+      "zipCode": "81767",
+      "country": "USA",
+      "city": "Seattle",
+      "addressType": "Business",
+      "street": "1529 Mcclellan Rd",
+      "coordinates": {
+        "latitude": "2.8215",
+        "longitude": "56.9089"
+      },
+      "state": "Louisiana"
+    }
+  },
+  {
+    "firstName": "Gabriella",
+    "lastName": "Larson",
+    "jobTitle": "Director of Business Development",
+    "contactEmail": "gabriella.larson@salesforce.com",
+    "phoneNumber": "(994) 791-5111",
+    "avatarUrl": "gabriella-larson-09v7int1qxdh.jpg",
+    "address": {
+      "zipCode": "81610",
+      "country": "USA",
+      "city": "Lewiston",
+      "addressType": "Business",
+      "street": "2171 Walnut Hill Ln",
+      "coordinates": {
+        "latitude": "-76.326",
+        "longitude": "57.145"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Manuel",
+    "lastName": "Soto",
+    "jobTitle": "Managing Director",
+    "contactEmail": "manuel.soto@salesforce.com",
+    "phoneNumber": "(479) 930-6682",
+    "avatarUrl": "manuel-soto-168mj90fvnmg.jpg",
+    "address": {
+      "zipCode": "50837",
+      "country": "USA",
+      "city": "Escondido",
+      "addressType": "Business",
+      "street": "4799 Railroad St",
+      "coordinates": {
+        "latitude": "11.6957",
+        "longitude": "-65.2267"
+      },
+      "state": "Louisiana"
+    }
+  },
+  {
+    "firstName": "Lois",
+    "lastName": "Porter",
+    "jobTitle": "Director of Marketing",
+    "contactEmail": "lois.porter@salesforce.com",
+    "phoneNumber": "(998) 392-9826",
+    "avatarUrl": "lois-porter-uy0yt8j955s.jpg",
+    "address": {
+      "zipCode": "83089",
+      "country": "USA",
+      "city": "Beaumont",
+      "addressType": "Business",
+      "street": "3978 Lone Wolf Trail",
+      "coordinates": {
+        "latitude": "-43.4569",
+        "longitude": "161.5617"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Gilbert",
+    "lastName": "Stanley",
+    "jobTitle": "Legal Operations Manager",
+    "contactEmail": "gilbert.stanley@tsmc.com",
+    "phoneNumber": "(789) 347-9321",
+    "avatarUrl": "gilbert-stanley-9lixoks7sev.jpg",
+    "address": {
+      "zipCode": "33040",
+      "country": "USA",
+      "city": "Paterson",
+      "addressType": "Business",
+      "street": "9964 Homestead Rd",
+      "coordinates": {
+        "latitude": "86.8866",
+        "longitude": "153.2747"
+      },
+      "state": "Mississippi"
+    }
+  },
+  {
+    "firstName": "Gail",
+    "lastName": "Brewer",
+    "jobTitle": "Contract Manager",
+    "contactEmail": "gail.brewer@tsmc.com",
+    "phoneNumber": "(548) 832-4453",
+    "avatarUrl": "gail-brewer-wv4a3dty2.jpg",
+    "address": {
+      "zipCode": "52489",
+      "country": "USA",
+      "city": "Corpus Christi",
+      "addressType": "Business",
+      "street": "4922 Dogwood Ave",
+      "coordinates": {
+        "latitude": "-31.5064",
+        "longitude": "-15.2643"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Bryan",
+    "lastName": "Knight",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "bryan.knight@tsmc.com",
+    "phoneNumber": "(578) 255-9659",
+    "avatarUrl": "bryan-knight-3acaa8fakvf.jpg",
+    "address": {
+      "zipCode": "40144",
+      "country": "USA",
+      "city": "Berkeley",
+      "addressType": "Business",
+      "street": "2525 Woodland St",
+      "coordinates": {
+        "latitude": "-23.4023",
+        "longitude": "-3.9589"
+      },
+      "state": "Washington"
+    }
+  },
+  {
+    "firstName": "Sergio",
+    "lastName": "Chambers",
+    "jobTitle": "Chief Legal Officer",
+    "contactEmail": "sergio.chambers@tsmc.com",
+    "phoneNumber": "(927) 383-5466",
+    "avatarUrl": "sergio-chambers-q3ow4l16b1i.jpg",
+    "address": {
+      "zipCode": "95259",
+      "country": "USA",
+      "city": "Seattle",
+      "addressType": "Business",
+      "street": "5632 Railroad St",
+      "coordinates": {
+        "latitude": "6.0549",
+        "longitude": "25.6912"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Donald",
+    "lastName": "Carpenter",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "donald.carpenter@tsmc.com",
+    "phoneNumber": "(346) 657-8609",
+    "avatarUrl": "donald-carpenter-r5x8tmp31bo.jpg",
+    "address": {
+      "zipCode": "19887",
+      "country": "USA",
+      "city": "Denver",
+      "addressType": "Business",
+      "street": "8657 Hunters Creek Dr",
+      "coordinates": {
+        "latitude": "-80.0883",
+        "longitude": "107.3273"
+      },
+      "state": "Alaska"
+    }
+  },
+  {
+    "firstName": "Herbert",
+    "lastName": "Nguyen",
+    "jobTitle": "Legal Operations Manager",
+    "contactEmail": "herbert.nguyen@tsmc.com",
+    "phoneNumber": "(534) 513-4920",
+    "avatarUrl": "herbert-nguyen-b5xqfyuf3xr.jpg",
+    "address": {
+      "zipCode": "79416",
+      "country": "USA",
+      "city": "Hayward",
+      "addressType": "Business",
+      "street": "4951 Valwood Pkwy",
+      "coordinates": {
+        "latitude": "-29.7107",
+        "longitude": "-169.6481"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Jordan",
+    "lastName": "Franklin",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "jordan.franklin@tsmc.com",
+    "phoneNumber": "(540) 234-8620",
+    "avatarUrl": "jordan-franklin-uzt42fhxtrc.jpg",
+    "address": {
+      "zipCode": "25745",
+      "country": "USA",
+      "city": "Brownsville",
+      "addressType": "Business",
+      "street": "9245 Homestead Rd",
+      "coordinates": {
+        "latitude": "-76.8899",
+        "longitude": "31.8915"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Wyatt",
+    "lastName": "Dixon",
+    "jobTitle": "Director of Engineering",
+    "contactEmail": "wyatt.dixon@tsmc.com",
+    "phoneNumber": "(276) 776-2524",
+    "avatarUrl": "wyatt-dixon-j1idtivc1z.jpg",
+    "address": {
+      "zipCode": "75091",
+      "country": "USA",
+      "city": "Little Rock",
+      "addressType": "Business",
+      "street": "3017 Edwards Rd",
+      "coordinates": {
+        "latitude": "29.8764",
+        "longitude": "29.804"
+      },
+      "state": "Tennessee"
+    }
+  },
+  {
+    "firstName": "Rachel",
+    "lastName": "Reyes",
+    "jobTitle": "Senior Corporate Counsel",
+    "contactEmail": "rachel.reyes@tsmc.com",
+    "phoneNumber": "(886) 891-5419",
+    "avatarUrl": "rachel-reyes-aw9k5uax8ew.jpg",
+    "address": {
+      "zipCode": "23880",
+      "country": "USA",
+      "city": "Corpus Christi",
+      "addressType": "Business",
+      "street": "165 Harrison Ct",
+      "coordinates": {
+        "latitude": "-1.4073",
+        "longitude": "-116.8359"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Frederick",
+    "lastName": "Wagner",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "frederick.wagner@tsmc.com",
+    "phoneNumber": "(966) 264-3834",
+    "avatarUrl": "frederick-wagner-6johy56ayoj.jpg",
+    "address": {
+      "zipCode": "86254",
+      "country": "USA",
+      "city": "Syracuse",
+      "addressType": "Business",
+      "street": "6905 Dogwood Ave",
+      "coordinates": {
+        "latitude": "59.7503",
+        "longitude": "-68.0967"
+      },
+      "state": "New York"
+    }
+  },
+  {
+    "firstName": "Hailey",
+    "lastName": "Palmer",
+    "jobTitle": "Chief Business Development Officer",
+    "contactEmail": "hailey.palmer@tsmc.com",
+    "phoneNumber": "(505) 875-4101",
+    "avatarUrl": "hailey-palmer-tzzj4zo1xdq.jpg",
+    "address": {
+      "zipCode": "98611",
+      "country": "USA",
+      "city": "Palm Bay",
+      "addressType": "Business",
+      "street": "5720 Cherry St",
+      "coordinates": {
+        "latitude": "-70.2457",
+        "longitude": "54.787"
+      },
+      "state": "Nebraska"
+    }
+  },
+  {
+    "firstName": "Raul",
+    "lastName": "Hale",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "raul.hale@tsmc.com",
+    "phoneNumber": "(871) 633-8824",
+    "avatarUrl": "raul-hale-g4s28msdnsp.jpg",
+    "address": {
+      "zipCode": "80342",
+      "country": "USA",
+      "city": "Overland Park",
+      "addressType": "Business",
+      "street": "3012 E Center St",
+      "coordinates": {
+        "latitude": "-70.2241",
+        "longitude": "-167.455"
+      },
+      "state": "Delaware"
+    }
+  },
+  {
+    "firstName": "Ann",
+    "lastName": "Ortiz",
+    "jobTitle": "Senior Corporate Counsel",
+    "contactEmail": "ann.ortiz@tsmc.com",
+    "phoneNumber": "(891) 407-6152",
+    "avatarUrl": "ann-ortiz-gv1xsfyx85.jpg",
+    "address": {
+      "zipCode": "60646",
+      "country": "USA",
+      "city": "Lafayette",
+      "addressType": "Business",
+      "street": "9481 Lakeshore Rd",
+      "coordinates": {
+        "latitude": "-87.8942",
+        "longitude": "-41.9953"
+      },
+      "state": "Alabama"
+    }
+  },
+  {
+    "firstName": "Maxine",
+    "lastName": "Williams",
+    "jobTitle": "Chief Financial Officer",
+    "contactEmail": "maxine.williams@tsmc.com",
+    "phoneNumber": "(929) 666-1438",
+    "avatarUrl": "maxine-williams-jq6hm6xkoho.jpg",
+    "address": {
+      "zipCode": "40249",
+      "country": "USA",
+      "city": "Broken Arrow",
+      "addressType": "Business",
+      "street": "4751 Locust Rd",
+      "coordinates": {
+        "latitude": "47.2591",
+        "longitude": "76.006"
+      },
+      "state": "Minnesota"
+    }
+  },
+  {
+    "firstName": "Allan",
+    "lastName": "Lawrence",
+    "jobTitle": "Legal Operations Manager",
+    "contactEmail": "allan.lawrence@tsmc.com",
+    "phoneNumber": "(512) 708-6905",
+    "avatarUrl": "allan-lawrence-vw6c3dxgsap.jpg",
+    "address": {
+      "zipCode": "95657",
+      "country": "USA",
+      "city": "Louisville",
+      "addressType": "Business",
+      "street": "1899 Westheimer Rd",
+      "coordinates": {
+        "latitude": "67.7435",
+        "longitude": "-138.5262"
+      },
+      "state": "Louisiana"
+    }
+  },
+  {
+    "firstName": "Gladys",
+    "lastName": "Morrison",
+    "jobTitle": "Chief Operating Officer",
+    "contactEmail": "gladys.morrison@tsmc.com",
+    "phoneNumber": "(533) 741-0401",
+    "avatarUrl": "gladys-morrison-gw67eque9y5.jpg",
+    "address": {
+      "zipCode": "21104",
+      "country": "USA",
+      "city": "Celina",
+      "addressType": "Business",
+      "street": "2602 Locust Rd",
+      "coordinates": {
+        "latitude": "46.0584",
+        "longitude": "44.5555"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Gavin",
+    "lastName": "Hopkins",
+    "jobTitle": "Chief Business Development Officer",
+    "contactEmail": "gavin.hopkins@broadcom.com",
+    "phoneNumber": "(254) 685-2281",
+    "avatarUrl": "gavin-hopkins-52pa7hhwhko.jpg",
+    "address": {
+      "zipCode": "17240",
+      "country": "USA",
+      "city": "South Bend",
+      "addressType": "Business",
+      "street": "6690 Saddle Dr",
+      "coordinates": {
+        "latitude": "-0.8617",
+        "longitude": "-153.8747"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Bryan",
+    "lastName": "Neal",
+    "jobTitle": "Corporate Development Director",
+    "contactEmail": "bryan.neal@broadcom.com",
+    "phoneNumber": "(734) 489-5946",
+    "avatarUrl": "bryan-neal-mu6jo20exl.jpg",
+    "address": {
+      "zipCode": "69333",
+      "country": "USA",
+      "city": "Great Falls",
+      "addressType": "Business",
+      "street": "3321 Dogwood Ave",
+      "coordinates": {
+        "latitude": "-64.351",
+        "longitude": "156.902"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Dianne",
+    "lastName": "Fox",
+    "jobTitle": "Legal Director",
+    "contactEmail": "dianne.fox@broadcom.com",
+    "phoneNumber": "(830) 640-2196",
+    "avatarUrl": "dianne-fox-z25fe7jeeuk.jpg",
+    "address": {
+      "zipCode": "22239",
+      "country": "USA",
+      "city": "Charlotte",
+      "addressType": "Business",
+      "street": "2089 First Street",
+      "coordinates": {
+        "latitude": "-85.9081",
+        "longitude": "-70.6989"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Penny",
+    "lastName": "Pearson",
+    "jobTitle": "Regulatory Affairs Director",
+    "contactEmail": "penny.pearson@broadcom.com",
+    "phoneNumber": "(429) 911-9287",
+    "avatarUrl": "penny-pearson-0r5cmkqs13l.jpg",
+    "address": {
+      "zipCode": "43483",
+      "country": "USA",
+      "city": "Miami Gardens",
+      "addressType": "Business",
+      "street": "6189 E Pecan St",
+      "coordinates": {
+        "latitude": "72.7129",
+        "longitude": "-139.3187"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Justin",
+    "lastName": "Arnold",
+    "jobTitle": "Chief Operating Officer",
+    "contactEmail": "justin.arnold@broadcom.com",
+    "phoneNumber": "(342) 368-7204",
+    "avatarUrl": "justin-arnold-ua9du3wh1mf.jpg",
+    "address": {
+      "zipCode": "62390",
+      "country": "USA",
+      "city": "Seattle",
+      "addressType": "Business",
+      "street": "1993 Stevens Creek Blvd",
+      "coordinates": {
+        "latitude": "40.3124",
+        "longitude": "-27.9773"
+      },
+      "state": "North Dakota"
+    }
+  },
+  {
+    "firstName": "Tina",
+    "lastName": "Herrera",
+    "jobTitle": "VP of Product",
+    "contactEmail": "tina.herrera@broadcom.com",
+    "phoneNumber": "(502) 620-5919",
+    "avatarUrl": "tina-herrera-2h78kq80w4q.jpg",
+    "address": {
+      "zipCode": "28562",
+      "country": "USA",
+      "city": "Hialeah",
+      "addressType": "Business",
+      "street": "857 Mcgowen St",
+      "coordinates": {
+        "latitude": "-2.2945",
+        "longitude": "91.0376"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Josephine",
+    "lastName": "Washington",
+    "jobTitle": "Chief Operating Officer",
+    "contactEmail": "josephine.washington@broadcom.com",
+    "phoneNumber": "(231) 221-7316",
+    "avatarUrl": "josephine-washington-gbm4vr02gm6.jpg",
+    "address": {
+      "zipCode": "85183",
+      "country": "USA",
+      "city": "Abilene",
+      "addressType": "Business",
+      "street": "3054 W Pecan St",
+      "coordinates": {
+        "latitude": "16.094",
+        "longitude": "137.9952"
+      },
+      "state": "Kentucky"
+    }
+  },
+  {
+    "firstName": "Wayne",
+    "lastName": "Roberts",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "wayne.roberts@broadcom.com",
+    "phoneNumber": "(222) 580-6447",
+    "avatarUrl": "wayne-roberts-uy2yykcypxo.jpg",
+    "address": {
+      "zipCode": "95391",
+      "country": "USA",
+      "city": "Charlotte",
+      "addressType": "Business",
+      "street": "6747 Railroad St",
+      "coordinates": {
+        "latitude": "-7.8638",
+        "longitude": "-80.8646"
+      },
+      "state": "Alabama"
+    }
+  },
+  {
+    "firstName": "Jamie",
+    "lastName": "Frazier",
+    "jobTitle": "Associate General Counsel",
+    "contactEmail": "jamie.frazier@broadcom.com",
+    "phoneNumber": "(413) 390-4471",
+    "avatarUrl": "jamie-frazier-96796clt1dr.jpg",
+    "address": {
+      "zipCode": "18327",
+      "country": "USA",
+      "city": "Miami",
+      "addressType": "Business",
+      "street": "7108 Hillcrest Rd",
+      "coordinates": {
+        "latitude": "81.9115",
+        "longitude": "89.4964"
+      },
+      "state": "Kansas"
+    }
+  },
+  {
+    "firstName": "Stella",
+    "lastName": "Sullivan",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "stella.sullivan@broadcom.com",
+    "phoneNumber": "(894) 419-9484",
+    "avatarUrl": "stella-sullivan-cwzch7iexya.jpg",
+    "address": {
+      "zipCode": "87718",
+      "country": "USA",
+      "city": "Norfolk",
+      "addressType": "Business",
+      "street": "4474 Groveland Terrace",
+      "coordinates": {
+        "latitude": "-77.5866",
+        "longitude": "21.9873"
+      },
+      "state": "Washington"
+    }
+  },
+  {
+    "firstName": "Jerry",
+    "lastName": "Craig",
+    "jobTitle": "Director of Marketing",
+    "contactEmail": "jerry.craig@broadcom.com",
+    "phoneNumber": "(385) 890-8514",
+    "avatarUrl": "jerry-craig-1z57icqpzf2.jpg",
+    "address": {
+      "zipCode": "77451",
+      "country": "USA",
+      "city": "Lewisville",
+      "addressType": "Business",
+      "street": "5497 Dogwood Ave",
+      "coordinates": {
+        "latitude": "76.1924",
+        "longitude": "85.7451"
+      },
+      "state": "Oklahoma"
+    }
+  },
+  {
+    "firstName": "Constance",
+    "lastName": "Black",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "constance.black@broadcom.com",
+    "phoneNumber": "(649) 983-7469",
+    "avatarUrl": "constance-black-ra796luxfp.jpg",
+    "address": {
+      "zipCode": "85716",
+      "country": "USA",
+      "city": "San Diego",
+      "addressType": "Business",
+      "street": "2614 Parker Rd",
+      "coordinates": {
+        "latitude": "-22.0073",
+        "longitude": "-119.4255"
+      },
+      "state": "South Dakota"
+    }
+  },
+  {
+    "firstName": "Kenneth",
+    "lastName": "Holland",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "kenneth.holland@broadcom.com",
+    "phoneNumber": "(490) 453-8708",
+    "avatarUrl": "kenneth-holland-msqd1qq3kof.jpg",
+    "address": {
+      "zipCode": "18810",
+      "country": "USA",
+      "city": "Cary",
+      "addressType": "Business",
+      "street": "6880 Spring St",
+      "coordinates": {
+        "latitude": "-69.0012",
+        "longitude": "-73.6614"
+      },
+      "state": "Washington"
+    }
+  },
+  {
+    "firstName": "Beverley",
+    "lastName": "Shelton",
+    "jobTitle": "Senior Director",
+    "contactEmail": "beverley.shelton@broadcom.com",
+    "phoneNumber": "(456) 322-9671",
+    "avatarUrl": "beverley-shelton-s0xj444utie.jpg",
+    "address": {
+      "zipCode": "43963",
+      "country": "USA",
+      "city": "Aurora",
+      "addressType": "Business",
+      "street": "7246 W Pecan St",
+      "coordinates": {
+        "latitude": "48.8838",
+        "longitude": "-172.7784"
+      },
+      "state": "Alaska"
+    }
+  },
+  {
+    "firstName": "Duane",
+    "lastName": "Henry",
+    "jobTitle": "Strategic Partnerships Director",
+    "contactEmail": "duane.henry@broadcom.com",
+    "phoneNumber": "(647) 456-9080",
+    "avatarUrl": "duane-henry-0d5zq7mtnd1v.jpg",
+    "address": {
+      "zipCode": "19573",
+      "country": "USA",
+      "city": "Caldwell",
+      "addressType": "Business",
+      "street": "9417 Pecan Acres Ln",
+      "coordinates": {
+        "latitude": "-0.4046",
+        "longitude": "-147.5595"
+      },
+      "state": "Montana"
+    }
+  },
+  {
+    "firstName": "Ernest",
+    "lastName": "Barnes",
+    "jobTitle": "Associate General Counsel",
+    "contactEmail": "ernest.barnes@broadcom.com",
+    "phoneNumber": "(436) 399-3983",
+    "avatarUrl": "ernest-barnes-ze9q3e58t87.jpg",
+    "address": {
+      "zipCode": "27062",
+      "country": "USA",
+      "city": "Spokane",
+      "addressType": "Business",
+      "street": "6253 Mcgowen St",
+      "coordinates": {
+        "latitude": "-20.4154",
+        "longitude": "122.3851"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Christian",
+    "lastName": "Foster",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "christian.foster@broadcom.com",
+    "phoneNumber": "(549) 759-0941",
+    "avatarUrl": "christian-foster-sknesax97gq.jpg",
+    "address": {
+      "zipCode": "76094",
+      "country": "USA",
+      "city": "Norman",
+      "addressType": "Business",
+      "street": "5492 Fincher Rd",
+      "coordinates": {
+        "latitude": "74.7024",
+        "longitude": "-158.2479"
+      },
+      "state": "Massachusetts"
+    }
+  },
+  {
+    "firstName": "Kelly",
+    "lastName": "Tucker",
+    "jobTitle": "Deputy General Counsel",
+    "contactEmail": "kelly.tucker@nvidia.com",
+    "phoneNumber": "(231) 448-0410",
+    "avatarUrl": "kelly-tucker-4lldyj5jvkb.jpg",
+    "address": {
+      "zipCode": "74040",
+      "country": "USA",
+      "city": "Clearwater",
+      "addressType": "Business",
+      "street": "2730 Groveland Terrace",
+      "coordinates": {
+        "latitude": "45.2756",
+        "longitude": "130.3474"
+      },
+      "state": "Virginia"
+    }
+  },
+  {
+    "firstName": "Layla",
+    "lastName": "Green",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "layla.green@nvidia.com",
+    "phoneNumber": "(892) 632-4233",
+    "avatarUrl": "layla-green-8n6wdmhk65.jpg",
+    "address": {
+      "zipCode": "22632",
+      "country": "USA",
+      "city": "Cedar Rapids",
+      "addressType": "Business",
+      "street": "6668 Cackson St",
+      "coordinates": {
+        "latitude": "67.02",
+        "longitude": "106.2354"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Catherine",
+    "lastName": "Patterson",
+    "jobTitle": "Director of Operations",
+    "contactEmail": "catherine.patterson@nvidia.com",
+    "phoneNumber": "(238) 854-9878",
+    "avatarUrl": "catherine-patterson-xkmde6u4izm.jpg",
+    "address": {
+      "zipCode": "46459",
+      "country": "USA",
+      "city": "Victorville",
+      "addressType": "Business",
+      "street": "4094 First Street",
+      "coordinates": {
+        "latitude": "-3.2048",
+        "longitude": "165.836"
+      },
+      "state": "Alabama"
+    }
+  },
+  {
+    "firstName": "Mitchell",
+    "lastName": "Fowler",
+    "jobTitle": "Director of Strategic Alliances",
+    "contactEmail": "mitchell.fowler@nvidia.com",
+    "phoneNumber": "(816) 218-8319",
+    "avatarUrl": "mitchell-fowler-mxzfbjfdzwe.jpg",
+    "address": {
+      "zipCode": "50773",
+      "country": "USA",
+      "city": "Grants Pass",
+      "addressType": "Business",
+      "street": "5897 Ranchview Dr",
+      "coordinates": {
+        "latitude": "14.0756",
+        "longitude": "34.687"
+      },
+      "state": "Maine"
+    }
+  },
+  {
+    "firstName": "Bernard",
+    "lastName": "Harrison",
+    "jobTitle": "Chief Financial Officer",
+    "contactEmail": "bernard.harrison@nvidia.com",
+    "phoneNumber": "(630) 517-7592",
+    "avatarUrl": "bernard-harrison-ppsdp6u231s.jpg",
+    "address": {
+      "zipCode": "44016",
+      "country": "USA",
+      "city": "Norman",
+      "addressType": "Business",
+      "street": "4840 Hogan St",
+      "coordinates": {
+        "latitude": "63.4963",
+        "longitude": "-44.905"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Bruce",
+    "lastName": "Mitchell",
+    "jobTitle": "Strategic Partnerships Director",
+    "contactEmail": "bruce.mitchell@nvidia.com",
+    "phoneNumber": "(860) 425-7059",
+    "avatarUrl": "bruce-mitchell-7gh6zuvf187.jpg",
+    "address": {
+      "zipCode": "17277",
+      "country": "USA",
+      "city": "Honolulu",
+      "addressType": "Business",
+      "street": "7112 Daisy Dr",
+      "coordinates": {
+        "latitude": "-76.2195",
+        "longitude": "-126.9393"
+      },
+      "state": "Missouri"
+    }
+  },
+  {
+    "firstName": "Dana",
+    "lastName": "Palmer",
+    "jobTitle": "VP of Strategic Partnerships",
+    "contactEmail": "dana.palmer@nvidia.com",
+    "phoneNumber": "(829) 429-9114",
+    "avatarUrl": "dana-palmer-t6tsj1ds689.jpg",
+    "address": {
+      "zipCode": "54061",
+      "country": "USA",
+      "city": "Red Oak",
+      "addressType": "Business",
+      "street": "5797 Hunters Creek Dr",
+      "coordinates": {
+        "latitude": "-2.8658",
+        "longitude": "146.6711"
+      },
+      "state": "Oregon"
+    }
+  },
+  {
+    "firstName": "Janet",
+    "lastName": "Barrett",
+    "jobTitle": "Director of Operations",
+    "contactEmail": "janet.barrett@nvidia.com",
+    "phoneNumber": "(917) 612-8600",
+    "avatarUrl": "janet-barrett-vzwc4g0mirh.jpg",
+    "address": {
+      "zipCode": "12348",
+      "country": "USA",
+      "city": "Jacksonville",
+      "addressType": "Business",
+      "street": "9998 Brown Terrace",
+      "coordinates": {
+        "latitude": "-88.5879",
+        "longitude": "-81.2124"
+      },
+      "state": "New Hampshire"
+    }
+  },
+  {
+    "firstName": "Naomi",
+    "lastName": "Cruz",
+    "jobTitle": "Chief Compliance Officer",
+    "contactEmail": "naomi.cruz@nvidia.com",
+    "phoneNumber": "(287) 557-9589",
+    "avatarUrl": "naomi-cruz-etesrffdm8.jpg",
+    "address": {
+      "zipCode": "53519",
+      "country": "USA",
+      "city": "Eugene",
+      "addressType": "Business",
+      "street": "6586 Royal Ln",
+      "coordinates": {
+        "latitude": "63.1598",
+        "longitude": "140.8417"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Marshall",
+    "lastName": "Murray",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "marshall.murray@nvidia.com",
+    "phoneNumber": "(944) 497-5003",
+    "avatarUrl": "marshall-murray-3iaucw9fz65.jpg",
+    "address": {
+      "zipCode": "55376",
+      "country": "USA",
+      "city": "Lexington",
+      "addressType": "Business",
+      "street": "4387 Bruce St",
+      "coordinates": {
+        "latitude": "-21.0418",
+        "longitude": "-1.5563"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Tommy",
+    "lastName": "Reynolds",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "tommy.reynolds@nvidia.com",
+    "phoneNumber": "(681) 809-4524",
+    "avatarUrl": "tommy-reynolds-bw85c21e4dk.jpg",
+    "address": {
+      "zipCode": "35260",
+      "country": "USA",
+      "city": "Green Bay",
+      "addressType": "Business",
+      "street": "1465 Pecan Acres Ln",
+      "coordinates": {
+        "latitude": "-87.5319",
+        "longitude": "-83.9488"
+      },
+      "state": "Minnesota"
+    }
+  },
+  {
+    "firstName": "Rene",
+    "lastName": "Duncan",
+    "jobTitle": "VP of Strategic Partnerships",
+    "contactEmail": "rene.duncan@nvidia.com",
+    "phoneNumber": "(783) 682-4327",
+    "avatarUrl": "rene-duncan-a970f6x9ked.jpg",
+    "address": {
+      "zipCode": "40436",
+      "country": "USA",
+      "city": "Seattle",
+      "addressType": "Business",
+      "street": "8735 Fincher Rd",
+      "coordinates": {
+        "latitude": "-29.8601",
+        "longitude": "-96.0021"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Walter",
+    "lastName": "Shaw",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "walter.shaw@nvidia.com",
+    "phoneNumber": "(529) 590-7024",
+    "avatarUrl": "walter-shaw-gxnz26x9gti.jpg",
+    "address": {
+      "zipCode": "80620",
+      "country": "USA",
+      "city": "Vancouver",
+      "addressType": "Business",
+      "street": "1940 Daisy Dr",
+      "coordinates": {
+        "latitude": "25.33",
+        "longitude": "97.5283"
+      },
+      "state": "Arizona"
+    }
+  },
+  {
+    "firstName": "Frederick",
+    "lastName": "Soto",
+    "jobTitle": "Director of Product",
+    "contactEmail": "frederick.soto@nvidia.com",
+    "phoneNumber": "(705) 298-8300",
+    "avatarUrl": "frederick-soto-ow1x0m7bqk.jpg",
+    "address": {
+      "zipCode": "54012",
+      "country": "USA",
+      "city": "Lancaster",
+      "addressType": "Business",
+      "street": "1841 Blossom Hill Rd",
+      "coordinates": {
+        "latitude": "-75.8515",
+        "longitude": "-20.1907"
+      },
+      "state": "Connecticut"
+    }
+  },
+  {
+    "firstName": "Judith",
+    "lastName": "Obrien",
+    "jobTitle": "VP of Marketing",
+    "contactEmail": "judith.obrien@nvidia.com",
+    "phoneNumber": "(842) 423-7886",
+    "avatarUrl": "judith-obrien-v1jg06hcifj.jpg",
+    "address": {
+      "zipCode": "28714",
+      "country": "USA",
+      "city": "Madison",
+      "addressType": "Business",
+      "street": "6395 Karen Dr",
+      "coordinates": {
+        "latitude": "-56.1984",
+        "longitude": "80.7547"
+      },
+      "state": "California"
+    }
+  },
+  {
+    "firstName": "Flenn",
+    "lastName": "Lawrence",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "flenn.lawrence@nvidia.com",
+    "phoneNumber": "(892) 875-3807",
+    "avatarUrl": "flenn-lawrence-h930kroqdii.jpg",
+    "address": {
+      "zipCode": "45356",
+      "country": "USA",
+      "city": "Rochmond",
+      "addressType": "Business",
+      "street": "5602 Wheeler Ridge Dr",
+      "coordinates": {
+        "latitude": "-12.3068",
+        "longitude": "-162.887"
+      },
+      "state": "Wisconsin"
+    }
+  },
+  {
+    "firstName": "Gordon",
+    "lastName": "Morris",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "gordon.morris@nvidia.com",
+    "phoneNumber": "(725) 485-2753",
+    "avatarUrl": "gordon-morris-pr86mi5doz.jpg",
+    "address": {
+      "zipCode": "17859",
+      "country": "USA",
+      "city": "Chesapeake",
+      "addressType": "Business",
+      "street": "9014 Valley View Ln",
+      "coordinates": {
+        "latitude": "-57.0999",
+        "longitude": "144.522"
+      },
+      "state": "Utah"
+    }
+  },
+  {
+    "firstName": "Janice",
+    "lastName": "Stone",
+    "jobTitle": "General Counsel",
+    "contactEmail": "janice.stone@google.com",
+    "phoneNumber": "(344) 708-3221",
+    "avatarUrl": "janice-stone-zsjwvgdj94.jpg",
+    "address": {
+      "zipCode": "13501",
+      "country": "USA",
+      "city": "Henderson",
+      "addressType": "Business",
+      "street": "6420 Oak Lawn Ave",
+      "coordinates": {
+        "latitude": "-47.6684",
+        "longitude": "55.8996"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Jordan",
+    "lastName": "Lawson",
+    "jobTitle": "Senior Legal Director",
+    "contactEmail": "jordan.lawson@google.com",
+    "phoneNumber": "(629) 915-2597",
+    "avatarUrl": "jordan-lawson-yc77n1vfjud.jpg",
+    "address": {
+      "zipCode": "81613",
+      "country": "USA",
+      "city": "Irving",
+      "addressType": "Business",
+      "street": "4022 Paddock Way",
+      "coordinates": {
+        "latitude": "57.3057",
+        "longitude": "40.4964"
+      },
+      "state": "North Dakota"
+    }
+  },
+  {
+    "firstName": "Eli",
+    "lastName": "Hart",
+    "jobTitle": "Compliance Director",
+    "contactEmail": "eli.hart@google.com",
+    "phoneNumber": "(941) 393-5885",
+    "avatarUrl": "eli-hart-th5gwtd2qm.jpg",
+    "address": {
+      "zipCode": "54354",
+      "country": "USA",
+      "city": "Ironville",
+      "addressType": "Business",
+      "street": "9427 Prospect Rd",
+      "coordinates": {
+        "latitude": "57.371",
+        "longitude": "-22.3865"
+      },
+      "state": "Wyoming"
+    }
+  },
+  {
+    "firstName": "Brad",
+    "lastName": "Kim",
+    "jobTitle": "Contract Manager",
+    "contactEmail": "brad.kim@google.com",
+    "phoneNumber": "(293) 532-6136",
+    "avatarUrl": "brad-kim-45n5sr3o2nr.jpg",
+    "address": {
+      "zipCode": "17441",
+      "country": "USA",
+      "city": "Amarillo",
+      "addressType": "Business",
+      "street": "5254 Marsh Ln",
+      "coordinates": {
+        "latitude": "-72.824",
+        "longitude": "-27.0141"
+      },
+      "state": "Delaware"
+    }
+  },
+  {
+    "firstName": "Yvonne",
+    "lastName": "Brown",
+    "jobTitle": "Legal Operations Manager",
+    "contactEmail": "yvonne.brown@google.com",
+    "phoneNumber": "(515) 971-1540",
+    "avatarUrl": "yvonne-brown-ol35xh88bhc.jpg",
+    "address": {
+      "zipCode": "25894",
+      "country": "USA",
+      "city": "Grants Pass",
+      "addressType": "Business",
+      "street": "8049 White Oak Dr",
+      "coordinates": {
+        "latitude": "-59.1553",
+        "longitude": "11.1991"
+      },
+      "state": "Tennessee"
+    }
+  },
+  {
+    "firstName": "Judith",
+    "lastName": "Carroll",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "judith.carroll@google.com",
+    "phoneNumber": "(603) 681-0044",
+    "avatarUrl": "judith-carroll-74bmiucj3lq.jpg",
+    "address": {
+      "zipCode": "94399",
+      "country": "USA",
+      "city": "Altoona",
+      "addressType": "Business",
+      "street": "3763 W 6th St",
+      "coordinates": {
+        "latitude": "-75.7067",
+        "longitude": "-163.7123"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Arron",
+    "lastName": "Rose",
+    "jobTitle": "Senior Legal Counsel",
+    "contactEmail": "arron.rose@google.com",
+    "phoneNumber": "(992) 405-2000",
+    "avatarUrl": "arron-rose-uw7vrate34n.jpg",
+    "address": {
+      "zipCode": "52854",
+      "country": "USA",
+      "city": "St. Petersburg",
+      "addressType": "Business",
+      "street": "6524 W Belt Line Rd",
+      "coordinates": {
+        "latitude": "60.9315",
+        "longitude": "-116.4211"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Thomas",
+    "lastName": "Taylor",
+    "jobTitle": "Senior Legal Counsel",
+    "contactEmail": "thomas.taylor@google.com",
+    "phoneNumber": "(434) 496-8018",
+    "avatarUrl": "thomas-taylor-4xgzh5ysesp.jpg",
+    "address": {
+      "zipCode": "40089",
+      "country": "USA",
+      "city": "Plano",
+      "addressType": "Business",
+      "street": "955 Lakeshore Rd",
+      "coordinates": {
+        "latitude": "-72.0899",
+        "longitude": "13.5531"
+      },
+      "state": "Iowa"
+    }
+  },
+  {
+    "firstName": "Andy",
+    "lastName": "Medina",
+    "jobTitle": "VP of Operations",
+    "contactEmail": "andy.medina@google.com",
+    "phoneNumber": "(970) 370-8384",
+    "avatarUrl": "andy-medina-0z8de2uxtws.jpg",
+    "address": {
+      "zipCode": "92406",
+      "country": "USA",
+      "city": "Hayward",
+      "addressType": "Business",
+      "street": "970 College St",
+      "coordinates": {
+        "latitude": "4.8661",
+        "longitude": "-81.3863"
+      },
+      "state": "Indiana"
+    }
+  },
+  {
+    "firstName": "Elijah",
+    "lastName": "Garza",
+    "jobTitle": "Chief Financial Officer",
+    "contactEmail": "elijah.garza@google.com",
+    "phoneNumber": "(700) 682-2414",
+    "avatarUrl": "elijah-garza-qpcrq5tzzpj.jpg",
+    "address": {
+      "zipCode": "80898",
+      "country": "USA",
+      "city": "Las Vegas",
+      "addressType": "Business",
+      "street": "3846 Plum St",
+      "coordinates": {
+        "latitude": "35.9852",
+        "longitude": "169.7089"
+      },
+      "state": "North Carolina"
+    }
+  },
+  {
+    "firstName": "Gail",
+    "lastName": "Tucker",
+    "jobTitle": "Chief Compliance Officer",
+    "contactEmail": "gail.tucker@amazon.com",
+    "phoneNumber": "(708) 855-4226",
+    "avatarUrl": "gail-tucker-kzpundvqcli.jpg",
+    "address": {
+      "zipCode": "35074",
+      "country": "USA",
+      "city": "Brownsville",
+      "addressType": "Business",
+      "street": "6044 Brown Terrace",
+      "coordinates": {
+        "latitude": "0.1554",
+        "longitude": "6.5643"
+      },
+      "state": "Idaho"
+    }
+  },
+  {
+    "firstName": "Doris",
+    "lastName": "Mills",
+    "jobTitle": "Chief Operating Officer",
+    "contactEmail": "doris.mills@amazon.com",
+    "phoneNumber": "(542) 584-2516",
+    "avatarUrl": "doris-mills-rc9e3lrokqp.jpg",
+    "address": {
+      "zipCode": "43700",
+      "country": "USA",
+      "city": "Van Alstyne",
+      "addressType": "Business",
+      "street": "5880 Preston Rd",
+      "coordinates": {
+        "latitude": "67.7403",
+        "longitude": "177.2576"
+      },
+      "state": "Kentucky"
+    }
+  },
+  {
+    "firstName": "Zack",
+    "lastName": "Gibson",
+    "jobTitle": "Senior Vice President",
+    "contactEmail": "zack.gibson@amazon.com",
+    "phoneNumber": "(877) 385-5177",
+    "avatarUrl": "zack-gibson-qr3brva8se.jpg",
+    "address": {
+      "zipCode": "56720",
+      "country": "USA",
+      "city": "Long Beach",
+      "addressType": "Business",
+      "street": "5775 College St",
+      "coordinates": {
+        "latitude": "-55.6495",
+        "longitude": "158.0967"
+      },
+      "state": "Vermont"
+    }
+  },
+  {
+    "firstName": "Dale",
+    "lastName": "Garza",
+    "jobTitle": "Deputy General Counsel",
+    "contactEmail": "dale.garza@amazon.com",
+    "phoneNumber": "(388) 272-6557",
+    "avatarUrl": "dale-garza-cccoi0o1xuw.jpg",
+    "address": {
+      "zipCode": "63860",
+      "country": "USA",
+      "city": "Pittsburgh",
+      "addressType": "Business",
+      "street": "5656 Pockrus Page Rd",
+      "coordinates": {
+        "latitude": "41.9182",
+        "longitude": "85.5091"
+      },
+      "state": "Wisconsin"
+    }
+  },
+  {
+    "firstName": "Theresa",
+    "lastName": "Campbell",
+    "jobTitle": "Senior Business Development Manager",
+    "contactEmail": "theresa.campbell@amazon.com",
+    "phoneNumber": "(776) 989-8880",
+    "avatarUrl": "theresa-campbell-c0g24bowj3.jpg",
+    "address": {
+      "zipCode": "25518",
+      "country": "USA",
+      "city": "Palmdale",
+      "addressType": "Business",
+      "street": "5161 Hickory Creek Dr",
+      "coordinates": {
+        "latitude": "63.8504",
+        "longitude": "-117.8053"
+      },
+      "state": "Nebraska"
+    }
+  },
+  {
+    "firstName": "Gina",
+    "lastName": "Campbell",
+    "jobTitle": "VP of Business Development",
+    "contactEmail": "gina.campbell@amazon.com",
+    "phoneNumber": "(468) 941-5557",
+    "avatarUrl": "gina-campbell-5wrmy09bgxh.jpg",
+    "address": {
+      "zipCode": "98257",
+      "country": "USA",
+      "city": "Anna",
+      "addressType": "Business",
+      "street": "8232 Stevens Creek Blvd",
+      "coordinates": {
+        "latitude": "-89.8398",
+        "longitude": "122.6861"
+      },
+      "state": "Georgia"
+    }
+  },
+  {
+    "firstName": "Jill",
+    "lastName": "Baker",
+    "jobTitle": "Corporate Counsel",
+    "contactEmail": "jill.baker@amazon.com",
+    "phoneNumber": "(575) 779-4316",
+    "avatarUrl": "jill-baker-atg0udw3v58.jpg",
+    "address": {
+      "zipCode": "41408",
+      "country": "USA",
+      "city": "Hartford",
+      "addressType": "Business",
+      "street": "7930 Central St",
+      "coordinates": {
+        "latitude": "-60.912",
+        "longitude": "33.5244"
+      },
+      "state": "Hawaii"
+    }
+  },
+  {
+    "firstName": "Lester",
+    "lastName": "Simpson",
+    "jobTitle": "Director of Sales",
+    "contactEmail": "lester.simpson@amazon.com",
+    "phoneNumber": "(916) 232-4511",
+    "avatarUrl": "lester-simpson-ot5nf558igo.jpg",
+    "address": {
+      "zipCode": "65437",
+      "country": "USA",
+      "city": "Tucson",
+      "addressType": "Business",
+      "street": "6645 Samaritan Dr",
+      "coordinates": {
+        "latitude": "1.075",
+        "longitude": "143.3708"
+      },
+      "state": "Pennsylvania"
+    }
+  },
+  {
+    "firstName": "Dwight",
+    "lastName": "Ray",
+    "jobTitle": "Chief Compliance Officer",
+    "contactEmail": "dwight.ray@amazon.com",
+    "phoneNumber": "(895) 348-6451",
+    "avatarUrl": "dwight-ray-myau84ik8n.jpg",
+    "address": {
+      "zipCode": "45637",
+      "country": "USA",
+      "city": "Fort Lauderdale",
+      "addressType": "Business",
+      "street": "6469 Brown Terrace",
+      "coordinates": {
+        "latitude": "-72.9751",
+        "longitude": "-53.8788"
+      },
+      "state": "Texas"
+    }
+  },
+  {
+    "firstName": "Jessica",
+    "lastName": "Hudson",
+    "jobTitle": "Executive Vice President",
+    "contactEmail": "jessica.hudson@amazon.com",
+    "phoneNumber": "(250) 722-1015",
+    "avatarUrl": "jessica-hudson-zj9wfz4phvr.jpg",
+    "address": {
+      "zipCode": "12675",
+      "country": "USA",
+      "city": "Nashville",
+      "addressType": "Business",
+      "street": "7427 Ranchview Dr",
+      "coordinates": {
+        "latitude": "-18.6706",
+        "longitude": "-149.0832"
+      },
+      "state": "West Virginia"
+    }
+  }
+]

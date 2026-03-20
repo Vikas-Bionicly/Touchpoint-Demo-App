@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
-import { companyRows } from '../common/constants/companies';
-import { contactRows } from '../common/constants/contacts';
 import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
 import ManageCompanyTagsModal from '../common/components/ManageCompanyTagsModal';
@@ -17,7 +15,31 @@ import FilterBar from '../common/components/FilterBar';
 import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
 import DataTable from '../common/components/DataTable';
 
-function CompanyLogo({ type }) {
+const companyAvatarUrls = import.meta.glob('../../demo-data/avatars/companies/*', {
+  eager: true,
+  import: 'default',
+});
+
+function resolveCompanyAvatarUrl(filename) {
+  if (!filename) return null;
+  const exactKey = `../../demo-data/avatars/companies/${filename}`;
+  if (companyAvatarUrls[exactKey]) return companyAvatarUrls[exactKey];
+
+  // Fallback: handle cases where the filename isn't an exact match (case differences).
+  const matchKey = Object.keys(companyAvatarUrls).find((k) => k.toLowerCase().endsWith(`/${filename.toLowerCase()}`));
+  return matchKey ? companyAvatarUrls[matchKey] : null;
+}
+
+function CompanyLogo({ type, avatarUrl, name }) {
+  const resolvedAvatarUrl = resolveCompanyAvatarUrl(avatarUrl);
+  if (resolvedAvatarUrl) {
+    return (
+      <div className="company-logo-v2">
+        <img className="company-logo-image-v2" src={resolvedAvatarUrl} alt={name || 'Company logo'} />
+      </div>
+    );
+  }
+
   if (type === 'uber') {
     return <div className="company-logo-v2 logo-uber">Uber</div>;
   }
@@ -60,6 +82,8 @@ export default function CompaniesPage() {
   const currentRole = useDemoStore((s) => s.currentRole || 'Partner');
   const rawTouchpoints = useDemoStore((s) => s.touchpoints);
   const rawCompanyNotes = useDemoStore((s) => s.companyNotes);
+  const contacts = useDemoStore((s) => s.contacts || []);
+  const companies = useDemoStore((s) => s.companies || []);
   const companyTags = rawCompanyTags || {};
   const tags = rawTags || [];
   const companyFilters = rawCompanyFilters || {};
@@ -70,11 +94,11 @@ export default function CompaniesPage() {
   const [engagementPersonFilter, setEngagementPersonFilter] = useState('All');
 
   function guessContactForCompany(companyName) {
-    return contactRows.find((c) => c.company === companyName) || null;
+    return contacts.find((c) => c.company === companyName) || null;
   }
 
   const rows = useMemo(() => {
-    let data = companyRows;
+    let data = companies;
 
     if (companyFilters.text?.trim()) {
       const q = companyFilters.text.toLowerCase();
@@ -105,7 +129,7 @@ export default function CompaniesPage() {
     }
 
     return data;
-  }, [companyFilters, companyTags, sort]);
+  }, [companies, companyFilters, companyTags, sort]);
 
   const nameParentOn = Boolean(showColumns.categories);
   const engagementParentOn = Boolean(showColumns.recentEngagement) || Boolean(showColumns.clientStatus);
@@ -486,7 +510,7 @@ export default function CompaniesPage() {
                 >
                   <td style={{ width: '50%' }}>
                     <div className="company-name-col-v2">
-                      <CompanyLogo type={row.logo} />
+                      <CompanyLogo type={row.logo} avatarUrl={row.avatarUrl} name={row.name} />
                       <div className="company-name-meta-v2">
                         <strong>{row.name}</strong>
                         {showColumns.categories && (
@@ -531,7 +555,7 @@ export default function CompaniesPage() {
                         onClick={() => {
                           const contact = guessContactForCompany(row.name);
                           setTouchpointPreset({
-                            contactName: contact?.name || contactRows[0]?.name || '',
+                            contactName: contact?.name || contacts[0]?.name || '',
                             company: row.name,
                             role: contact?.role || '',
                             title: `Touchpoint for ${row.name}`,
@@ -564,7 +588,7 @@ export default function CompaniesPage() {
                 onClick={() => setSelectedCompany(row)}
               >
                 <div className="company-card-header">
-                  <CompanyLogo type={row.logo} />
+                  <CompanyLogo type={row.logo} avatarUrl={row.avatarUrl} name={row.name} />
                   <div className="company-card-main">
                     <strong>{row.name}</strong>
                     <div className="company-card-meta">
@@ -590,7 +614,7 @@ export default function CompaniesPage() {
                       event.stopPropagation();
                       const contact = guessContactForCompany(row.name);
                       setTouchpointPreset({
-                        contactName: contact?.name || contactRows[0]?.name || '',
+                        contactName: contact?.name || contacts[0]?.name || '',
                         company: row.name,
                         role: contact?.role || '',
                         title: `Touchpoint for ${row.name}`,
@@ -634,7 +658,11 @@ export default function CompaniesPage() {
               ← Back to companies
             </button>
             <div className="company-detail-title">
-              <CompanyLogo type={selectedCompany.logo} />
+              <CompanyLogo
+                type={selectedCompany.logo}
+                avatarUrl={selectedCompany.avatarUrl}
+                name={selectedCompany.name}
+              />
               <div>
                 <h1>{selectedCompany.name}</h1>
                 <p className="company-detail-subtitle">
@@ -675,7 +703,7 @@ export default function CompaniesPage() {
                 onClick={() => {
                   const contact = guessContactForCompany(selectedCompany.name);
                   setTouchpointPreset({
-                    contactName: contact?.name || contactRows[0]?.name || '',
+                    contactName: contact?.name || contacts[0]?.name || '',
                     company: selectedCompany.name,
                     role: contact?.role || '',
                     title: `Touchpoint for ${selectedCompany.name}`,

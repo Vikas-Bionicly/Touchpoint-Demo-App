@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from 'react';
 import { buildSeedState } from './seed';
 
-const STORAGE_KEY = 'touchpoint-demo:v1';
+// Bump this version any time we change seed/transform logic,
+// so users don't get stuck on an older localStorage snapshot.
+const STORAGE_KEY = 'touchpoint-demo:v4';
 
 function safeJsonParse(value) {
   try {

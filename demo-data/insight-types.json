@@ -1,0 +1,44 @@
+[
+  {
+    "insightTypeName": "Initial Engagement",
+    "description": "When a contact is added to the database and has no touchpoints",
+    "category": "Trigger",
+    "priorityWeighting": "0.093"
+  },
+  {
+    "insightTypeName": "Event Recommendation",
+    "description": "When an event tag or organizer matches a contact's interests",
+    "category": "Match",
+    "priorityWeighting": "0.095"
+  },
+  {
+    "insightTypeName": "Fading Relationship",
+    "description": "When contact has no touchpoints in the last 90-180 days",
+    "category": "Trigger",
+    "priorityWeighting": "0.096"
+  },
+  {
+    "insightTypeName": "Litigation Filing",
+    "description": "When a court filing is submitted involving principals contact company",
+    "category": "Trigger",
+    "priorityWeighting": "0.097"
+  },
+  {
+    "insightTypeName": "Opportunity Follow-up",
+    "description": "When a principal was involved in an opportunity that has not been updated in over 3 weeks.",
+    "category": "Trigger",
+    "priorityWeighting": "0.094"
+  },
+  {
+    "insightTypeName": "Pertinent Client Alert",
+    "description": "When recently published firm content matches the interests of an external contact.",
+    "category": "Trigger",
+    "priorityWeighting": "0.099"
+  },
+  {
+    "insightTypeName": "Upcoming Meeting",
+    "description": "When contact has an upcoming meeting with a principal",
+    "category": "Trigger",
+    "priorityWeighting": "0.098"
+  }
+]

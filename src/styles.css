@@ -1815,6 +1815,16 @@ h1 {
   flex-shrink: 0;
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+
+.company-logo-image-v2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  flex-shrink: 0;
+  object-fit: contain;
+  display: block;
 }
 
 .logo-uber {

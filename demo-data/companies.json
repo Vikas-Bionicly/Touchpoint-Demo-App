@@ -1,0 +1,254 @@
+[
+  {
+    "companyName": "Sony",
+    "accountType": "Other",
+    "avatarUrl": "Sony-Logo.png",
+    "website": "https://www.sony.com",
+    "domain": "sony.com",
+    "addresses": [
+      {
+        "zipCode": "",
+        "country": "Japan",
+        "state": "",
+        "city": "Tokyo",
+        "addressType": "Headquarters",
+        "street": ""
+      }
+    ]
+  },
+  {
+    "companyName": "Microsoft",
+    "accountType": "Client",
+    "avatarUrl": "Microsoft-Logo.png",
+    "website": "https://www.microsoft.com",
+    "domain": "microsoft.com",
+    "addresses": [
+      {
+        "zipCode": "98052-6399",
+        "country": "United States",
+        "city": "Redmond",
+        "addressType": "Headquarters",
+        "street": "One Microsoft Way",
+        "coordinates": {
+          "latitude": "47.64016",
+          "longitude": "-122.12962"
+        },
+        "state": "WA"
+      }
+    ]
+  },
+  {
+    "companyName": "Google",
+    "accountType": "Former Client",
+    "avatarUrl": "Google-Logo.png",
+    "website": "https://www.google.com",
+    "domain": "google.com",
+    "addresses": [
+      {
+        "zipCode": "94043",
+        "country": "United States",
+        "city": "Mountain View",
+        "addressType": "Headquarters",
+        "street": "1600 Amphitheatre Parkway",
+        "coordinates": {
+          "latitude": "37.3860517",
+          "longitude": "-122.0829272"
+        },
+        "state": "CA"
+      }
+    ]
+  },
+  {
+    "companyName": "Nvidia",
+    "accountType": "Client",
+    "avatarUrl": "Nvidia-Logo.png",
+    "website": "https://www.nvidia.com",
+    "domain": "nvidia.com",
+    "addresses": [
+      {
+        "zipCode": "95051",
+        "country": "United States",
+        "city": "Santa Clara",
+        "addressType": "Headquarters",
+        "street": "2788 San Tomas Expressway",
+        "coordinates": {
+          "latitude": "37.3382082",
+          "longitude": "-121.9761919"
+        },
+        "state": "CA"
+      }
+    ]
+  },
+  {
+    "companyName": "Broadcom",
+    "accountType": "Client",
+    "avatarUrl": "Broadcom-Logo.png",
+    "website": "https://www.broadcom.com",
+    "domain": "broadcom.com",
+    "addresses": [
+      {
+        "zipCode": "94304",
+        "country": "United States",
+        "city": "Palo Alto",
+        "addressType": "Headquarters",
+        "street": "3421 Hillview Ave",
+        "coordinates": {
+          "latitude": "37.44429",
+          "longitude": "-122.03891"
+        },
+        "state": "CA"
+      }
+    ]
+  },
+  {
+    "companyName": "Palantir Technologies",
+    "accountType": "Prospect",
+    "avatarUrl": "Palantir-Logo.png",
+    "website": "https://www.palantir.com",
+    "domain": "palantir.com",
+    "addresses": [
+      {
+        "zipCode": "80202",
+        "country": "United States",
+        "city": "Denver",
+        "addressType": "Headquarters",
+        "street": "1200 17th Street, Floor 15",
+        "coordinates": {
+          "latitude": "39.7492358",
+          "longitude": "-104.990251"
+        },
+        "state": "CO"
+      }
+    ]
+  },
+  {
+    "companyName": "Salesforce",
+    "accountType": "Client",
+    "avatarUrl": "Salesforce-Logo.png",
+    "website": "https://www.salesforce.com",
+    "domain": "salesforce.com",
+    "addresses": [
+      {
+        "zipCode": "94105",
+        "country": "United States",
+        "city": "San Francisco",
+        "addressType": "Headquarters",
+        "street": "1 Market St",
+        "coordinates": {
+          "latitude": "37.7749295",
+          "longitude": "-122.419416"
+        },
+        "state": "CA"
+      }
+    ]
+  },
+  {
+    "companyName": "Amazon",
+    "accountType": "Prospect",
+    "avatarUrl": "Amazon-Logo.png",
+    "website": "https://www.amazon.com",
+    "domain": "amazon.com",
+    "addresses": [
+      {
+        "zipCode": "98109",
+        "country": "United States",
+        "city": "Seattle",
+        "addressType": "Headquarters",
+        "street": "410 Terry Ave N",
+        "coordinates": {
+          "latitude": "47.60621",
+          "longitude": "-122.33207"
+        },
+        "state": "WA"
+      }
+    ]
+  },
+  {
+    "companyName": "Taiwan Semiconductor Manufacturing Company (TSMC)",
+    "accountType": "Prospect",
+    "avatarUrl": "TSMC-Logo.png",
+    "website": "https://www.tsmc.com",
+    "domain": "tsmc.com",
+    "addresses": [
+      {
+        "zipCode": "",
+        "country": "Taiwan",
+        "state": "",
+        "city": "",
+        "addressType": "Headquarters",
+        "street": ""
+      }
+    ]
+  },
+  {
+    "companyName": "Samsung Electronics",
+    "accountType": "Former Client",
+    "avatarUrl": "Samsung-Logo.png",
+    "website": "https://www.samsung.com",
+    "domain": "samsung.com",
+    "addresses": [
+      {
+        "zipCode": "",
+        "country": "South Korea",
+        "state": "",
+        "city": "Suwon",
+        "addressType": "Headquarters",
+        "street": ""
+      }
+    ]
+  },
+  {
+    "companyName": "Apple",
+    "accountType": "Other",
+    "avatarUrl": "Apple-Logo.png",
+    "website": "https://www.apple.com",
+    "domain": "apple.com",
+    "addresses": [
+      {
+        "zipCode": "95014",
+        "country": "United States",
+        "city": "Cupertino",
+        "addressType": "Headquarters",
+        "street": "1 Infinite Loop",
+        "coordinates": {
+          "latitude": "37.33182",
+          "longitude": "-122.03118"
+        },
+        "state": "CA"
+      }
+    ]
+  },
+  {
+    "companyName": "Oracle",
+    "accountType": "Client",
+    "avatarUrl": "Oracle-Logo.png",
+    "website": "https://www.oracle.com",
+    "domain": "oracle.com",
+    "addresses": [
+      {
+        "zipCode": "78741",
+        "country": "United States",
+        "city": "Austin",
+        "addressType": "Headquarters",
+        "street": "2300 Oracle Way",
+        "coordinates": {
+          "latitude": "30.267153",
+          "longitude": "-97.7430608"
+        },
+        "state": "TX"
+      },
+      {
+        "zipCode": "94065",
+        "country": "United States",
+        "city": "Redwood Shores",
+        "addressType": "secondary office",
+        "street": "500 Oracle Parkway",
+        "coordinates": {
+          "latitude": "37.485001",
+          "longitude": "-122.060786"
+        },
+        "state": "CA"
+      }
+    ]
+  }
+]
