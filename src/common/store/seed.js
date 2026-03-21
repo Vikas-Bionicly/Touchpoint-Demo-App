@@ -3,9 +3,9 @@ import { contactRows } from '../constants/contacts';
 import { touchpointRows as legacyTouchpoints } from '../constants/touchpoints';
 import { listRows as staticLists } from '../constants/lists';
 import { calculateRelationshipStrength } from '../utils/relationshipStrength';
+import { BADGE_TYPES } from '../constants/badges';
 
 // Client-provided mock DB (taxonomy + identity).
-// We'll normalize it into the app's expected schema and append it.
 import clientTagsRaw from '../../../demo-data/tags.json';
 import clientContactsRaw from '../../../demo-data/contacts.json';
 import clientCompaniesRaw from '../../../demo-data/companies.json';
@@ -39,7 +39,6 @@ function slugify(value) {
 }
 
 function hashToUnit(value) {
-  // Deterministic 0..1 from a string.
   const str = String(value ?? '');
   let hash = 0;
   for (let i = 0; i < str.length; i += 1) {
@@ -94,10 +93,14 @@ function makeTaskFromLegacy(row) {
     relationshipScore: row.relationshipScore,
     lastInteracted: row.lastInteracted,
     source: 'seed',
+    assignedTo: '',
+    assignedBy: '',
+    onBehalfOf: '',
+    visitStage: '',
   };
 }
 
-function makePlannedTouchpoint({ id, contact, dueDaysFromNow, title, description }) {
+function makePlannedTouchpoint({ id, contact, dueDaysFromNow, title, description, assignedTo, assignedBy, onBehalfOf, visitStage }) {
   return {
     id,
     kind: 'task',
@@ -121,12 +124,21 @@ function makePlannedTouchpoint({ id, contact, dueDaysFromNow, title, description
     relationshipScore: contact.relationshipScore,
     lastInteracted: contact.lastInteracted,
     source: 'seed',
+    assignedTo: assignedTo || '',
+    assignedBy: assignedBy || '',
+    onBehalfOf: onBehalfOf || '',
+    visitStage: visitStage || '',
   };
 }
 
 const SIGNAL_TONES = ['blue', 'green', 'yellow', 'orange', 'cyan'];
 const PRACTICE_OPTIONS = ['Corporate', 'Litigation', 'Regulatory'];
 const OFFICES = ['Toronto', 'Calgary', 'Vancouver'];
+
+const LAWYER_NAMES = ['M. Chen', 'A. Patel', 'R. Thompson', 'S. Nakamura', 'L. Martinez', 'J. Kim', 'D. Okafor', 'H. Singh'];
+const CAT_CODES = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1'];
+const CLIENT_CODES = ['CL-1001', 'CL-1002', 'CL-2001', 'CL-2002', 'CL-3001', 'CL-3002', 'CL-4001'];
+const GICS_SECTORS = ['Information Technology', 'Financials', 'Health Care', 'Consumer Discretionary', 'Industrials', 'Energy', 'Real Estate'];
 
 function transformClientTags(clientTags) {
   const tagsBase = Array.isArray(clientTags) ? clientTags : [];
@@ -145,7 +157,6 @@ function transformClientCompanies(clientCompanies, clientContacts) {
   const companiesBase = Array.isArray(clientCompanies) ? clientCompanies : [];
   const contactsBase = Array.isArray(clientContacts) ? clientContacts : [];
 
-  // Generate relationships/metrics first; then we'll fill keyContacts below.
   const companies = companiesBase.map((co, idx) => {
     const name = co.companyName || '';
     const seed = `${name}-${idx}`;
@@ -155,7 +166,7 @@ function transformClientCompanies(clientCompanies, clientContacts) {
     const category1 = accountType;
     const category2 = industryTag;
 
-    const baseRevenue = 0.6 + hashToUnit(`${seed}-rev`) * 2.4; // in $M
+    const baseRevenue = 0.6 + hashToUnit(`${seed}-rev`) * 2.4;
     const recentDays = Math.floor(hashToUnit(`${seed}-days`) * 60);
     const statusOptions = ['Good', 'At Risk', 'Needs Attention', 'Improving'];
     const clientStatus = pickFrom(statusOptions, `${seed}-status`);
@@ -187,7 +198,6 @@ function transformClientCompanies(clientCompanies, clientContacts) {
       practice: x.practice,
       value: Math.max(5, Math.round((x.value / psTotal) * 100)),
     }));
-    // Normalize to 100% (roughly; keep demo-friendly).
     const shareSum = practiceShare.reduce((s, x) => s + x.value, 0);
     if (shareSum !== 100 && practiceShare.length) {
       practiceShare[0].value = clamp(practiceShare[0].value + (100 - shareSum), 0, 100);
@@ -226,21 +236,21 @@ function transformClientCompanies(clientCompanies, clientContacts) {
         id: `m-${idx}-1`,
         openDate: formatMmDd(seed, idx + 20),
         status: pickFrom(['Active', 'In Conflicts', 'Closed'], `${seed}-mstat`),
-        name: pickFrom(
-          ['Commercial Agreements Review', 'Privacy Program Overhaul', 'Regulatory Compliance Support', 'AI Governance Framework'],
-          `${seed}-mname`
-        ),
+        name: pickFrom(['Commercial Agreements Review', 'Privacy Program Overhaul', 'Regulatory Compliance Support', 'AI Governance Framework'], `${seed}-mname`),
         practiceArea: pickFrom(PRACTICE_OPTIONS, `${seed}-mpra`),
+        leadLawyer: pickFrom(LAWYER_NAMES, `${seed}-ml1`),
+        matterRank: clamp(Math.floor(hashToUnit(`${seed}-mr1`) * 10) + 1, 1, 10),
+        wip: Math.floor(hashToUnit(`${seed}-wip1`) * 500000),
       },
       {
         id: `m-${idx}-2`,
         openDate: formatMmDd(seed, idx + 60),
         status: pickFrom(['Active', 'In Conflicts', 'Closed'], `${seed}-mstat2`),
-        name: pickFrom(
-          ['Competition Review – APAC Expansion', 'Driver Classification Litigation', 'Data Breach Incident Response'],
-          `${seed}-mname2`
-        ),
+        name: pickFrom(['Competition Review – APAC Expansion', 'Driver Classification Litigation', 'Data Breach Incident Response'], `${seed}-mname2`),
         practiceArea: pickFrom(PRACTICE_OPTIONS, `${seed}-mpra2`),
+        leadLawyer: pickFrom(LAWYER_NAMES, `${seed}-ml2`),
+        matterRank: clamp(Math.floor(hashToUnit(`${seed}-mr2`) * 10) + 1, 1, 10),
+        wip: Math.floor(hashToUnit(`${seed}-wip2`) * 500000),
       },
     ];
 
@@ -249,22 +259,23 @@ function transformClientCompanies(clientCompanies, clientContacts) {
         id: `o-${idx}-1`,
         date: formatMmDd(seed, idx + 10),
         status: pickFrom(['Pending', 'Won', 'Lost'], `${seed}-ostatus`),
-        name: pickFrom(
-          ['Unified Communications Suite Launch', 'Privacy Program Overhaul', 'Cross-border Data Transfer Program'],
-          `${seed}-oname`
-        ),
+        name: pickFrom(['Unified Communications Suite Launch', 'Privacy Program Overhaul', 'Cross-border Data Transfer Program'], `${seed}-oname`),
         type: pickFrom(['Pitch', 'RFP', 'Panel'], `${seed}-otype`),
       },
       {
         id: `o-${idx}-2`,
         date: formatMmDd(seed, idx + 35),
         status: pickFrom(['Pending', 'Won', 'Lost'], `${seed}-ostatus2`),
-        name: pickFrom(
-          ['AI Safety Advisory Panel', 'Global Mobility Program', 'Strategic Target Opportunity'],
-          `${seed}-oname2`
-        ),
+        name: pickFrom(['AI Safety Advisory Panel', 'Global Mobility Program', 'Strategic Target Opportunity'], `${seed}-oname2`),
         type: pickFrom(['Pitch', 'RFP', 'Panel'], `${seed}-otype2`),
       },
+    ];
+
+    // Mock news items
+    const newsItems = [
+      { id: `news-${idx}-1`, date: formatMmDd(seed, 3), title: `${name} announces Q4 results`, source: 'Reuters', summary: `${name} reported stronger-than-expected quarterly earnings driven by expansion in key markets.` },
+      { id: `news-${idx}-2`, date: formatMmDd(seed, 15), title: `${name} appoints new General Counsel`, source: 'Law.com', summary: `${name} has hired a new GC from a major competitor, signaling strategic legal restructuring.` },
+      { id: `news-${idx}-3`, date: formatMmDd(seed, 30), title: `${name} expands into APAC market`, source: 'Bloomberg', summary: `${name} announced plans to establish regional offices across Asia-Pacific.` },
     ];
 
     return {
@@ -276,8 +287,6 @@ function transformClientCompanies(clientCompanies, clientContacts) {
       recentEngagement: recentDays <= 0 ? 'Today' : `${recentDays} days ago`,
       clientStatus,
       logo: slugify(name) || `company-${idx + 1}`,
-      // Client DB provides avatar filenames like "Sony-Logo.png".
-      // UI resolves these filenames to actual bundled assets.
       avatarUrl: co.avatarUrl || co.logoUrl || '',
       revenue: `$${baseRevenue.toFixed(1)}M`,
       hierarchy: [`${name} (Parent)`, `${name} Legal Team`, `${name} Operations`],
@@ -299,6 +308,12 @@ function transformClientCompanies(clientCompanies, clientContacts) {
       opportunities: companiesSeedOpps,
       relationshipTrend: relationship.trend,
       relationshipScore: relationship.score,
+      catCode: pickFrom(CAT_CODES, `${seed}-cat`),
+      clientCode: pickFrom(CLIENT_CODES, `${seed}-cc`),
+      gics: pickFrom(GICS_SECTORS, `${seed}-gics`),
+      billingLawyer: pickFrom(LAWYER_NAMES, `${seed}-bl`),
+      newsItems,
+      accountType,
     };
   });
 
@@ -326,10 +341,7 @@ function transformClientCompanies(clientCompanies, clientContacts) {
   return companies;
 }
 
-// Helper: because we are generating everything, we need a fallback “industry tag”
-// source even if we didn't fully map client tags to companies.
 function clientTagsFromContactsFallback(clientContacts, idx) {
-  // Use contact job titles as a crude proxy for industry naming.
   const companyIndustryHints = ['Technology', 'Financial Services', 'Biotech', 'Healthcare', 'Retail', 'Defense', 'Semiconductors'];
   const seed = `${idx}-${(clientContacts?.[idx]?.jobTitle || '')}`;
   return [pickFrom(companyIndustryHints, seed)];
@@ -340,6 +352,8 @@ function transformClientContacts(clientContacts, transformedCompanies) {
   const companies = Array.isArray(transformedCompanies) ? transformedCompanies : [];
 
   const namePool = generateMockNamePool();
+  const badgeIds = BADGE_TYPES.map((b) => b.id);
+
   return contactsBase.map((ct, idx) => {
     const firstName = ct.firstName || '';
     const lastName = ct.lastName || '';
@@ -390,6 +404,30 @@ function transformClientContacts(clientContacts, transformedCompanies) {
     ];
 
     const lastInteractedDays = metricsCurrent.daysSinceLastInteraction;
+
+    // ~20% key contacts, ~10% alumni
+    const isKeyContact = hashToUnit(`${seed}-key`) < 0.2;
+    const isAlumni = hashToUnit(`${seed}-alumni`) < 0.1;
+
+    // Assign 0-3 badges deterministically
+    const badgeCount = Math.floor(hashToUnit(`${seed}-bc`) * 4);
+    const contactBadges = [];
+    for (let b = 0; b < badgeCount; b++) {
+      const bid = pickFrom(badgeIds, `${seed}-badge-${b}`);
+      if (!contactBadges.includes(bid)) contactBadges.push(bid);
+    }
+
+    // Special dates
+    const specialDates = {};
+    if (hashToUnit(`${seed}-bday`) < 0.4) {
+      const bMonth = 1 + Math.floor(hashToUnit(`${seed}-bdm`) * 12);
+      const bDay = 1 + Math.floor(hashToUnit(`${seed}-bdd`) * 28);
+      specialDates.birthday = `${String(bMonth).padStart(2, '0')}/${String(bDay).padStart(2, '0')}`;
+    }
+    if (hashToUnit(`${seed}-anniv`) < 0.2) {
+      specialDates.workAnniversary = `${1 + Math.floor(hashToUnit(`${seed}-anny`) * 12)} years`;
+    }
+
     return {
       id: `client-contact-${idx + 1}`,
       name: name || `Client ${idx + 1}`,
@@ -412,12 +450,16 @@ function transformClientContacts(clientContacts, transformedCompanies) {
       relationship: relationship.trend,
       relationshipScore: relationship.score,
       relationshipDelta: relationship.delta,
+      isKeyContact,
+      isAlumni,
+      contactBadges,
+      specialDates,
+      ownerId: hashToUnit(`${seed}-owner`) < 0.5 ? 'current-user' : 'other-user',
     };
   });
 }
 
 export function buildSeedState() {
-  // ---- Normalize and append client-provided mock DB ----
   const CLIENT_COMPANY_LIMIT = 12;
   const CLIENT_CONTACT_LIMIT = 40;
   const clientCompanies = clientCompaniesRaw.slice(0, CLIENT_COMPANY_LIMIT);
@@ -427,15 +469,11 @@ export function buildSeedState() {
   const transformedClientCompanies = transformClientCompanies(clientCompanies, []);
   const transformedClientContacts = transformClientContacts(clientContacts, transformedClientCompanies);
 
-  // Re-fill keyContacts based on transformed contacts -> company.
   const clientCompaniesRehydrated = transformClientCompanies(clientCompanies, transformedClientContacts);
 
-  // Use ONLY client-provided companies for the demo.
-  // (Legacy `companyRows` are no longer merged into state.)
   const mergedCompanies = [...clientCompaniesRehydrated];
   const mergedContacts = [...contactRows, ...transformedClientContacts];
 
-  // Keep existing base tags so Lists still match by label.
   const baseTags = [
     { id: 't-practice-privacy', label: 'Privacy & Security', type: 'Practice' },
     { id: 't-practice-ma', label: 'Mergers & Acquisitions', type: 'Practice' },
@@ -458,7 +496,7 @@ export function buildSeedState() {
     return Array.from(byLabelAndType.values());
   })();
 
-  // Deterministic tag assignments (so tag filters show content immediately).
+  // Deterministic tag assignments
   const contactTags = {};
   mergedContacts.forEach((c, idx) => {
     const tagsCount = 1 + (idx % 2);
@@ -481,10 +519,9 @@ export function buildSeedState() {
     companyTags[co.id] = chosen;
   });
 
-  // ---- Existing seed behavior (touchpoints + lists) ----
+  // ---- Touchpoints ----
   const touchpoints = [
     ...legacyTouchpoints.map(makeTaskFromLegacy),
-    // Open tasks (some overdue, some upcoming) to make the demo feel alive
     makePlannedTouchpoint({
       id: 'task-1',
       contact: pick(mergedContacts, 0),
@@ -513,32 +550,75 @@ export function buildSeedState() {
       title: 'Invite to upcoming firm event',
       description: 'Confirm interest, then coordinate with events team.',
     }),
+    // Assigned touchpoints for BD demo
+    makePlannedTouchpoint({
+      id: 'task-5',
+      contact: pick(mergedContacts, 4),
+      dueDaysFromNow: 3,
+      title: 'BD-assigned: Client introduction email',
+      description: 'Draft introduction email for partner review.',
+      assignedTo: 'M. Chen',
+      assignedBy: 'BD Team',
+    }),
+    makePlannedTouchpoint({
+      id: 'task-6',
+      contact: pick(mergedContacts, 6),
+      dueDaysFromNow: 5,
+      title: 'BD-assigned: Event follow-up calls',
+      description: 'Follow up with attendees from the recent seminar.',
+      assignedTo: 'A. Patel',
+      assignedBy: 'BD Team',
+      onBehalfOf: 'Partner Group',
+    }),
   ];
 
-  const lists = staticLists.map((list, index) => ({
+  // ---- Lists (expanded to 8-10) ----
+  const baseListTypes = ['Practice-based', 'Initiative-based', 'Event-based', 'Event-based', 'Referral', 'Personal', 'Trip Planning', 'Practice-based', 'Initiative-based', 'Event-based'];
+  const baseListVisibilities = ['Firm-wide', 'Firm-wide', 'Shared', 'Personal', 'Shared', 'Personal', 'Personal', 'Firm-wide', 'Shared', 'Firm-wide'];
+  const baseListColors = ['bg-blue', 'bg-green', 'bg-purple', 'bg-orange', 'bg-cyan', 'bg-rose', 'bg-amber', 'bg-indigo', 'bg-emerald', 'bg-red'];
+
+  const extraLists = [
+    { id: 'list-5', name: 'Referral Network – Financial Services', owner: 'L. Martinez', tag: 'Financial Services', initials: 'RN', members: 6 },
+    { id: 'list-6', name: 'Personal Watch List', owner: 'You', tag: 'Strategy', initials: 'PW', members: 4 },
+    { id: 'list-7', name: 'Vancouver Trip – March 2026', owner: 'You', tag: 'Travel', initials: 'VT', members: 5 },
+    { id: 'list-8', name: 'Litigation Practice Group', owner: 'R. Thompson', tag: 'Litigation', initials: 'LP', members: 12 },
+    { id: 'list-9', name: 'AI & Emerging Tech Initiative', owner: 'S. Nakamura', tag: 'AI & Emerging Tech', initials: 'AI', members: 8 },
+    { id: 'list-10', name: 'Annual Client Appreciation Gala', owner: 'BD Team', tag: 'Events', initials: 'CG', members: 20 },
+  ];
+
+  const allStaticLists = [...staticLists, ...extraLists];
+
+  const lists = allStaticLists.map((list, index) => ({
     id: list.id,
     name: list.name,
     owner: list.owner,
-    type:
-      index === 0
-        ? 'Practice-based'
-        : index === 1
-        ? 'Initiative-based'
-        : index === 2
-        ? 'Event-based'
-        : 'Event-based',
+    type: baseListTypes[index] || 'Event-based',
     tag: list.tag,
     initials: list.initials,
-    color: list.color,
-    lastEngagement: list.lastEngagement,
-    visibility: index === 3 ? 'Personal' : index === 2 ? 'Shared' : 'Firm-wide',
+    color: baseListColors[index] || 'bg-blue',
+    lastEngagement: list.lastEngagement || `${3 + index * 2} days ago`,
+    visibility: baseListVisibilities[index] || 'Firm-wide',
     createdAt: '2025-01-15',
     members: list.members,
     memberIds: mergedContacts.filter((_, i) => i % (index + 2) === 0).map((c) => c.id),
+    marketingActivity: index < 4 ? [
+      { date: formatMmDd(`${list.name}-ma1`, 5), type: 'Email Campaign', description: 'Quarterly newsletter sent', recipients: 45 },
+      { date: formatMmDd(`${list.name}-ma2`, 20), type: 'Event Invite', description: 'Webinar invitation distributed', recipients: 30 },
+    ] : [],
   }));
+
+  // ---- Mock notifications ----
+  const notifications = [
+    { id: 'notif-1', type: 'team-coordination', title: 'Team Coordination Alert', message: 'M. Chen also contacted Aria Chen this week — coordinate outreach.', read: false, createdAt: isoDaysFromNow(-1) },
+    { id: 'notif-2', type: 'new-role', title: 'Job Change Detected', message: 'Derek Liu has been promoted to VP, Legal at TechCorp.', read: false, createdAt: isoDaysFromNow(-2) },
+    { id: 'notif-3', type: 'company-news', title: 'Company News', message: 'Magna International announced Q4 results — revenue up 12%.', read: false, createdAt: isoDaysFromNow(-3) },
+    { id: 'notif-4', type: 'birthday', title: 'Upcoming Birthday', message: 'Naomi Park\'s birthday is in 3 days.', read: false, createdAt: isoDaysFromNow(0) },
+    { id: 'notif-5', type: 'misalignment', title: 'Engagement Misalignment', message: 'Two partners contacted the same client this week without coordination.', read: true, createdAt: isoDaysFromNow(-5) },
+  ];
 
   return {
     version: 1,
+    currentPersonaId: 'partner',
     currentRole: 'Partner',
     contacts: mergedContacts,
     companies: mergedCompanies,
@@ -565,6 +645,6 @@ export function buildSeedState() {
       tagId: '',
     },
     insightState: {},
+    notifications,
   };
 }
-

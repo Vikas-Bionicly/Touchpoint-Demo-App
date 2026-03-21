@@ -3,7 +3,7 @@ import { buildSeedState } from './seed';
 
 // Bump this version any time we change seed/transform logic,
 // so users don't get stuck on an older localStorage snapshot.
-const STORAGE_KEY = 'touchpoint-demo:v4';
+const STORAGE_KEY = 'touchpoint-demo:v5';
 
 function safeJsonParse(value) {
   try {
@@ -23,6 +23,10 @@ function loadFromStorage() {
 function saveToStorage(state) {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function uid(prefix = 'id') {
+  return `${prefix}-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 }
 
 function createStore() {
@@ -49,19 +53,30 @@ function createStore() {
       return () => listeners.delete(listener);
     },
     actions: {
+      // --- Persona ---
+      setCurrentPersona(personaId) {
+        setState((prev) => ({
+          ...prev,
+          currentPersonaId: personaId,
+        }));
+      },
+
+      // Legacy role setter (kept for backward compat during transition)
       setCurrentRole(role) {
         setState((prev) => ({
           ...prev,
           currentRole: role,
         }));
       },
+
       resetToSeed() {
         setState(buildSeedState());
       },
 
+      // --- Touchpoints ---
       addTouchpointTask(input) {
         const nowIso = new Date().toISOString();
-        const id = `task-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('task');
         const item = {
           id,
           kind: 'task',
@@ -85,6 +100,10 @@ function createStore() {
           relationshipScore: input.relationshipScore ?? 50,
           lastInteracted: input.lastInteracted || '',
           source: input.source || 'manual',
+          assignedTo: input.assignedTo || '',
+          assignedBy: input.assignedBy || '',
+          onBehalfOf: input.onBehalfOf || '',
+          visitStage: input.visitStage || '',
         };
 
         setState((prev) => ({
@@ -97,7 +116,7 @@ function createStore() {
 
       logInteraction(input) {
         const nowIso = new Date().toISOString();
-        const id = `int-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('int');
         const item = {
           id,
           kind: 'interaction',
@@ -121,6 +140,10 @@ function createStore() {
           relationshipScore: input.relationshipScore ?? 50,
           lastInteracted: input.lastInteracted || '0 days ago',
           source: input.source || 'manual',
+          assignedTo: input.assignedTo || '',
+          assignedBy: input.assignedBy || '',
+          onBehalfOf: input.onBehalfOf || '',
+          visitStage: input.visitStage || '',
         };
 
         setState((prev) => ({
@@ -156,6 +179,25 @@ function createStore() {
         }));
       },
 
+      assignTouchpoint(id, assignedTo, assignedBy) {
+        setState((prev) => ({
+          ...prev,
+          touchpoints: prev.touchpoints.map((t) =>
+            t.id === id ? { ...t, assignedTo, assignedBy: assignedBy || '' } : t
+          ),
+        }));
+      },
+
+      setVisitStage(id, stage) {
+        setState((prev) => ({
+          ...prev,
+          touchpoints: prev.touchpoints.map((t) =>
+            t.id === id ? { ...t, visitStage: stage } : t
+          ),
+        }));
+      },
+
+      // --- Insights ---
       likeInsight(insightId) {
         setState((prev) => {
           const current = prev.insightState?.[insightId] || {};
@@ -163,10 +205,7 @@ function createStore() {
             ...prev,
             insightState: {
               ...(prev.insightState || {}),
-              [insightId]: {
-                ...current,
-                liked: !current.liked,
-              },
+              [insightId]: { ...current, liked: !current.liked },
             },
           };
         });
@@ -179,10 +218,7 @@ function createStore() {
             ...prev,
             insightState: {
               ...(prev.insightState || {}),
-              [insightId]: {
-                ...current,
-                dismissed: true,
-              },
+              [insightId]: { ...current, dismissed: true },
             },
           };
         });
@@ -195,18 +231,16 @@ function createStore() {
             ...prev,
             insightState: {
               ...(prev.insightState || {}),
-              [insightId]: {
-                ...current,
-                dismissed: false,
-              },
+              [insightId]: { ...current, dismissed: false },
             },
           };
         });
       },
 
+      // --- Notes ---
       addContactNote(input) {
         const nowIso = new Date().toISOString();
-        const id = `note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('note');
         const note = {
           id,
           contactId: input.contactId,
@@ -228,7 +262,7 @@ function createStore() {
 
       addCompanyNote(input) {
         const nowIso = new Date().toISOString();
-        const id = `company-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('company-note');
         const note = {
           id,
           companyId: input.companyId,
@@ -261,7 +295,7 @@ function createStore() {
 
       addListNote(input) {
         const nowIso = new Date().toISOString();
-        const id = `list-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('list-note');
         const note = {
           id,
           listId: input.listId,
@@ -280,7 +314,7 @@ function createStore() {
 
       addTouchpointNote(input) {
         const nowIso = new Date().toISOString();
-        const id = `tp-note-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('tp-note');
         const note = {
           id,
           touchpointId: input.touchpointId,
@@ -297,6 +331,189 @@ function createStore() {
         return id;
       },
 
+      // --- Contacts CRUD ---
+      addContact(input) {
+        const id = uid('contact');
+        const contact = {
+          id,
+          name: input.name || 'New Contact',
+          role: input.role || 'Client Contact',
+          company: input.company || '',
+          city: input.city || '',
+          region: input.region || '',
+          email: input.email || '',
+          phone: input.phone || '',
+          lastInteraction: 'No interactions yet',
+          lastInteracted: '0 days ago',
+          avatarUrl: `https://i.pravatar.cc/96?img=${Math.floor(Math.random() * 70) + 1}&u=${encodeURIComponent(input.name || id)}`,
+          signalTone: 'blue',
+          recentInteractions: [],
+          relationshipHistory: [],
+          internalConnections: [],
+          metricsCurrent: {
+            daysSinceLastInteraction: 0,
+            interactionsLast90d: 0,
+            engagementQuality: 3,
+            mattersActive: 0,
+            twoWayRatio: 0.5,
+          },
+          metricsPrevious: {
+            daysSinceLastInteraction: 0,
+            interactionsLast90d: 0,
+            engagementQuality: 3,
+            mattersActive: 0,
+            twoWayRatio: 0.5,
+          },
+          relationship: 'New',
+          relationshipScore: 50,
+          relationshipDelta: 0,
+          isKeyContact: input.isKeyContact || false,
+          isAlumni: input.isAlumni || false,
+          contactBadges: [],
+          specialDates: input.specialDates || {},
+          ownerId: input.ownerId || 'current-user',
+        };
+
+        setState((prev) => ({
+          ...prev,
+          contacts: [contact, ...prev.contacts],
+        }));
+
+        return id;
+      },
+
+      updateContact(id, updates) {
+        setState((prev) => ({
+          ...prev,
+          contacts: prev.contacts.map((c) =>
+            c.id === id ? { ...c, ...updates } : c
+          ),
+        }));
+      },
+
+      toggleKeyContact(id) {
+        setState((prev) => ({
+          ...prev,
+          contacts: prev.contacts.map((c) =>
+            c.id === id ? { ...c, isKeyContact: !c.isKeyContact } : c
+          ),
+        }));
+      },
+
+      toggleAlumniFlag(id) {
+        setState((prev) => ({
+          ...prev,
+          contacts: prev.contacts.map((c) =>
+            c.id === id ? { ...c, isAlumni: !c.isAlumni } : c
+          ),
+        }));
+      },
+
+      // --- Companies CRUD ---
+      addCompany(input) {
+        const id = uid('company');
+        const company = {
+          id,
+          name: input.name || 'New Company',
+          category1: input.accountType || 'Prospective',
+          category2: input.industry || '',
+          engagementTitle: 'No engagements yet',
+          recentEngagement: 'Never',
+          clientStatus: 'New',
+          logo: '',
+          avatarUrl: '',
+          revenue: '$0',
+          hierarchy: [input.name || 'New Company'],
+          keyContacts: [],
+          recentInteractions: [],
+          relationshipHistory: [],
+          metricsCurrent: { daysSinceLastInteraction: 0, interactionsLast90d: 0, engagementQuality: 3, mattersActive: 0, twoWayRatio: 0.5 },
+          metricsPrevious: { daysSinceLastInteraction: 0, interactionsLast90d: 0, engagementQuality: 3, mattersActive: 0, twoWayRatio: 0.5 },
+          revenueHistory: [],
+          practiceShare: [],
+          revenueByPracticeOffice: {},
+          mattersTrends: [],
+          opportunityActivity: [],
+          matters: [],
+          opportunities: [],
+          relationshipTrend: 'New',
+          relationshipScore: 50,
+          catCode: input.catCode || '',
+          clientCode: input.clientCode || '',
+          gics: input.gics || '',
+          billingLawyer: input.billingLawyer || '',
+          newsItems: [],
+          accountType: input.accountType || 'Prospective',
+        };
+
+        setState((prev) => ({
+          ...prev,
+          companies: [company, ...prev.companies],
+        }));
+
+        return id;
+      },
+
+      updateCompany(id, updates) {
+        setState((prev) => ({
+          ...prev,
+          companies: prev.companies.map((c) =>
+            c.id === id ? { ...c, ...updates } : c
+          ),
+        }));
+      },
+
+      // --- Opportunities ---
+      addOpportunity(input) {
+        const id = uid('opp');
+        const opp = {
+          id,
+          date: new Date().toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' }),
+          status: input.status || 'Pending',
+          name: input.name || 'New Opportunity',
+          type: input.type || 'Pitch',
+        };
+
+        setState((prev) => ({
+          ...prev,
+          companies: prev.companies.map((c) =>
+            c.id === input.companyId
+              ? { ...c, opportunities: [...(c.opportunities || []), opp] }
+              : c
+          ),
+        }));
+
+        return id;
+      },
+
+      // --- Lists ---
+      createList(input) {
+        const id = uid('list');
+        const list = {
+          id,
+          name: input.name || 'New List',
+          owner: input.owner || 'You',
+          type: input.type || 'Personal',
+          tag: input.tag || '',
+          initials: (input.name || 'NL').slice(0, 2).toUpperCase(),
+          color: input.color || 'bg-blue',
+          lastEngagement: 'Just created',
+          visibility: input.visibility || 'Personal',
+          createdAt: new Date().toISOString().slice(0, 10),
+          members: 0,
+          memberIds: input.memberIds || [],
+          marketingActivity: [],
+        };
+
+        setState((prev) => ({
+          ...prev,
+          lists: [list, ...prev.lists],
+        }));
+
+        return id;
+      },
+
+      // --- Filters & Views ---
       setContactFilters(partial) {
         setState((prev) => ({
           ...prev,
@@ -320,7 +537,7 @@ function createStore() {
       saveContactView(name) {
         const trimmed = (name || '').trim();
         if (!trimmed) return null;
-        const id = `view-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('view');
         setState((prev) => ({
           ...prev,
           savedViews: [
@@ -334,7 +551,7 @@ function createStore() {
       saveCompanyView(name) {
         const trimmed = (name || '').trim();
         if (!trimmed) return null;
-        const id = `view-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+        const id = uid('view');
         setState((prev) => ({
           ...prev,
           savedViews: [
@@ -349,10 +566,7 @@ function createStore() {
         setState((prev) => {
           const view = (prev.savedViews || []).find((v) => v.id === id && v.scope === 'contacts');
           if (!view) return prev;
-          return {
-            ...prev,
-            contactFilters: { ...(view.filters || {}) },
-          };
+          return { ...prev, contactFilters: { ...(view.filters || {}) } };
         });
       },
 
@@ -360,10 +574,7 @@ function createStore() {
         setState((prev) => {
           const view = (prev.savedViews || []).find((v) => v.id === id && v.scope === 'companies');
           if (!view) return prev;
-          return {
-            ...prev,
-            companyFilters: { ...(view.filters || {}) },
-          };
+          return { ...prev, companyFilters: { ...(view.filters || {}) } };
         });
       },
 
@@ -393,6 +604,16 @@ function createStore() {
           },
         }));
       },
+
+      // --- Notifications ---
+      dismissNotification(id) {
+        setState((prev) => ({
+          ...prev,
+          notifications: (prev.notifications || []).map((n) =>
+            n.id === id ? { ...n, read: true } : n
+          ),
+        }));
+      },
     },
   };
 }
@@ -406,4 +627,3 @@ function getSnapshot() {
 export function useDemoStore(selector = (s) => s) {
   return useSyncExternalStore(demoStore.subscribe, () => selector(getSnapshot()), () => selector(getSnapshot()));
 }
-

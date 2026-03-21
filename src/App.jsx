@@ -3,6 +3,9 @@ import Icon from './common/components/Icon';
 import BlakesLogo from './common/components/BlakesLogo';
 import { navItems } from './common/constants/navigation';
 import { demoStore, useDemoStore } from './common/store/demoStore';
+import { PERSONAS } from './common/constants/personas';
+import { usePersona } from './common/hooks/usePersona';
+import NotificationCenter from './common/components/NotificationCenter';
 import MyInsightsPage from './pages/MyInsightsPage';
 import ContactsPage from './pages/ContactsPage';
 import CompaniesPage from './pages/CompaniesPage';
@@ -13,7 +16,8 @@ export default function App() {
   const [activePage, setActivePage] = useState('My Insights');
   const [activeSubPage, setActiveSubPage] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const role = useDemoStore((s) => s.currentRole || 'Partner');
+  const personaId = useDemoStore((s) => s.currentPersonaId || 'partner');
+  const { persona, tier } = usePersona();
   const actions = demoStore.actions;
 
   useEffect(() => {
@@ -70,7 +74,9 @@ export default function App() {
             <Icon name="menu" />
           </button>
           <h1 className="mobile-topbar-title">{activePage}</h1>
-          <div className="mobile-topbar-right" />
+          <div className="mobile-topbar-right">
+            <NotificationCenter />
+          </div>
         </div>
       )}
 
@@ -79,7 +85,6 @@ export default function App() {
           <div className="sidebar-brand-bar">
             <BlakesLogo />
 
-            {/* Mobile close icon inside the red header */}
             <button
               type="button"
               className="sidebar-close"
@@ -96,16 +101,29 @@ export default function App() {
               <div className="role-avatar">JD</div>
               <div className="role-meta">
                 <span className="role-name">John Doe</span>
-                <span className="role-title">{role}</span>
+                <span className="role-title">{persona.label}</span>
+                <span className="role-tier" style={{ fontSize: 11, opacity: 0.7 }}>Tier {tier}</span>
               </div>
-              <button
-                type="button"
-                className="role-toggle-icon"
-                onClick={() => actions.setCurrentRole(role === 'Partner' ? 'BD' : 'Partner')}
-                aria-label="Toggle role"
+              <select
+                className="persona-select"
+                value={personaId}
+                onChange={(e) => actions.setCurrentPersona(e.target.value)}
+                style={{
+                  border: '1px solid #d4d4d4',
+                  borderRadius: 6,
+                  padding: '4px 6px',
+                  fontSize: 12,
+                  background: '#fff',
+                  cursor: 'pointer',
+                  maxWidth: 120,
+                }}
               >
-                <Icon name="switch" />
-              </button>
+                {PERSONAS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label} (T{p.tier})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -148,13 +166,32 @@ export default function App() {
               </div>
             );
           })}
+
+          {/* Placeholder integration items */}
+          <div className="nav-group">
+            <button type="button" className="nav-item" disabled style={{ opacity: 0.4 }}>
+              <Icon name="note" className="nav-icon" />
+              <span>Outlook Add-in</span>
+              <span style={{ fontSize: 10, marginLeft: 'auto', color: '#9ca3af' }}>Soon</span>
+            </button>
+          </div>
+          <div className="nav-group">
+            <button type="button" className="nav-item" disabled style={{ opacity: 0.4 }}>
+              <Icon name="handshake" className="nav-icon" />
+              <span>Teams</span>
+              <span style={{ fontSize: 10, marginLeft: 'auto', color: '#9ca3af' }}>Soon</span>
+            </button>
+          </div>
         </nav>
       </aside>
 
       <main className="main">
-        {activePage === 'My Insights' && <MyInsightsPage />}
-        {activePage === 'Contacts' && <ContactsPage />}
-        {activePage === 'Companies' && <CompaniesPage />}
+        <div className="main-header-bar" style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 16px 0', gap: 8 }}>
+          <NotificationCenter />
+        </div>
+        {activePage === 'My Insights' && <MyInsightsPage subPage={activeSubPage} />}
+        {activePage === 'Contacts' && <ContactsPage subPage={activeSubPage} />}
+        {activePage === 'Companies' && <CompaniesPage subPage={activeSubPage} />}
         {activePage === 'Lists' && <ListsPage />}
         {activePage === 'Touchpoints' && <TouchpointsPage view={activeSubPage} />}
       </main>
