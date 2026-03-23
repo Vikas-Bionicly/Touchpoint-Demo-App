@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import Icon from './Icon';
+import DetailActionBar from './DetailActionBar';
+import DetailTabBar from './DetailTabBar';
 import RelationshipScoreGauge from './RelationshipScoreGauge';
 import { demoStore, useDemoStore } from '../store/demoStore';
 import { usePersona } from '../hooks/usePersona';
@@ -34,8 +36,22 @@ export default function ContactDetailModal({
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'activity', label: 'Activity' },
-    { id: 'notes', label: 'Notes' },
+    { id: 'activity', label: 'Activity', count: contactActivities.length },
+    { id: 'notes', label: 'Notes', count: contactNotes.length },
+  ];
+
+  const actions = [
+    { label: 'Firm Connections', onClick: () => onFirmConnections?.(contact) },
+    { label: 'Add to List', onClick: () => onAddToList?.(contact) },
+    { divider: true },
+    { label: 'Add Note', onClick: () => onAddNote?.(contact) },
+    { label: 'Create Touchpoint', onClick: () => onCreateTouchpoint?.(contact) },
+    { divider: true },
+    ...(field('aiDraft') ? [{ label: 'Draft Outreach', onClick: () => onDraftOutreach?.(contact) }] : []),
+    ...(field('aiSummary') ? [{ label: 'AI Summary', onClick: () => onAiSummary?.(contact) }] : []),
+    ...((field('aiDraft') || field('aiSummary')) ? [{ divider: true }] : []),
+    ...(can('tag.manage') ? [{ label: 'Tags', onClick: () => onManageTags?.(contact) }] : []),
+    ...(can('contact.edit') ? [{ label: 'Edit', onClick: () => { onEdit?.(contact); onClose(); } }] : []),
   ];
 
   function renderBadges() {
@@ -63,43 +79,30 @@ export default function ContactDetailModal({
     <div className="modal-backdrop" onClick={onClose}>
       <div className="company-modal contact-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 600 }}>
         {/* Header */}
-        <div className="modal-head" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <img
-            src={avatarSrc}
-            alt={contact.name}
-            className={`contact-avatar-v2 tone-${contact.signalTone}`}
-            style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }}
-          />
-          <div style={{ flex: 1 }}>
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
+        <div className="detail-header" style={{ padding: '16px 16px 0' }}>
+          <img src={avatarSrc} alt={contact.name} className={`detail-header-avatar tone-${contact.signalTone}`} />
+          <div className="detail-header-info">
+            <h2>
               {contact.name}
               {contact.isKeyContact && <span title="Key Contact" style={{ color: '#f59e0b', fontSize: 16 }}>★</span>}
               {contact.isAlumni && field('alumni.flag') && (
                 <span style={{ display: 'inline-flex', padding: '1px 6px', borderRadius: 10, fontSize: 10, fontWeight: 600, background: '#dbeafe', color: '#2563eb' }}>Alumni</span>
               )}
             </h2>
-            <p style={{ margin: '2px 0 0', fontSize: 13, color: '#6b7280' }}>{contact.role}</p>
-            <p style={{ margin: '1px 0 0', fontSize: 13, color: '#6b7280' }}>{contact.company}</p>
+            <p>{contact.role}</p>
+            <p>{contact.company}</p>
           </div>
           <button className="modal-close" onClick={onClose} aria-label="close modal">x</button>
         </div>
 
+        {/* Action bar */}
+        <div style={{ padding: '0 16px' }}>
+          <DetailActionBar actions={actions} />
+        </div>
+
         {/* Tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', padding: '0 16px' }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                all: 'unset', cursor: 'pointer', padding: '10px 16px', fontSize: 13, fontWeight: 500,
-                borderBottom: activeTab === tab.id ? '2px solid #6366f1' : '2px solid transparent',
-                color: activeTab === tab.id ? '#6366f1' : '#6b7280',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div style={{ padding: '0 16px' }}>
+          <DetailTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
 
         {/* Tab content */}
@@ -186,21 +189,6 @@ export default function ContactDetailModal({
               )}
             </div>
           )}
-        </div>
-
-        {/* Quick action icon bar */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '12px 16px', borderTop: '1px solid #e5e7eb' }}>
-          <button className="tool-btn" onClick={() => onFirmConnections?.(contact)}>Firm Connections</button>
-          <button className="tool-btn" onClick={() => onAddToList?.(contact)}>Add to List</button>
-          <span style={{ width: 1, background: '#e5e7eb', margin: '0 2px' }} />
-          <button className="tool-btn" onClick={() => onAddNote?.(contact)}>Add Note</button>
-          <button className="tool-btn" onClick={() => onCreateTouchpoint?.(contact)}>Create Touchpoint</button>
-          <span style={{ width: 1, background: '#e5e7eb', margin: '0 2px' }} />
-          {field('aiDraft') && <button className="tool-btn" onClick={() => onDraftOutreach?.(contact)}>Draft Outreach</button>}
-          {field('aiSummary') && <button className="tool-btn" onClick={() => onAiSummary?.(contact)}>AI Summary</button>}
-          <span style={{ width: 1, background: '#e5e7eb', margin: '0 2px' }} />
-          {can('tag.manage') && <button className="tool-btn" onClick={() => onManageTags?.(contact)}>Tags</button>}
-          {can('contact.edit') && <button className="tool-btn" onClick={() => { onEdit?.(contact); onClose(); }}>Edit</button>}
         </div>
       </div>
     </div>

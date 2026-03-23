@@ -3833,3 +3833,167 @@ h1 {
   font-size: 14px;
   color: #525252;
 }
+
+/* ══════════════════════════════════════════════
+   Shared Detail View: Action Bar + Tab Bar
+   ══════════════════════════════════════════════ */
+
+.detail-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+}
+
+.detail-action-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.detail-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.detail-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.detail-action-btn.primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.detail-action-btn.primary:hover {
+  opacity: 0.9;
+}
+
+.detail-action-btn .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.detail-action-divider {
+  width: 1px;
+  height: 24px;
+  background: #e5e7eb;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.detail-tab-bar {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 0;
+}
+
+.detail-tab {
+  all: unset;
+  cursor: pointer;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-tab:hover {
+  color: #374151;
+}
+
+.detail-tab.active {
+  color: #6366f1;
+  border-bottom-color: #6366f1;
+}
+
+.detail-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.detail-tab.active .detail-tab-count {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.detail-tab-content {
+  padding: 16px 0;
+}
+
+/* ── Detail view header consistent pattern ── */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+
+.detail-header-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.detail-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-header-info h2 {
+  margin: 0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-header-info p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .detail-action-bar {
+    gap: 6px;
+  }
+  .detail-action-btn span {
+    display: none;
+  }
+  .detail-action-btn {
+    padding: 8px;
+  }
+  .detail-action-divider {
+    display: none;
+  }
+}

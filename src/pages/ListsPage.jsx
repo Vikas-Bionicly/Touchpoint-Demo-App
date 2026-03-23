@@ -8,6 +8,8 @@ import SearchBar from '../common/components/SearchBar';
 import FilterBar from '../common/components/FilterBar';
 import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 import FilterViewButton from '../common/components/FilterViewButton';
+import DetailActionBar from '../common/components/DetailActionBar';
+import DetailTabBar from '../common/components/DetailTabBar';
 
 export default function ListsPage() {
   const [query, setQuery] = useState('');
@@ -26,6 +28,7 @@ export default function ListsPage() {
   const [visibilityFilter, setVisibilityFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState('');
   const [memberSearch, setMemberSearch] = useState('');
+  const [listDetailTab, setListDetailTab] = useState('members');
   const tags = rawTags || [];
   const actions = demoStore.actions;
 
@@ -184,110 +187,119 @@ export default function ListsPage() {
         </>
       )}
 
-      {isDetailView && selectedList && (
-        <section className="list-detail-page">
-          <header className="list-detail-header">
-            <button type="button" className="filter-btn list-detail-back" onClick={() => setSelectedListId(null)}>← Back to lists</button>
-            <div className="list-detail-title">
-              <div className={`list-avatar-v2 ${selectedList.color}`}>{selectedList.initials}</div>
-              <div>
-                <h1>{selectedList.name}</h1>
-                <p className="list-detail-subtitle">{selectedMembers.length} members • Last engagement {selectedList.lastEngagement}</p>
+      {isDetailView && selectedList && (() => {
+        const listTabs = [
+          { id: 'overview', label: 'Overview' },
+          { id: 'members', label: 'Members', count: selectedMembersRaw.length },
+          { id: 'notes', label: 'Notes', count: selectedListNotes.length },
+        ];
+        const listActions = [
+          { label: 'Add Note', onClick: () => setListDetailTab('notes') },
+          { divider: true },
+          ...(selectedList.type === 'Event-based' ? [{ label: 'Pull Through Follow-ups', icon: 'send', onClick: () => window.alert('Event pull-through: Creating follow-up touchpoints for all attendees...') }] : []),
+          ...(can('list.create') ? [{ label: 'Edit', onClick: () => window.alert('Edit list coming soon') }] : []),
+        ];
+        return (
+          <section className="list-detail-page">
+            <header className="list-detail-header">
+              <button type="button" className="filter-btn list-detail-back" onClick={() => { setSelectedListId(null); setListDetailTab('members'); }}>← Back to lists</button>
+              <div className="list-detail-title">
+                <div className={`list-avatar-v2 ${selectedList.color}`}>{selectedList.initials}</div>
+                <div>
+                  <h1>{selectedList.name}</h1>
+                  <p className="list-detail-subtitle">{selectedMembersRaw.length} members • Last engagement {selectedList.lastEngagement}</p>
+                </div>
               </div>
-            </div>
-            <div className="list-detail-header-meta">
-              <div><p className="modal-label">Primary tag</p><p className="modal-value">{selectedList.tag}</p></div>
-              <div><p className="modal-label">Visibility</p><p className="modal-value">{selectedList.visibility || 'Firm-wide'}</p></div>
-            </div>
-          </header>
+              <DetailActionBar actions={listActions} />
+              <DetailTabBar tabs={listTabs} activeTab={listDetailTab} onTabChange={setListDetailTab} />
+            </header>
 
-          <div className="list-detail-grid">
-            <section className="list-detail-summary">
-              <div><p className="modal-label">List owner</p><p className="modal-value">{selectedList.owner}</p></div>
-              <div><p className="modal-label">List type</p><p className="modal-value">{selectedList.type}</p></div>
-              <div><p className="modal-label">Date created</p><p className="modal-value">{selectedList.createdAt}</p></div>
-            </section>
+            {listDetailTab === 'overview' && (
+              <div className="list-detail-grid">
+                <section className="list-detail-summary">
+                  <div><p className="modal-label">List owner</p><p className="modal-value">{selectedList.owner}</p></div>
+                  <div><p className="modal-label">List type</p><p className="modal-value">{selectedList.type}</p></div>
+                  <div><p className="modal-label">Date created</p><p className="modal-value">{selectedList.createdAt}</p></div>
+                  <div><p className="modal-label">Primary tag</p><p className="modal-value">{selectedList.tag}</p></div>
+                  <div><p className="modal-label">Visibility</p><p className="modal-value">{selectedList.visibility || 'Firm-wide'}</p></div>
+                </section>
 
-            {/* Marketing Activity */}
-            {field('marketingActivity') && selectedList.marketingActivity?.length > 0 && (
-              <section style={{ marginTop: 16 }}>
-                <p className="modal-label">Marketing Activity</p>
-                <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', marginTop: 8 }}>
-                  <thead><tr><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Date</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Type</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Description</th><th style={{ textAlign: 'center', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Recipients</th></tr></thead>
-                  <tbody>
-                    {selectedList.marketingActivity.map((ma, i) => (
-                      <tr key={i}><td style={{ padding: '6px 8px' }}>{ma.date}</td><td style={{ padding: '6px 8px' }}>{ma.type}</td><td style={{ padding: '6px 8px' }}>{ma.description}</td><td style={{ padding: '6px 8px', textAlign: 'center' }}>{ma.recipients}</td></tr>
-                    ))}
-                  </tbody>
-                </table>
+                {field('marketingActivity') && selectedList.marketingActivity?.length > 0 && (
+                  <section style={{ marginTop: 16 }}>
+                    <p className="modal-label">Marketing Activity</p>
+                    <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', marginTop: 8 }}>
+                      <thead><tr><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Date</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Type</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Description</th><th style={{ textAlign: 'center', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Recipients</th></tr></thead>
+                      <tbody>
+                        {selectedList.marketingActivity.map((ma, i) => (
+                          <tr key={i}><td style={{ padding: '6px 8px' }}>{ma.date}</td><td style={{ padding: '6px 8px' }}>{ma.type}</td><td style={{ padding: '6px 8px' }}>{ma.description}</td><td style={{ padding: '6px 8px', textAlign: 'center' }}>{ma.recipients}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </section>
+                )}
+              </div>
+            )}
+
+            {listDetailTab === 'members' && (
+              <section className="list-detail-members" style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <p className="modal-label">Members ({selectedMembers.length})</p>
+                  <input
+                    placeholder="Filter members..."
+                    value={memberSearch}
+                    onChange={(e) => setMemberSearch(e.target.value)}
+                    style={{ border: '1px solid #d4d4d4', borderRadius: 8, padding: '6px 10px', fontSize: 13, width: 200 }}
+                  />
+                </div>
+                <div className="list-members-table">
+                  <div className="list-members-head"><span>Contact</span><span>Status</span><span>Summary</span><span>Actions</span></div>
+                  <div className="list-members-body">
+                    {selectedMembers.map((member) => {
+                      const memberTouchpoints = touchpoints.filter((tp) => tp.contactName === member.name);
+                      const hasEventCompleted = memberTouchpoints.some((tp) => tp.kind === 'interaction' && tp.interactionType === 'Event');
+                      const hasCompletedInteraction = memberTouchpoints.some((tp) => tp.kind === 'interaction');
+                      let status = 'Invited';
+                      if (hasEventCompleted) status = 'Attended';
+                      else if (hasCompletedInteraction) status = 'Confirmed';
+                      return (
+                        <div className="list-member-row" key={member.id}>
+                          <div className="list-member-contact">
+                            <div className="avatar">{member.name.split(' ').map((n) => n[0]).join('')}</div>
+                            <div className="list-member-meta"><strong>{member.name}</strong><p>{member.title} • {member.company}</p></div>
+                          </div>
+                          <div className="list-member-status">{status}</div>
+                          <div className="list-member-summary">Recent engagement summary placeholder</div>
+                          <div className="list-member-actions">
+                            <button aria-label="open contact"><Icon name="user" /></button>
+                            <button aria-label="add touchpoint"><Icon name="docPlus" /></button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </section>
             )}
 
-            <section className="list-detail-members">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <p className="modal-label">Members ({selectedMembers.length})</p>
-                <input
-                  placeholder="Filter members..."
-                  value={memberSearch}
-                  onChange={(e) => setMemberSearch(e.target.value)}
-                  style={{ border: '1px solid #d4d4d4', borderRadius: 8, padding: '6px 10px', fontSize: 13, width: 200 }}
-                />
-              </div>
-              <div className="list-members-table">
-                <div className="list-members-head"><span>Contact</span><span>Status</span><span>Summary</span><span>Actions</span></div>
-                <div className="list-members-body">
-                  {selectedMembers.map((member) => {
-                    const memberTouchpoints = touchpoints.filter((tp) => tp.contactName === member.name);
-                    const hasEventCompleted = memberTouchpoints.some((tp) => tp.kind === 'interaction' && tp.interactionType === 'Event');
-                    const hasCompletedInteraction = memberTouchpoints.some((tp) => tp.kind === 'interaction');
-                    let status = 'Invited';
-                    if (hasEventCompleted) status = 'Attended';
-                    else if (hasCompletedInteraction) status = 'Confirmed';
-                    return (
-                      <div className="list-member-row" key={member.id}>
-                        <div className="list-member-contact">
-                          <div className="avatar">{member.name.split(' ').map((n) => n[0]).join('')}</div>
-                          <div className="list-member-meta"><strong>{member.name}</strong><p>{member.title} • {member.company}</p></div>
-                        </div>
-                        <div className="list-member-status">{status}</div>
-                        <div className="list-member-summary">Recent engagement summary placeholder</div>
-                        <div className="list-member-actions">
-                          <button aria-label="open contact"><Icon name="user" /></button>
-                          <button aria-label="add touchpoint"><Icon name="docPlus" /></button>
-                        </div>
-                      </div>
-                    );
-                  })}
+            {listDetailTab === 'notes' && (
+              <section className="list-detail-notes" style={{ marginTop: 16 }}>
+                <p className="modal-label">List notes</p>
+                {selectedListNotes.length === 0 ? <p className="modal-value">No notes yet for this list.</p> : (
+                  <ul className="modal-list">
+                    {selectedListNotes.map((note) => (
+                      <li key={note.id}><strong>{note.author}</strong> — {new Date(note.createdAt).toLocaleDateString()} <br />{note.text}</li>
+                    ))}
+                  </ul>
+                )}
+                <div className="list-note-add">
+                  <textarea rows={3} className="list-note-textarea" placeholder="Add a shared note about this list or event..." value={newNoteText} onChange={(e) => setNewNoteText(e.target.value)} />
+                  <button type="button" className="detail-action-btn primary" disabled={!newNoteText.trim()} onClick={() => { const text = newNoteText.trim(); if (!text) return; actions.addListNote({ listId: selectedList.id, text }); setNewNoteText(''); }}>Add note</button>
                 </div>
-              </div>
-            </section>
-
-            {/* Event pull-through action */}
-            {selectedList.type === 'Event-based' && (
-              <div style={{ marginTop: 12 }}>
-                <button className="tool-btn" onClick={() => { window.alert('Event pull-through: Creating follow-up touchpoints for all attendees...'); }}>
-                  Pull Through Event Follow-ups
-                </button>
-              </div>
+              </section>
             )}
-
-            <section className="list-detail-notes">
-              <p className="modal-label">List notes</p>
-              {selectedListNotes.length === 0 ? <p className="modal-value">No notes yet for this list.</p> : (
-                <ul className="modal-list">
-                  {selectedListNotes.map((note) => (
-                    <li key={note.id}><strong>{note.author}</strong> — {new Date(note.createdAt).toLocaleDateString()} <br />{note.text}</li>
-                  ))}
-                </ul>
-              )}
-              <div className="list-note-add">
-                <textarea rows={3} className="list-note-textarea" placeholder="Add a shared note about this list or event..." value={newNoteText} onChange={(e) => setNewNoteText(e.target.value)} />
-                <button type="button" className="filter-btn" disabled={!newNoteText.trim()} onClick={() => { const text = newNoteText.trim(); if (!text) return; actions.addListNote({ listId: selectedList.id, text }); setNewNoteText(''); }}>Add note</button>
-              </div>
-            </section>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       <CreateListModal isOpen={showCreateList} onClose={() => setShowCreateList(false)} />
     </section>

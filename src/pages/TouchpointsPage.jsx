@@ -6,8 +6,15 @@ import SearchBar from '../common/components/SearchBar';
 import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 import AssignTaskModal from '../common/components/AssignTaskModal';
 import { usePersona } from '../common/hooks/usePersona';
+import { resolveContactAvatarUrl } from '../common/utils/avatars';
+import DetailActionBar from '../common/components/DetailActionBar';
+import DetailTabBar from '../common/components/DetailTabBar';
 
 const interactionTypes = ['Email', 'Meeting', 'Event', 'Call', 'Visit'];
+
+function avatarSrc(url) {
+  return resolveContactAvatarUrl(url) || url || '';
+}
 
 function contactByName(contacts, name) {
   return contacts.find((contact) => contact.name === name);
@@ -35,6 +42,7 @@ export default function TouchpointsPage({ view = '' }) {
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [assignTarget, setAssignTarget] = useState(null);
   const [rescheduleDueAt, setRescheduleDueAt] = useState('');
+  const [detailTab, setDetailTab] = useState('details');
   const [sort, setSort] = useState({ key: '', direction: '' });
   const [showColumns, setShowColumns] = useState({ contact: true, interaction: true, status: true, relationship: true });
   const contacts = useDemoStore((s) => s.contacts || []);
@@ -271,7 +279,7 @@ export default function TouchpointsPage({ view = '' }) {
               </div>
               {showColumns.contact && (
                 <div className="touchpoint-contact-col-v2">
-                  <img src={row.avatarUrl} alt={row.contactName} className={`contact-avatar-v2 tone-${row.signalTone}`} />
+                  <img src={avatarSrc(row.avatarUrl)} alt={row.contactName} className={`contact-avatar-v2 tone-${row.signalTone}`} />
                   <div className="touchpoint-contact-meta-v2">
                     <div className="contact-title-line-v2"><strong>{row.contactName}</strong><Icon name="signal" className={`network-icon tone-${row.signalTone}`} /></div>
                     <p>{row.role}</p>
@@ -310,7 +318,7 @@ export default function TouchpointsPage({ view = '' }) {
                 {isOverdue(row) && <span className="tp-pill tp-pill-overdue">Overdue</span>}
               </div>
               <div className="touchpoint-card-contact">
-                <img src={row.avatarUrl} alt={row.contactName} className={`contact-avatar-v2 tone-${row.signalTone}`} />
+                <img src={avatarSrc(row.avatarUrl)} alt={row.contactName} className={`contact-avatar-v2 tone-${row.signalTone}`} />
                 <div className="touchpoint-card-contact-meta">
                   <strong>{row.contactName}</strong>
                   <p>{row.role}</p><p>{row.company}</p>
@@ -330,67 +338,106 @@ export default function TouchpointsPage({ view = '' }) {
       </section>
 
       {/* Touchpoint Detail Modal */}
-      {selectedRow && (
-        <div className="modal-backdrop" onClick={() => setSelectedRow(null)}>
-          <div className="company-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head touchpoint-detail-head">
-              <div className="touchpoint-detail-contact">
-                <img src={selectedRow.avatarUrl} alt={selectedRow.contactName} className={`contact-avatar-v2 tone-${selectedRow.signalTone}`} />
-                <div className="touchpoint-detail-contact-meta">
+      {selectedRow && (() => {
+        const tpNotes = touchpointNotes.filter((n) => n.touchpointId === selectedRow.id);
+        const detailTabs = [
+          { id: 'details', label: 'Details' },
+          { id: 'history', label: 'History', count: (selectedRow.history || []).length },
+          { id: 'notes', label: 'Notes', count: tpNotes.length + (selectedRow.notes ? 1 : 0) },
+        ];
+        const detailActions = [
+          ...(selectedRow.kind === 'task' ? [
+            { label: 'Complete', icon: 'check', onClick: () => { demoStore.actions.completeTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'completed' } : p); }, disabled: selectedRow.status !== 'open' },
+            { label: 'Cancel', icon: 'x', onClick: () => { demoStore.actions.cancelTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'cancelled' } : p); }, disabled: selectedRow.status !== 'open' },
+          ] : []),
+          ...(selectedRow.kind === 'task' && can('touchpoint.assign') ? [
+            { divider: true },
+            { label: 'Assign', icon: 'user', onClick: () => { setAssignTarget(selectedRow); setSelectedRow(null); } },
+          ] : []),
+          { divider: true },
+          { label: 'Add Note', icon: 'note', onClick: () => setDetailTab('notes') },
+        ];
+        return (
+          <div className="modal-backdrop" onClick={() => setSelectedRow(null)}>
+            <div className="company-modal" onClick={(event) => event.stopPropagation()} style={{ maxWidth: 600 }}>
+              {/* Header */}
+              <div className="detail-header" style={{ padding: '16px 16px 0' }}>
+                <img src={avatarSrc(selectedRow.avatarUrl)} alt={selectedRow.contactName} className={`detail-header-avatar tone-${selectedRow.signalTone}`} />
+                <div className="detail-header-info">
                   <h2>{selectedRow.contactName}</h2>
                   <p>{selectedRow.role} • {selectedRow.company}</p>
+                  <p style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                    <span className="tp-pill tp-pill-status" data-status={selectedRow.status}>{selectedRow.status}</span>
+                    <span className="tp-pill tp-pill-relationship">Relationship <strong>{selectedRow.relationshipStatus}</strong></span>
+                  </p>
                 </div>
-              </div>
-              <div className="touchpoint-detail-meta">
-                <div><p className="modal-label">Status</p><p className="modal-value">{selectedRow.status}</p></div>
-                <div><p className="modal-label">Relationship</p><p className="modal-value">{selectedRow.relationshipStatus} (Score {selectedRow.relationshipScore})</p></div>
                 <button className="modal-close" onClick={() => setSelectedRow(null)} aria-label="close modal">x</button>
               </div>
-            </div>
-            <div className="modal-grid">
-              <div><p className="modal-label">Interaction type</p><p className="modal-value">{selectedRow.interactionType}</p></div>
-              <div><p className="modal-label">Status</p><p className="modal-value">{selectedRow.status}</p></div>
-              <div><p className="modal-label">Outcome</p><p className="modal-value">{selectedRow.outcome || '—'}</p></div>
-              <div><p className="modal-label">{selectedRow.kind === 'task' ? 'Due date' : 'Completed'}</p><p className="modal-value">{selectedRow.kind === 'task' ? formatDueLabel(selectedRow.dueAt) : formatDueLabel(selectedRow.completedAt)}</p></div>
-              {selectedRow.assignedTo && <div><p className="modal-label">Assigned to</p><p className="modal-value">{selectedRow.assignedTo}</p></div>}
-              {selectedRow.assignedBy && <div><p className="modal-label">Assigned by</p><p className="modal-value">{selectedRow.assignedBy}</p></div>}
-              {selectedRow.onBehalfOf && <div><p className="modal-label">On behalf of</p><p className="modal-value">{selectedRow.onBehalfOf}</p></div>}
-              {selectedRow.visitStage && <div><p className="modal-label">Visit stage</p><p className="modal-value">{selectedRow.visitStage}</p></div>}
-            </div>
-            <div className="modal-stack">
-              <div><p className="modal-label">Interaction history</p><ul className="modal-list">{(selectedRow.history || []).map((item) => <li key={item}>{item}</li>)}</ul></div>
-              <div>
-                <p className="modal-label">Notes</p>
-                {touchpointNotes.filter((n) => n.touchpointId === selectedRow.id).length === 0 && !selectedRow.notes && <p className="modal-value">No notes yet.</p>}
-                <ul className="modal-list">
-                  {selectedRow.notes && <li key="inline-note"><strong>Original note</strong> — {selectedRow.notes}</li>}
-                  {touchpointNotes.filter((n) => n.touchpointId === selectedRow.id).map((note) => (
-                    <li key={note.id}><strong>{note.author}</strong> — {new Date(note.createdAt).toLocaleDateString()} <br />{note.text}</li>
-                  ))}
-                </ul>
-                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <textarea rows={3} placeholder="Add a note about this touchpoint..." value={newNoteText} onChange={(e) => setNewNoteText(e.target.value)} style={{ width: '100%', borderRadius: 8, border: '1px solid #d4d4d4', padding: '8px 10px' }} />
-                  <button type="button" className="filter-btn" disabled={!newNoteText.trim()} onClick={() => { const text = newNoteText.trim(); if (!text) return; demoStore.actions.addTouchpointNote({ touchpointId: selectedRow.id, text }); setNewNoteText(''); }}>Add note</button>
-                </div>
+
+              {/* Action bar */}
+              <div style={{ padding: '0 16px' }}>
+                <DetailActionBar actions={detailActions} />
               </div>
-            </div>
-            {selectedRow.kind === 'task' && (
-              <div className="modal-actions">
-                <button className="tool-btn" onClick={() => { demoStore.actions.completeTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'completed' } : p); }} disabled={selectedRow.status !== 'open'}>Complete</button>
-                <button className="tool-btn" onClick={() => { demoStore.actions.cancelTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'cancelled' } : p); }} disabled={selectedRow.status !== 'open'}>Cancel</button>
-                {can('touchpoint.assign') && (
-                  <button className="tool-btn" onClick={() => { setAssignTarget(selectedRow); setSelectedRow(null); }}>Assign</button>
+
+              {/* Tab bar */}
+              <div style={{ padding: '0 16px' }}>
+                <DetailTabBar tabs={detailTabs} activeTab={detailTab} onTabChange={setDetailTab} />
+              </div>
+
+              {/* Tab content */}
+              <div style={{ padding: 16, maxHeight: 400, overflowY: 'auto' }}>
+                {detailTab === 'details' && (
+                  <div className="modal-grid">
+                    <div><p className="modal-label">Interaction type</p><p className="modal-value">{selectedRow.interactionType}</p></div>
+                    <div><p className="modal-label">Status</p><p className="modal-value">{selectedRow.status}</p></div>
+                    <div><p className="modal-label">Outcome</p><p className="modal-value">{selectedRow.outcome || '—'}</p></div>
+                    <div><p className="modal-label">{selectedRow.kind === 'task' ? 'Due date' : 'Completed'}</p><p className="modal-value">{selectedRow.kind === 'task' ? formatDueLabel(selectedRow.dueAt) : formatDueLabel(selectedRow.completedAt)}</p></div>
+                    {selectedRow.assignedTo && <div><p className="modal-label">Assigned to</p><p className="modal-value">{selectedRow.assignedTo}</p></div>}
+                    {selectedRow.assignedBy && <div><p className="modal-label">Assigned by</p><p className="modal-value">{selectedRow.assignedBy}</p></div>}
+                    {selectedRow.onBehalfOf && <div><p className="modal-label">On behalf of</p><p className="modal-value">{selectedRow.onBehalfOf}</p></div>}
+                    {selectedRow.visitStage && <div><p className="modal-label">Visit stage</p><p className="modal-value">{selectedRow.visitStage}</p></div>}
+                    {selectedRow.kind === 'task' && selectedRow.status === 'open' && (
+                      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+                        <p className="modal-label" style={{ margin: 0 }}>Reschedule</p>
+                        <input value={rescheduleDueAt} onChange={(e) => setRescheduleDueAt(e.target.value)} placeholder="YYYY-MM-DD" style={{ border: '1px solid #d4d4d4', borderRadius: 8, padding: '6px 10px', fontSize: 13, flex: 1 }} />
+                        <button className="detail-action-btn primary" type="button" onClick={() => { const iso = rescheduleDueAt ? new Date(`${rescheduleDueAt}T09:00:00`).toISOString() : null; if (!iso) return; demoStore.actions.rescheduleTouchpoint(selectedRow.id, iso); setSelectedRow((p) => p ? { ...p, dueAt: iso, status: 'open' } : p); setRescheduleDueAt(''); }}>Save</button>
+                      </div>
+                    )}
+                  </div>
                 )}
-                <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: 'var(--muted-2)' }}>Reschedule</span>
-                  <input value={rescheduleDueAt} onChange={(e) => setRescheduleDueAt(e.target.value)} placeholder="YYYY-MM-DD" style={{ border: '1px solid #d4d4d4', borderRadius: 8, padding: '10px 12px', fontSize: 14 }} />
-                  <button className="primary" type="button" onClick={() => { const iso = rescheduleDueAt ? new Date(`${rescheduleDueAt}T09:00:00`).toISOString() : null; if (!iso) return; demoStore.actions.rescheduleTouchpoint(selectedRow.id, iso); setSelectedRow((p) => p ? { ...p, dueAt: iso, status: 'open' } : p); setRescheduleDueAt(''); }}>Save</button>
-                </label>
+
+                {detailTab === 'history' && (
+                  <div>
+                    {(selectedRow.history || []).length === 0 ? (
+                      <p style={{ color: '#6b7280', fontSize: 13 }}>No interaction history.</p>
+                    ) : (
+                      <ul className="modal-list">
+                        {(selectedRow.history || []).map((item) => <li key={item}>{item}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {detailTab === 'notes' && (
+                  <div>
+                    {tpNotes.length === 0 && !selectedRow.notes && <p style={{ color: '#6b7280', fontSize: 13 }}>No notes yet.</p>}
+                    <ul className="modal-list">
+                      {selectedRow.notes && <li key="inline-note"><strong>Original note</strong> — {selectedRow.notes}</li>}
+                      {tpNotes.map((note) => (
+                        <li key={note.id}><strong>{note.author}</strong> — {new Date(note.createdAt).toLocaleDateString()} <br />{note.text}</li>
+                      ))}
+                    </ul>
+                    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <textarea rows={3} placeholder="Add a note about this touchpoint..." value={newNoteText} onChange={(e) => setNewNoteText(e.target.value)} style={{ width: '100%', borderRadius: 8, border: '1px solid #d4d4d4', padding: '8px 10px', fontSize: 13 }} />
+                      <button type="button" className="detail-action-btn primary" style={{ alignSelf: 'flex-start' }} disabled={!newNoteText.trim()} onClick={() => { const text = newNoteText.trim(); if (!text) return; demoStore.actions.addTouchpointNote({ touchpointId: selectedRow.id, text }); setNewNoteText(''); }}>Add note</button>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Log Interaction Modal */}
       {isLogOpen && (

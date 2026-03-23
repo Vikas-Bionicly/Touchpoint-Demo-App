@@ -24,6 +24,8 @@ import FilterBar from '../common/components/FilterBar';
 import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
 import DataTable from '../common/components/DataTable';
 import ActivityFeed from '../common/components/ActivityFeed';
+import DetailActionBar from '../common/components/DetailActionBar';
+import DetailTabBar from '../common/components/DetailTabBar';
 
 const companyAvatarUrls = import.meta.glob('../../demo-data/avatars/companies/*', { eager: true, import: 'default' });
 
@@ -61,6 +63,7 @@ export default function CompaniesPage({ subPage }) {
   const [editCompany, setEditCompany] = useState(null);
   const [showAddOpp, setShowAddOpp] = useState(null);
   const [showInteractions, setShowInteractions] = useState(null);
+  const [companyDetailTab, setCompanyDetailTab] = useState('overview');
   const rawCompanyTags = useDemoStore((s) => s.companyTags);
   const rawTags = useDemoStore((s) => s.tags);
   const rawCompanyFilters = useDemoStore((s) => s.companyFilters);
@@ -322,189 +325,201 @@ export default function CompaniesPage({ subPage }) {
         </>
       )}
 
-      {isDetailView && selectedCompany && (
-        <section className="company-detail-page">
-          <header className="company-detail-header">
-            <button type="button" className="filter-btn company-detail-back" onClick={() => setSelectedCompany(null)}>← Back to companies</button>
-            <div className="company-detail-title">
-              <CompanyLogo type={selectedCompany.logo} avatarUrl={selectedCompany.avatarUrl} name={selectedCompany.name} />
-              <div>
-                <h1>{selectedCompany.name}</h1>
-                <p className="company-detail-subtitle">{selectedCompany.category1}{selectedCompany.category2 ? ` • ${selectedCompany.category2}` : ''}</p>
+      {isDetailView && selectedCompany && (() => {
+        const companyDetailTabs = [
+          { id: 'overview', label: 'Overview' },
+          { id: 'engagement', label: 'Engagement', count: engagementRows.length },
+          { id: 'matters', label: 'Matters & Opportunities' },
+          { id: 'activity', label: 'Activity & Notes' },
+        ];
+        const companyDetailActions = [
+          { label: 'Add Note', onClick: () => setNoteForCompany(selectedCompany) },
+          { label: 'Firm Connections', icon: 'target', onClick: () => { const c = guessContactForCompany(selectedCompany.name) || { id: selectedCompany.id, name: selectedCompany.name, company: selectedCompany.name, role: 'Client contact' }; setConnectionsForContact(c); } },
+          { divider: true },
+          ...(can('tag.manage') ? [{ label: 'Tags', onClick: () => setTagsForCompany(selectedCompany) }] : []),
+          ...(can('company.edit') ? [{ label: 'Edit', onClick: () => setEditCompany(selectedCompany) }] : []),
+          { label: 'Recent Interactions', onClick: () => setShowInteractions(selectedCompany) },
+          { divider: true },
+          ...(can('opportunity.add') ? [{ label: '+ Opportunity', onClick: () => setShowAddOpp(selectedCompany) }] : []),
+          { label: 'Create Touchpoint', primary: true, onClick: () => { const c = guessContactForCompany(selectedCompany.name); setTouchpointPreset({ contactName: c?.name || contacts[0]?.name || '', company: selectedCompany.name, role: c?.role || '', title: `Touchpoint for ${selectedCompany.name}`, notes: '', source: 'companies:detail' }); } },
+        ];
+        return (
+          <section className="company-detail-page">
+            <header className="company-detail-header">
+              <button type="button" className="filter-btn company-detail-back" onClick={() => { setSelectedCompany(null); setCompanyDetailTab('overview'); }}>← Back to companies</button>
+              <div className="company-detail-title">
+                <CompanyLogo type={selectedCompany.logo} avatarUrl={selectedCompany.avatarUrl} name={selectedCompany.name} />
+                <div>
+                  <h1>{selectedCompany.name}</h1>
+                  <p className="company-detail-subtitle">{selectedCompany.category1}{selectedCompany.category2 ? ` • ${selectedCompany.category2}` : ''}</p>
+                </div>
               </div>
-            </div>
-            <div className="company-detail-header-actions">
-              <button className="tool-btn" onClick={() => setNoteForCompany(selectedCompany)}>Add note</button>
-              <button className="tool-btn" onClick={() => { const c = guessContactForCompany(selectedCompany.name) || { id: selectedCompany.id, name: selectedCompany.name, company: selectedCompany.name, role: 'Client contact' }; setConnectionsForContact(c); }}>Firm connections</button>
-              {can('tag.manage') && <button className="tool-btn" onClick={() => setTagsForCompany(selectedCompany)}>Manage tags</button>}
-              {can('company.edit') && <button className="tool-btn" onClick={() => { setEditCompany(selectedCompany); }}>Edit</button>}
-              <button className="tool-btn" onClick={() => setShowInteractions(selectedCompany)}>Recent Interactions</button>
-              {can('opportunity.add') && <button className="tool-btn" onClick={() => setShowAddOpp(selectedCompany)}>+ Opportunity</button>}
-              <button className="primary" onClick={() => { const c = guessContactForCompany(selectedCompany.name); setTouchpointPreset({ contactName: c?.name || contacts[0]?.name || '', company: selectedCompany.name, role: c?.role || '', title: `Touchpoint for ${selectedCompany.name}`, notes: '', source: 'companies:detail' }); }}>Create touchpoint</button>
-            </div>
-          </header>
+              <DetailActionBar actions={companyDetailActions} />
+              <DetailTabBar tabs={companyDetailTabs} activeTab={companyDetailTab} onTabChange={setCompanyDetailTab} />
+            </header>
 
-          <div className="company-detail-grid">
-            <section className="company-detail-summary">
-              <div><p className="modal-label">Client status</p><p className="modal-value">{selectedCompany.clientStatus}</p></div>
-              <div><p className="modal-label">Recent engagement</p><p className="modal-value">{selectedCompany.recentEngagement}</p></div>
-              <div>
-                <p className="modal-label">Client revenue{!field('revenue.exact') && field('revenue.range') && <span style={{ marginLeft: 6, fontSize: 12 }}>(range)</span>}</p>
-                <p className="modal-value">{revenueLabel}</p>
-              </div>
-              <div>
-                <p className="modal-label">Relationship</p>
-                {field('relationshipScore') ? (
-                  <RelationshipScoreGauge metricsCurrent={selectedCompany.metricsCurrent} metricsPrevious={selectedCompany.metricsPrevious} compact />
-                ) : (
-                  <p className="modal-value">{selectedCompany.relationshipTrend}</p>
+            {companyDetailTab === 'overview' && (
+              <>
+                <div className="company-detail-grid">
+                  <section className="company-detail-summary">
+                    <div><p className="modal-label">Client status</p><p className="modal-value">{selectedCompany.clientStatus}</p></div>
+                    <div><p className="modal-label">Recent engagement</p><p className="modal-value">{selectedCompany.recentEngagement}</p></div>
+                    <div>
+                      <p className="modal-label">Client revenue{!field('revenue.exact') && field('revenue.range') && <span style={{ marginLeft: 6, fontSize: 12 }}>(range)</span>}</p>
+                      <p className="modal-value">{revenueLabel}</p>
+                    </div>
+                    <div>
+                      <p className="modal-label">Relationship</p>
+                      {field('relationshipScore') ? (
+                        <RelationshipScoreGauge metricsCurrent={selectedCompany.metricsCurrent} metricsPrevious={selectedCompany.metricsPrevious} compact />
+                      ) : (
+                        <p className="modal-value">{selectedCompany.relationshipTrend}</p>
+                      )}
+                    </div>
+                    {field('companyHierarchy') && (
+                      <div className="company-detail-hierarchy"><p className="modal-label">Company hierarchy</p><p className="modal-value">{selectedCompany.hierarchy.join(' > ')}</p></div>
+                    )}
+                    {field('catCode') && selectedCompany.catCode && <div><p className="modal-label">Cat Code</p><p className="modal-value">{selectedCompany.catCode}</p></div>}
+                    {field('clientCode') && selectedCompany.clientCode && <div><p className="modal-label">Client Code</p><p className="modal-value">{selectedCompany.clientCode}</p></div>}
+                    {field('gics') && selectedCompany.gics && <div><p className="modal-label">GICs</p><p className="modal-value">{selectedCompany.gics}</p></div>}
+                    {field('billingLawyer') && selectedCompany.billingLawyer && <div><p className="modal-label">Billing Lawyer</p><p className="modal-value">{selectedCompany.billingLawyer}</p></div>}
+                  </section>
+
+                  {field('companyNews') && <CompanyNewsPanel newsItems={selectedCompany.newsItems} />}
+
+                  <section className="company-detail-columns">
+                    {field('relationshipHistory') && (
+                      <div className="company-detail-column">
+                        <p className="modal-label">Relationship history</p>
+                        <ul className="modal-list">{selectedCompany.relationshipHistory.slice(0, depth('relationshipHistory')).map((item) => <li key={item}>{item}</li>)}</ul>
+                      </div>
+                    )}
+                    {field('internalConnections') && (
+                      <div className="company-detail-column">
+                        <p className="modal-label">Key internal connections</p>
+                        <ul className="modal-list">{selectedCompany.keyContacts.slice(0, depth('keyContacts')).map((item) => <li key={item}>{item}</li>)}</ul>
+                      </div>
+                    )}
+                    <div className="company-detail-column">
+                      <p className="modal-label">Recent interactions</p>
+                      <ul className="modal-list">{selectedCompany.recentInteractions.slice(0, depth('recentInteractions')).map((item) => <li key={item}>{item}</li>)}</ul>
+                    </div>
+                  </section>
+                </div>
+
+                {field('companyHealth') && (
+                  <div className="company-detail-section">
+                    <div className="company-detail-panels">
+                      <CompanyHealthPanel company={selectedCompany} />
+                      <OpportunityIdentificationPanel company={selectedCompany} />
+                    </div>
+                  </div>
                 )}
-              </div>
-              {field('companyHierarchy') && (
-                <div className="company-detail-hierarchy"><p className="modal-label">Company hierarchy</p><p className="modal-value">{selectedCompany.hierarchy.join(' > ')}</p></div>
-              )}
-              {field('catCode') && selectedCompany.catCode && (
-                <div><p className="modal-label">Cat Code</p><p className="modal-value">{selectedCompany.catCode}</p></div>
-              )}
-              {field('clientCode') && selectedCompany.clientCode && (
-                <div><p className="modal-label">Client Code</p><p className="modal-value">{selectedCompany.clientCode}</p></div>
-              )}
-              {field('gics') && selectedCompany.gics && (
-                <div><p className="modal-label">GICs</p><p className="modal-value">{selectedCompany.gics}</p></div>
-              )}
-              {field('billingLawyer') && selectedCompany.billingLawyer && (
-                <div><p className="modal-label">Billing Lawyer</p><p className="modal-value">{selectedCompany.billingLawyer}</p></div>
-              )}
-            </section>
 
-            {field('companyNews') && <CompanyNewsPanel newsItems={selectedCompany.newsItems} />}
+                {field('financialTrends') && (
+                  <div className="company-detail-section">
+                    <div className="company-detail-section-heading"><p className="modal-label">Financial & BD trends</p></div>
+                    <div className="company-detail-panels company-detail-panels-secondary">
+                      <CompanyMattersPanel company={selectedCompany} />
+                      <CompanyOpportunitiesPanel company={selectedCompany} />
+                    </div>
+                  </div>
+                )}
 
-            <section className="company-detail-columns">
-              {field('relationshipHistory') && (
-                <div className="company-detail-column">
-                  <p className="modal-label">Relationship history</p>
+                {field('powerBIDashboard') && (
+                  <div className="company-detail-section">
+                    <div className="company-detail-section-heading"><p className="modal-label">Analytics Dashboard</p></div>
+                    <PowerBIDashboard company={selectedCompany} />
+                  </div>
+                )}
+              </>
+            )}
+
+            {companyDetailTab === 'engagement' && (
+              <section className="company-engagement-section">
+                <div className="company-engagement-header">
+                  <h3>Engagement</h3>
+                  <div className="company-engagement-filters">
+                    <select value={engagementTypeFilter} onChange={(e) => setEngagementTypeFilter(e.target.value)}>
+                      <option value="All">All types</option>
+                      <option value="Email">Email</option><option value="Meeting">Meeting</option><option value="Call">Call</option><option value="Event">Event</option><option value="Other">Other</option>
+                    </select>
+                    <select value={engagementPersonFilter} onChange={(e) => setEngagementPersonFilter(e.target.value)}>
+                      <option value="All">All internal</option><option value="You">You</option>
+                    </select>
+                  </div>
+                </div>
+                <table className="company-engagement-table">
+                  <thead><tr><th>Date</th><th>Type</th><th>Contact</th><th>Internal</th><th>Summary</th></tr></thead>
+                  <tbody>
+                    {engagementRows.map((row) => <tr key={row.id}><td>{row.date}</td><td>{row.type}</td><td>{row.contact}</td><td>{row.internal}</td><td>{row.summary}</td></tr>)}
+                    {engagementRows.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No engagement found for the current filters.</td></tr>}
+                  </tbody>
+                </table>
+              </section>
+            )}
+
+            {companyDetailTab === 'matters' && (
+              <>
+                <div className="company-detail-section">
+                  <div className="company-detail-section-heading"><p className="modal-label">Matters</p></div>
+                  {field('matters.table') ? (
+                    <table className="company-matters-table">
+                      <thead><tr><th>Open date</th><th>Status</th><th>Matter name</th><th>Practice area</th>{field('matterRank') && <th>Rank</th>}{field('wip') && <th>WIP</th>}<th>Lead Lawyer</th></tr></thead>
+                      <tbody>
+                        {(selectedCompany.matters || []).map((m) => (
+                          <tr key={m.id}><td>{m.openDate}</td><td>{m.status}</td><td>{m.name}</td><td>{m.practiceArea}</td>{field('matterRank') && <td>{m.matterRank}</td>}{field('wip') && <td>${(m.wip || 0).toLocaleString()}</td>}<td>{m.leadLawyer || '—'}</td></tr>
+                        ))}
+                        {(!selectedCompany.matters || selectedCompany.matters.length === 0) && <tr><td colSpan={7} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No matters yet.</td></tr>}
+                      </tbody>
+                    </table>
+                  ) : field('matters.summary') ? (
+                    <p className="modal-value">{(selectedCompany.matters || []).length} matters total ({(selectedCompany.matters || []).filter((m) => m.status === 'Active').length} active)</p>
+                  ) : null}
+                </div>
+
+                <div className="company-detail-section">
+                  <div className="company-detail-section-heading"><p className="modal-label">Opportunities pipeline</p></div>
+                  {field('opportunities.table') ? (
+                    <table className="company-opportunities-table">
+                      <thead><tr><th>Date</th><th>Status</th><th>Name</th><th>Type</th></tr></thead>
+                      <tbody>
+                        {(selectedCompany.opportunities || []).map((opp) => <tr key={opp.id}><td>{opp.date}</td><td>{opp.status}</td><td>{opp.name}</td><td>{opp.type}</td></tr>)}
+                        {(!selectedCompany.opportunities || selectedCompany.opportunities.length === 0) && <tr><td colSpan={4} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No opportunities in the pipeline yet.</td></tr>}
+                      </tbody>
+                    </table>
+                  ) : field('opportunities.summary') ? (
+                    <p className="modal-value">{(selectedCompany.opportunities || []).length} opportunities ({(selectedCompany.opportunities || []).filter((o) => o.status === 'Pending').length} pending, {(selectedCompany.opportunities || []).filter((o) => o.status === 'Won').length} won)</p>
+                  ) : null}
+                </div>
+              </>
+            )}
+
+            {companyDetailTab === 'activity' && (
+              <>
+                <div className="company-detail-section">
+                  <div className="company-detail-section-heading"><p className="modal-label">Company notes</p></div>
                   <ul className="modal-list">
-                    {selectedCompany.relationshipHistory.slice(0, depth('relationshipHistory')).map((item) => <li key={item}>{item}</li>)}
+                    {companyNotes.filter((n) => n.companyId === selectedCompany.id).slice(0, depth('companyNotes')).map((note) => (
+                      <li key={note.id}>
+                        <strong>{note.type}</strong> · <span style={{ textTransform: 'capitalize' }}>{note.visibility}</span>{' '}
+                        <span style={{ opacity: 0.7, fontSize: 12 }}>{new Date(note.createdAt).toLocaleDateString()}</span>
+                        <div>{note.text}</div>
+                      </li>
+                    ))}
+                    {companyNotes.filter((n) => n.companyId === selectedCompany.id).length === 0 && <li>No notes yet for this company.</li>}
                   </ul>
                 </div>
-              )}
-              {field('internalConnections') && (
-                <div className="company-detail-column">
-                  <p className="modal-label">Key internal connections</p>
-                  <ul className="modal-list">
-                    {selectedCompany.keyContacts.slice(0, depth('keyContacts')).map((item) => <li key={item}>{item}</li>)}
-                  </ul>
+
+                <div className="company-detail-section">
+                  <div className="company-detail-section-heading"><p className="modal-label">Activity</p></div>
+                  <ActivityFeed activities={activities} entityFilter={selectedCompany.name} limit={10} />
                 </div>
-              )}
-              <div className="company-detail-column">
-                <p className="modal-label">Recent interactions</p>
-                <ul className="modal-list">
-                  {selectedCompany.recentInteractions.slice(0, depth('recentInteractions')).map((item) => <li key={item}>{item}</li>)}
-                </ul>
-              </div>
-            </section>
-          </div>
-
-          <div className="company-detail-section">
-            <div className="company-detail-section-heading"><p className="modal-label">Company notes</p></div>
-            <ul className="modal-list">
-              {companyNotes.filter((n) => n.companyId === selectedCompany.id).slice(0, depth('companyNotes')).map((note) => (
-                <li key={note.id}>
-                  <strong>{note.type}</strong> · <span style={{ textTransform: 'capitalize' }}>{note.visibility}</span>{' '}
-                  <span style={{ opacity: 0.7, fontSize: 12 }}>{new Date(note.createdAt).toLocaleDateString()}</span>
-                  <div>{note.text}</div>
-                </li>
-              ))}
-              {companyNotes.filter((n) => n.companyId === selectedCompany.id).length === 0 && <li>No notes yet for this company.</li>}
-            </ul>
-          </div>
-
-          <div className="company-detail-section">
-            <div className="company-detail-section-heading"><p className="modal-label">Activity</p></div>
-            <ActivityFeed activities={activities} entityFilter={selectedCompany.name} limit={10} />
-          </div>
-
-          <section className="company-engagement-section">
-            <div className="company-engagement-header">
-              <h3>Engagement</h3>
-              <div className="company-engagement-filters">
-                <select value={engagementTypeFilter} onChange={(e) => setEngagementTypeFilter(e.target.value)}>
-                  <option value="All">All types</option>
-                  <option value="Email">Email</option><option value="Meeting">Meeting</option><option value="Call">Call</option><option value="Event">Event</option><option value="Other">Other</option>
-                </select>
-                <select value={engagementPersonFilter} onChange={(e) => setEngagementPersonFilter(e.target.value)}>
-                  <option value="All">All internal</option><option value="You">You</option>
-                </select>
-              </div>
-            </div>
-            <table className="company-engagement-table">
-              <thead><tr><th>Date</th><th>Type</th><th>Contact</th><th>Internal</th><th>Summary</th></tr></thead>
-              <tbody>
-                {engagementRows.map((row) => <tr key={row.id}><td>{row.date}</td><td>{row.type}</td><td>{row.contact}</td><td>{row.internal}</td><td>{row.summary}</td></tr>)}
-                {engagementRows.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No engagement found for the current filters.</td></tr>}
-              </tbody>
-            </table>
+              </>
+            )}
           </section>
-
-          {field('companyHealth') && (
-            <div className="company-detail-section">
-              <div className="company-detail-panels">
-                <CompanyHealthPanel company={selectedCompany} />
-                <OpportunityIdentificationPanel company={selectedCompany} />
-              </div>
-            </div>
-          )}
-
-          <div className="company-detail-section">
-            <div className="company-detail-section-heading"><p className="modal-label">Matters</p></div>
-            {field('matters.table') ? (
-              <table className="company-matters-table">
-                <thead><tr><th>Open date</th><th>Status</th><th>Matter name</th><th>Practice area</th>{field('matterRank') && <th>Rank</th>}{field('wip') && <th>WIP</th>}<th>Lead Lawyer</th></tr></thead>
-                <tbody>
-                  {(selectedCompany.matters || []).map((m) => (
-                    <tr key={m.id}><td>{m.openDate}</td><td>{m.status}</td><td>{m.name}</td><td>{m.practiceArea}</td>{field('matterRank') && <td>{m.matterRank}</td>}{field('wip') && <td>${(m.wip || 0).toLocaleString()}</td>}<td>{m.leadLawyer || '—'}</td></tr>
-                  ))}
-                  {(!selectedCompany.matters || selectedCompany.matters.length === 0) && <tr><td colSpan={7} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No matters yet.</td></tr>}
-                </tbody>
-              </table>
-            ) : field('matters.summary') ? (
-              <p className="modal-value">{(selectedCompany.matters || []).length} matters total ({(selectedCompany.matters || []).filter((m) => m.status === 'Active').length} active)</p>
-            ) : null}
-          </div>
-
-          <div className="company-detail-section">
-            <div className="company-detail-section-heading"><p className="modal-label">Opportunities pipeline</p></div>
-            {field('opportunities.table') ? (
-              <table className="company-opportunities-table">
-                <thead><tr><th>Date</th><th>Status</th><th>Name</th><th>Type</th></tr></thead>
-                <tbody>
-                  {(selectedCompany.opportunities || []).map((opp) => <tr key={opp.id}><td>{opp.date}</td><td>{opp.status}</td><td>{opp.name}</td><td>{opp.type}</td></tr>)}
-                  {(!selectedCompany.opportunities || selectedCompany.opportunities.length === 0) && <tr><td colSpan={4} style={{ textAlign: 'center', padding: 12, color: '#6b7280' }}>No opportunities in the pipeline yet.</td></tr>}
-                </tbody>
-              </table>
-            ) : field('opportunities.summary') ? (
-              <p className="modal-value">{(selectedCompany.opportunities || []).length} opportunities ({(selectedCompany.opportunities || []).filter((o) => o.status === 'Pending').length} pending, {(selectedCompany.opportunities || []).filter((o) => o.status === 'Won').length} won)</p>
-            ) : null}
-          </div>
-
-          {field('financialTrends') && (
-            <div className="company-detail-section">
-              <div className="company-detail-section-heading"><p className="modal-label">Financial & BD trends</p></div>
-              <div className="company-detail-panels company-detail-panels-secondary">
-                <CompanyMattersPanel company={selectedCompany} />
-                <CompanyOpportunitiesPanel company={selectedCompany} />
-              </div>
-            </div>
-          )}
-
-          {field('powerBIDashboard') && (
-            <div className="company-detail-section">
-              <div className="company-detail-section-heading"><p className="modal-label">Analytics Dashboard</p></div>
-              <PowerBIDashboard company={selectedCompany} />
-            </div>
-          )}
-        </section>
-      )}
+        );
+      })()}
 
       <CreateTouchpointTaskModal isOpen={Boolean(touchpointPreset)} preset={touchpointPreset} onClose={() => setTouchpointPreset(null)} />
       <ManageCompanyTagsModal company={tagsForCompany} isOpen={Boolean(tagsForCompany)} onClose={() => setTagsForCompany(null)} />
