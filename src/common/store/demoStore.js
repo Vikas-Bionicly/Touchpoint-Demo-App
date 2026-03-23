@@ -3,7 +3,7 @@ import { buildSeedState } from './seed';
 
 // Bump this version any time we change seed/transform logic,
 // so users don't get stuck on an older localStorage snapshot.
-const STORAGE_KEY = 'touchpoint-demo:v5';
+const STORAGE_KEY = 'touchpoint-demo:v6';
 
 function safeJsonParse(value) {
   try {
@@ -53,6 +53,25 @@ function createStore() {
       return () => listeners.delete(listener);
     },
     actions: {
+      // --- Activity Log ---
+      logActivity({ type, entityType, entityId, entityName, description, metadata }) {
+        const activity = {
+          id: uid('act'),
+          type,
+          entityType: entityType || '',
+          entityId: entityId || '',
+          entityName: entityName || '',
+          description: description || '',
+          metadata: metadata || {},
+          createdAt: new Date().toISOString(),
+        };
+        setState((prev) => ({
+          ...prev,
+          activities: [activity, ...(prev.activities || []).slice(0, 499)],
+        }));
+        return activity.id;
+      },
+
       // --- Persona ---
       setCurrentPersona(personaId) {
         setState((prev) => ({
@@ -111,6 +130,7 @@ function createStore() {
           touchpoints: [item, ...prev.touchpoints],
         }));
 
+        this.logActivity({ type: 'touchpoint.created', entityType: 'contact', entityName: input.contactName, description: `Created touchpoint: ${item.title}` });
         return id;
       },
 
@@ -151,17 +171,20 @@ function createStore() {
           touchpoints: [item, ...prev.touchpoints],
         }));
 
+        this.logActivity({ type: 'interaction.logged', entityType: 'contact', entityName: input.contactName, description: `Logged ${input.interactionType || 'interaction'} with ${input.contactName}` });
         return id;
       },
 
       completeTouchpoint(id) {
         const nowIso = new Date().toISOString();
+        const tp = state.touchpoints.find((t) => t.id === id);
         setState((prev) => ({
           ...prev,
           touchpoints: prev.touchpoints.map((t) =>
             t.id === id ? { ...t, status: 'completed', completedAt: nowIso, cancelledAt: null } : t
           ),
         }));
+        this.logActivity({ type: 'touchpoint.completed', entityType: 'contact', entityId: id, entityName: tp?.contactName || '', description: `Completed touchpoint: ${tp?.title || id}` });
       },
 
       cancelTouchpoint(id) {
@@ -209,6 +232,7 @@ function createStore() {
             },
           };
         });
+        this.logActivity({ type: 'insight.liked', entityType: 'insight', entityId: insightId, description: `Liked insight ${insightId}` });
       },
 
       dismissInsight(insightId) {
@@ -222,6 +246,7 @@ function createStore() {
             },
           };
         });
+        this.logActivity({ type: 'insight.dismissed', entityType: 'insight', entityId: insightId, description: `Dismissed insight ${insightId}` });
       },
 
       undismissInsight(insightId) {
@@ -257,6 +282,7 @@ function createStore() {
           notes: [note, ...prev.notes],
         }));
 
+        this.logActivity({ type: 'note.added', entityType: 'contact', entityId: input.contactId, entityName: input.contactName, description: `Added note for ${input.contactName}` });
         return id;
       },
 
@@ -279,6 +305,7 @@ function createStore() {
           companyNotes: [note, ...(prev.companyNotes || [])],
         }));
 
+        this.logActivity({ type: 'note.added', entityType: 'company', entityId: input.companyId, entityName: input.companyName, description: `Added note for ${input.companyName}` });
         return id;
       },
 
@@ -379,6 +406,7 @@ function createStore() {
           contacts: [contact, ...prev.contacts],
         }));
 
+        this.logActivity({ type: 'contact.created', entityType: 'contact', entityId: id, entityName: contact.name, description: `Created contact: ${contact.name}` });
         return id;
       },
 
@@ -451,6 +479,7 @@ function createStore() {
           companies: [company, ...prev.companies],
         }));
 
+        this.logActivity({ type: 'company.created', entityType: 'company', entityId: id, entityName: company.name, description: `Created company: ${company.name}` });
         return id;
       },
 
@@ -510,6 +539,7 @@ function createStore() {
           lists: [list, ...prev.lists],
         }));
 
+        this.logActivity({ type: 'list.created', entityType: 'list', entityId: id, entityName: list.name, description: `Created list: ${list.name}` });
         return id;
       },
 
@@ -593,6 +623,7 @@ function createStore() {
             [contactId]: tagIds,
           },
         }));
+        this.logActivity({ type: 'tags.updated', entityType: 'contact', entityId: contactId, description: `Updated tags for contact` });
       },
 
       setCompanyTags(companyId, tagIds) {
@@ -603,6 +634,7 @@ function createStore() {
             [companyId]: tagIds,
           },
         }));
+        this.logActivity({ type: 'tags.updated', entityType: 'company', entityId: companyId, description: `Updated tags for company` });
       },
 
       // --- Notifications ---

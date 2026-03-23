@@ -351,6 +351,12 @@ function transformClientContacts(clientContacts, transformedCompanies) {
   const contactsBase = Array.isArray(clientContacts) ? clientContacts : [];
   const companies = Array.isArray(transformedCompanies) ? transformedCompanies : [];
 
+  // Build domain→company lookup from raw company data
+  const domainToCompany = {};
+  clientCompaniesRaw.forEach((co) => {
+    if (co.domain) domainToCompany[co.domain.toLowerCase()] = co.companyName;
+  });
+
   const namePool = generateMockNamePool();
   const badgeIds = BADGE_TYPES.map((b) => b.id);
 
@@ -360,7 +366,11 @@ function transformClientContacts(clientContacts, transformedCompanies) {
     const name = `${firstName} ${lastName}`.trim();
     const seed = `${name}-${idx}`;
 
-    const company = companies.length ? companies[idx % companies.length].name : 'Unknown Company';
+    // Map contact to company via email domain
+    const emailDomain = (ct.contactEmail || '').split('@')[1]?.toLowerCase() || '';
+    const companyFromDomain = domainToCompany[emailDomain];
+    const companyFromCompanies = companyFromDomain || (companies.length ? companies[idx % companies.length].name : 'Unknown Company');
+    const company = companyFromCompanies;
 
     const country = ct.address?.country || '';
     const state = ct.address?.state || '';
@@ -432,6 +442,8 @@ function transformClientContacts(clientContacts, transformedCompanies) {
       id: `client-contact-${idx + 1}`,
       name: name || `Client ${idx + 1}`,
       role: ct.jobTitle || 'Client Contact',
+      email: ct.contactEmail || '',
+      phone: ct.phoneNumber || '',
       company,
       city,
       region,
@@ -440,7 +452,7 @@ function transformClientContacts(clientContacts, transformedCompanies) {
         seed
       )}`,
       lastInteracted: `${lastInteractedDays} days ago`,
-      avatarUrl: `https://i.pravatar.cc/96?img=${(idx % 70) + 1}&u=${encodeURIComponent(name)}`,
+      avatarUrl: ct.avatarUrl || `https://i.pravatar.cc/96?img=${(idx % 70) + 1}&u=${encodeURIComponent(name)}`,
       signalTone: pickFrom(SIGNAL_TONES, `${seed}-tone`),
       recentInteractions,
       relationshipHistory,
@@ -461,9 +473,8 @@ function transformClientContacts(clientContacts, transformedCompanies) {
 
 export function buildSeedState() {
   const CLIENT_COMPANY_LIMIT = 12;
-  const CLIENT_CONTACT_LIMIT = 40;
   const clientCompanies = clientCompaniesRaw.slice(0, CLIENT_COMPANY_LIMIT);
-  const clientContacts = clientContactsRaw.slice(0, CLIENT_CONTACT_LIMIT);
+  const clientContacts = clientContactsRaw; // Use all 184 contacts
   const clientTags = transformClientTags(clientTagsRaw);
 
   const transformedClientCompanies = transformClientCompanies(clientCompanies, []);
@@ -472,7 +483,7 @@ export function buildSeedState() {
   const clientCompaniesRehydrated = transformClientCompanies(clientCompanies, transformedClientContacts);
 
   const mergedCompanies = [...clientCompaniesRehydrated];
-  const mergedContacts = [...contactRows, ...transformedClientContacts];
+  const mergedContacts = [...transformedClientContacts];
 
   const baseTags = [
     { id: 't-practice-privacy', label: 'Privacy & Security', type: 'Practice' },
@@ -616,6 +627,56 @@ export function buildSeedState() {
     { id: 'notif-5', type: 'misalignment', title: 'Engagement Misalignment', message: 'Two partners contacted the same client this week without coordination.', read: true, createdAt: isoDaysFromNow(-5) },
   ];
 
+  // Generate additional interactions spread across the larger contact set for demo realism
+  const interactionTypes = ['Email', 'Meeting', 'Call', 'Event', 'Visit'];
+  const interactionTitles = [
+    'Quarterly check-in', 'Shared regulatory update', 'Follow-up on proposal', 'Discussed partnership opportunity',
+    'Intro call with legal team', 'Budget review meeting', 'Webinar attendance', 'Conference follow-up',
+    'Shared industry report', 'Contract renewal discussion', 'Holiday greetings', 'Board prep materials sent',
+  ];
+  const additionalInteractions = [];
+  for (let i = 0; i < 60; i++) {
+    const contact = mergedContacts[Math.floor(hashToUnit(`seed-int-${i}`) * mergedContacts.length)];
+    if (!contact) continue;
+    const daysAgo = Math.floor(hashToUnit(`seed-int-days-${i}`) * 120) + 1;
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    d.setHours(9, 0, 0, 0);
+    const isoDate = d.toISOString();
+    const intType = pickFrom(interactionTypes, `seed-int-type-${i}`);
+    const intTitle = pickFrom(interactionTitles, `seed-int-title-${i}`);
+    additionalInteractions.push({
+      id: `seed-int-${i}`,
+      kind: 'interaction',
+      status: 'completed',
+      createdAt: isoDate,
+      dueAt: null,
+      completedAt: isoDate,
+      cancelledAt: null,
+      contactName: contact.name,
+      company: contact.company,
+      role: contact.role,
+      interactionType: intType,
+      title: `${intTitle} with ${contact.name}`,
+      outcome: 'Completed successfully',
+      notes: '',
+      followUpDate: '',
+      history: [],
+      avatarUrl: contact.avatarUrl,
+      signalTone: contact.signalTone || 'blue',
+      relationshipStatus: contact.relationship || 'Stable',
+      relationshipScore: contact.relationshipScore || 50,
+      lastInteracted: contact.lastInteracted || '0 days ago',
+      source: 'seed',
+      assignedTo: '',
+      assignedBy: '',
+      onBehalfOf: '',
+      visitStage: '',
+    });
+  }
+
+  touchpoints.push(...additionalInteractions);
+
   return {
     version: 1,
     currentPersonaId: 'partner',
@@ -646,5 +707,6 @@ export function buildSeedState() {
     },
     insightState: {},
     notifications,
+    activities: [],
   };
 }

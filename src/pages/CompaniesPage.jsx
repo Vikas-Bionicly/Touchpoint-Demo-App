@@ -23,6 +23,7 @@ import SearchBar from '../common/components/SearchBar';
 import FilterBar from '../common/components/FilterBar';
 import { FilterButton, FilterControls, FilterSelect } from '../common/components/FilterControls';
 import DataTable from '../common/components/DataTable';
+import ActivityFeed from '../common/components/ActivityFeed';
 
 const companyAvatarUrls = import.meta.glob('../../demo-data/avatars/companies/*', { eager: true, import: 'default' });
 
@@ -68,6 +69,7 @@ export default function CompaniesPage({ subPage }) {
   const rawCompanyNotes = useDemoStore((s) => s.companyNotes);
   const contacts = useDemoStore((s) => s.contacts || []);
   const companies = useDemoStore((s) => s.companies || []);
+  const activities = useDemoStore((s) => s.activities || []);
   const companyTags = rawCompanyTags || {};
   const tags = rawTags || [];
   const companyFilters = rawCompanyFilters || {};
@@ -76,6 +78,8 @@ export default function CompaniesPage({ subPage }) {
   const companyNotes = rawCompanyNotes || [];
   const [engagementTypeFilter, setEngagementTypeFilter] = useState('All');
   const [engagementPersonFilter, setEngagementPersonFilter] = useState('All');
+  const [industryFilter, setIndustryFilter] = useState('');
+  const [clientStatusFilter, setClientStatusFilter] = useState('');
 
   const { can, field, depth, tier } = usePersona();
 
@@ -99,6 +103,8 @@ export default function CompaniesPage({ subPage }) {
     }
     if (companyFilters.relationshipTrend) data = data.filter((row) => row.relationshipTrend === companyFilters.relationshipTrend);
     if (companyFilters.tagId) data = data.filter((row) => (companyTags[row.id] || []).includes(companyFilters.tagId));
+    if (industryFilter) data = data.filter((row) => row.category2 === industryFilter);
+    if (clientStatusFilter) data = data.filter((row) => row.clientStatus === clientStatusFilter);
 
     if (sort.key && sort.direction) {
       const dir = sort.direction === 'asc' ? 1 : -1;
@@ -110,7 +116,7 @@ export default function CompaniesPage({ subPage }) {
       });
     }
     return data;
-  }, [companies, companyFilters, companyTags, sort, activeTab]);
+  }, [companies, companyFilters, companyTags, sort, activeTab, industryFilter, clientStatusFilter]);
 
   const nameParentOn = Boolean(showColumns.categories);
   const engagementParentOn = Boolean(showColumns.recentEngagement) || Boolean(showColumns.clientStatus);
@@ -206,6 +212,14 @@ export default function CompaniesPage({ subPage }) {
               <FilterSelect value={companyFilters.tagId || ''} onChange={(e) => demoStore.actions.setCompanyFilters({ tagId: e.target.value })}>
                 <option value="">All Tags</option>
                 {tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+              </FilterSelect>
+              <FilterSelect value={industryFilter} onChange={(e) => setIndustryFilter(e.target.value)}>
+                <option value="">Industry</option>
+                {[...new Set(companies.map((c) => c.category2).filter(Boolean))].sort().map((ind) => <option key={ind} value={ind}>{ind}</option>)}
+              </FilterSelect>
+              <FilterSelect value={clientStatusFilter} onChange={(e) => setClientStatusFilter(e.target.value)}>
+                <option value="">Client Status</option>
+                {['Good', 'At Risk', 'Needs Attention', 'Improving', 'New'].map((s) => <option key={s} value={s}>{s}</option>)}
               </FilterSelect>
               <FilterButton onClick={() => { const name = window.prompt('Save current company filters as view name'); if (name) demoStore.actions.saveCompanyView(name); }}>Save View</FilterButton>
               <FilterSelect onChange={(e) => { const v = e.target.value; if (v) demoStore.actions.applyCompanyView(v); }}>
@@ -403,6 +417,11 @@ export default function CompaniesPage({ subPage }) {
               ))}
               {companyNotes.filter((n) => n.companyId === selectedCompany.id).length === 0 && <li>No notes yet for this company.</li>}
             </ul>
+          </div>
+
+          <div className="company-detail-section">
+            <div className="company-detail-section-heading"><p className="modal-label">Activity</p></div>
+            <ActivityFeed activities={activities} entityFilter={selectedCompany.name} limit={10} />
           </div>
 
           <section className="company-engagement-section">

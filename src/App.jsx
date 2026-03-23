@@ -11,6 +11,8 @@ import ContactsPage from './pages/ContactsPage';
 import CompaniesPage from './pages/CompaniesPage';
 import ListsPage from './pages/ListsPage';
 import TouchpointsPage from './pages/TouchpointsPage';
+import VisitsPage from './pages/VisitsPage';
+import QuickCapture from './common/components/QuickCapture';
 
 export default function App() {
   const [activePage, setActivePage] = useState('My Insights');
@@ -193,8 +195,10 @@ export default function App() {
         {activePage === 'Contacts' && <ContactsPage subPage={activeSubPage} />}
         {activePage === 'Companies' && <CompaniesPage subPage={activeSubPage} />}
         {activePage === 'Lists' && <ListsPage />}
+        {activePage === 'Visits' && <VisitsPage subPage={activeSubPage} />}
         {activePage === 'Touchpoints' && <TouchpointsPage view={activeSubPage} />}
       </main>
+      <QuickCapture />
     </div>
   );
 }

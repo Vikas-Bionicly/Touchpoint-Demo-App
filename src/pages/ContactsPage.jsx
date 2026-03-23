@@ -11,10 +11,12 @@ import UpdateContactModal from '../common/components/UpdateContactModal';
 import AiDraftPanel from '../common/components/AiDraftPanel';
 import AiNoteSummaryPanel from '../common/components/AiNoteSummaryPanel';
 import TripPlanningModal from '../common/components/TripPlanningModal';
+import ContactDetailModal from '../common/components/ContactDetailModal';
 import SubTabBar from '../common/components/SubTabBar';
 import RelationshipScoreGauge from '../common/components/RelationshipScoreGauge';
 import { usePersona } from '../common/hooks/usePersona';
 import { BADGE_MAP } from '../common/constants/badges';
+import { resolveContactAvatarUrl } from '../common/utils/avatars';
 import PageHeader from '../common/components/PageHeader';
 import SearchBar from '../common/components/SearchBar';
 import FilterBar from '../common/components/FilterBar';
@@ -36,6 +38,7 @@ export default function ContactsPage({ subPage }) {
   const [showAiDraft, setShowAiDraft] = useState(null);
   const [showAiSummary, setShowAiSummary] = useState(null);
   const [showTripPlanning, setShowTripPlanning] = useState(false);
+  const [lastInteractedFilter, setLastInteractedFilter] = useState('');
   const [sort, setSort] = useState({ key: '', direction: '' });
   const [showColumns, setShowColumns] = useState({
     role: true,
@@ -52,6 +55,10 @@ export default function ContactsPage({ subPage }) {
   const savedViews = useDemoStore((s) => s.savedViews || []);
 
   const { can, field, depth } = usePersona();
+
+  function avatarSrc(row) {
+    return resolveContactAvatarUrl(row.avatarUrl) || row.avatarUrl;
+  }
 
   const rows = useMemo(() => {
     let data = contacts;
@@ -97,6 +104,16 @@ export default function ContactsPage({ subPage }) {
       data = data.filter((row) => (contactTags[row.id] || []).includes(filters.tagId));
     }
 
+    if (lastInteractedFilter) {
+      data = data.filter((row) => {
+        const days = row.metricsCurrent?.daysSinceLastInteraction ?? 999;
+        if (lastInteractedFilter === '30d') return days <= 30;
+        if (lastInteractedFilter === '30-90d') return days > 30 && days <= 90;
+        if (lastInteractedFilter === '90d+') return days > 90;
+        return true;
+      });
+    }
+
     if (sort.key && sort.direction) {
       const dir = sort.direction === 'asc' ? 1 : -1;
       data = [...data].sort((a, b) => {
@@ -111,7 +128,7 @@ export default function ContactsPage({ subPage }) {
     }
 
     return data;
-  }, [contacts, filters, lists, contactTags, sort, activeTab]);
+  }, [contacts, filters, lists, contactTags, sort, activeTab, lastInteractedFilter]);
 
   const nameParentOn = Boolean(showColumns.role) || Boolean(showColumns.company);
   const engagementParentOn = Boolean(showColumns.lastInteraction) || Boolean(showColumns.relationship);
@@ -243,6 +260,16 @@ export default function ContactsPage({ subPage }) {
             <option value="">All Tags</option>
             {tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
           </FilterSelect>
+          <FilterSelect
+            className="contacts-filter-select"
+            value={lastInteractedFilter}
+            onChange={(e) => setLastInteractedFilter(e.target.value)}
+          >
+            <option value="">Last Interacted</option>
+            <option value="30d">Last 30 days</option>
+            <option value="30-90d">30–90 days</option>
+            <option value="90d+">90+ days</option>
+          </FilterSelect>
           <FilterButton onClick={() => { const name = window.prompt('Save current filters as view name'); if (name) demoStore.actions.saveContactView(name); }}>Save View</FilterButton>
           <FilterSelect onChange={(e) => { const v = e.target.value; if (!v) return; if (v.startsWith('del:')) demoStore.actions.deleteContactView(v.slice(4)); else demoStore.actions.applyContactView(v); }}>
             <option value="">Views</option>
@@ -309,7 +336,7 @@ export default function ContactsPage({ subPage }) {
                 >
                   <div className="contact-name-col-v2">
                     <div style={{ display: nameParentOn ? 'flex' : 'none', alignItems: 'center', gap: 16 }}>
-                      <img src={row.avatarUrl} alt={row.name} className={`contact-avatar-v2 tone-${row.signalTone}`} />
+                      <img src={avatarSrc(row)} alt={row.name} className={`contact-avatar-v2 tone-${row.signalTone}`} />
                       <div className="contact-name-meta-v2">
                         <div className="contact-title-line-v2">
                           <strong>{row.name}</strong>
@@ -362,7 +389,7 @@ export default function ContactsPage({ subPage }) {
         {rows.map((row) => (
           <article key={row.id} className="contact-card" onClick={() => setSelectedContact(row)} role="button">
             <div className="contact-card-header">
-              <img src={row.avatarUrl} alt={row.name} className={`contact-avatar-v2 tone-${row.signalTone}`} />
+              <img src={avatarSrc(row)} alt={row.name} className={`contact-avatar-v2 tone-${row.signalTone}`} />
               <div className="contact-card-main">
                 <strong>{row.name}</strong>{renderFlags(row)}
                 <div className="contact-card-meta"><span>{row.role}</span>{' • '}<span>{row.company}</span></div>
@@ -382,75 +409,19 @@ export default function ContactsPage({ subPage }) {
         ))}
       </section>
 
-      {/* Contact Detail Modal */}
-      {selectedContact && (
-        <div className="modal-backdrop" onClick={() => setSelectedContact(null)}>
-          <div className="company-modal contact-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
-              <h2>{selectedContact.name}{renderFlags(selectedContact)}</h2>
-              <button className="modal-close" onClick={() => setSelectedContact(null)} aria-label="close modal">x</button>
-            </div>
-
-            <div className="modal-grid">
-              <div><p className="modal-label">Contact role</p><p className="modal-value">{selectedContact.role}</p></div>
-              <div><p className="modal-label">Company</p><p className="modal-value">{selectedContact.company}</p></div>
-              {field('relationshipScore') && (
-                <div>
-                  <p className="modal-label">Relationship Score</p>
-                  <RelationshipScoreGauge metricsCurrent={selectedContact.metricsCurrent} metricsPrevious={selectedContact.metricsPrevious} />
-                </div>
-              )}
-              {field('internalConnections') && (
-                <div><p className="modal-label">Internal connections</p><p className="modal-value">{selectedContact.internalConnections?.join(', ') || 'None'}</p></div>
-              )}
-              {field('specialDates') && selectedContact.specialDates?.birthday && (
-                <div><p className="modal-label">Birthday</p><p className="modal-value">{selectedContact.specialDates.birthday}</p></div>
-              )}
-            </div>
-
-            {renderBadges(selectedContact)}
-
-            <div className="modal-stack">
-              {field('relationshipHistory') && (
-                <div>
-                  <p className="modal-label">Relationship history</p>
-                  <ul className="modal-list">
-                    {selectedContact.relationshipHistory?.slice(0, depth('relationshipHistory')).map((item) => <li key={item}>{item}</li>)}
-                  </ul>
-                </div>
-              )}
-              <div>
-                <p className="modal-label">Recent interactions</p>
-                <ul className="modal-list">
-                  {selectedContact.recentInteractions?.slice(0, depth('recentInteractions')).map((item) => <li key={item}>{item}</li>)}
-                </ul>
-              </div>
-              <div>
-                <p className="modal-label">Notes</p>
-                <ul className="modal-list">
-                  {notes.filter((n) => n.contactId === selectedContact.id).slice(0, depth('contactNotes')).map((n) => (
-                    <li key={n.id}><strong>{n.type}</strong> ({n.visibility}) — {n.text}</li>
-                  ))}
-                  {notes.filter((n) => n.contactId === selectedContact.id).length === 0 && <li>No notes yet.</li>}
-                </ul>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button className="tool-btn" onClick={() => setConnectionsForContact(selectedContact)}>Firm connections</button>
-              <button className="tool-btn" onClick={() => setListForContact(selectedContact)}>Add to list</button>
-              <button className="tool-btn" onClick={() => setNoteForContact(selectedContact)}>Add note</button>
-              {can('tag.manage') && <button className="tool-btn" onClick={() => setTagsForContact(selectedContact)}>Manage tags</button>}
-              {can('contact.edit') && <button className="tool-btn" onClick={() => { setEditContact(selectedContact); setSelectedContact(null); }}>Edit</button>}
-              {field('aiDraft') && <button className="tool-btn" onClick={() => setShowAiDraft(selectedContact)}>Draft Outreach</button>}
-              {field('aiSummary') && <button className="tool-btn" onClick={() => setShowAiSummary(selectedContact)}>AI Summary</button>}
-              <button className="primary" onClick={() => setTouchpointPreset({ contactName: selectedContact.name, company: selectedContact.company, role: selectedContact.role, title: `Follow up with ${selectedContact.name}`, notes: '', source: 'contacts:modal' })}>
-                Create touchpoint
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ContactDetailModal
+        contact={selectedContact}
+        isOpen={Boolean(selectedContact)}
+        onClose={() => setSelectedContact(null)}
+        onCreateTouchpoint={(c) => setTouchpointPreset({ contactName: c.name, company: c.company, role: c.role, title: `Follow up with ${c.name}`, notes: '', source: 'contacts:modal' })}
+        onAddNote={(c) => setNoteForContact(c)}
+        onAddToList={(c) => setListForContact(c)}
+        onManageTags={(c) => setTagsForContact(c)}
+        onFirmConnections={(c) => setConnectionsForContact(c)}
+        onDraftOutreach={(c) => setShowAiDraft(c)}
+        onAiSummary={(c) => setShowAiSummary(c)}
+        onEdit={(c) => setEditContact(c)}
+      />
 
       <CreateTouchpointTaskModal isOpen={Boolean(touchpointPreset)} preset={touchpointPreset} onClose={() => setTouchpointPreset(null)} />
       <AddContactNoteModal contact={noteForContact} isOpen={Boolean(noteForContact)} onClose={() => setNoteForContact(null)} />
@@ -460,8 +431,8 @@ export default function ContactsPage({ subPage }) {
       <AddContactModal isOpen={showAddContact} onClose={() => setShowAddContact(false)} />
       <UpdateContactModal contact={editContact} isOpen={Boolean(editContact)} onClose={() => setEditContact(null)} />
       <TripPlanningModal isOpen={showTripPlanning} onClose={() => setShowTripPlanning(false)} />
-      <AiDraftPanel isOpen={Boolean(showAiDraft)} contactName={showAiDraft?.name} companyName={showAiDraft?.company} onClose={() => setShowAiDraft(null)} />
-      <AiNoteSummaryPanel isOpen={Boolean(showAiSummary)} contactName={showAiSummary?.name} onClose={() => setShowAiSummary(null)} />
+      <AiDraftPanel isOpen={Boolean(showAiDraft)} contactName={showAiDraft?.name} contactEmail={showAiDraft?.email} companyName={showAiDraft?.company} onClose={() => setShowAiDraft(null)} />
+      <AiNoteSummaryPanel isOpen={Boolean(showAiSummary)} contactName={showAiSummary?.name} contactId={showAiSummary?.id} onClose={() => setShowAiSummary(null)} />
     </section>
   );
 }

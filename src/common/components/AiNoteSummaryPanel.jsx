@@ -1,22 +1,34 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import AiThinkingIndicator from './AiThinkingIndicator';
+import { demoStore } from '../store/demoStore';
 
 const MOCK_SUMMARIES = [
   "Key themes across recent notes: regulatory compliance concerns, interest in expanding litigation support, positive relationship momentum. Recommended next step: schedule a strategic review meeting.",
   "Summary: Contact has been engaged on privacy matters over the past quarter. Two meetings held, one follow-up pending. Sentiment is positive. Consider cross-selling opportunity in M&A advisory.",
   "Digest: Recent notes indicate growing interest in AI governance. Contact mentioned upcoming board review. Internal connections suggest warm intro path through the Toronto office.",
+  "Analysis: Strong engagement pattern with consistent two-way communication. Key topics include data privacy regulations, cross-border compliance, and strategic litigation preparation. Next step: propose quarterly review cadence.",
 ];
 
-export default function AiNoteSummaryPanel({ isOpen, onClose, contactName }) {
+export default function AiNoteSummaryPanel({ isOpen, onClose, contactName, contactId }) {
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleThinkingComplete = useCallback(() => {
+    const text = MOCK_SUMMARIES[Math.floor(Math.random() * MOCK_SUMMARIES.length)];
+    setSummary(text);
+    setLoading(false);
+    demoStore.actions.logActivity({
+      type: 'ai.summary.generated',
+      entityType: 'contact',
+      entityId: contactId || '',
+      entityName: contactName || '',
+      description: `Generated AI summary for ${contactName || 'contact'}`,
+    });
+  }, [contactName, contactId]);
 
   function handleSummarize() {
     setLoading(true);
     setSummary('');
-    setTimeout(() => {
-      setSummary(MOCK_SUMMARIES[Math.floor(Math.random() * MOCK_SUMMARIES.length)]);
-      setLoading(false);
-    }, 1200);
   }
 
   if (!isOpen) return null;
@@ -37,10 +49,12 @@ export default function AiNoteSummaryPanel({ isOpen, onClose, contactName }) {
               Summarize with AI
             </button>
           )}
-          {loading && (
-            <div style={{ padding: 16, textAlign: 'center', color: '#6b7280' }}>
-              Analyzing notes...
-            </div>
+          {loading && !summary && (
+            <AiThinkingIndicator
+              message="Analyzing notes"
+              duration={1500}
+              onComplete={handleThinkingComplete}
+            />
           )}
           {summary && (
             <div style={{

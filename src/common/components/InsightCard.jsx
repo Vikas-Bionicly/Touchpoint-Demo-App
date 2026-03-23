@@ -4,6 +4,7 @@ import Icon from './Icon';
 export default function InsightCard({
   card,
   onCreateTouchpoint,
+  onDraftOutreach,
   state,
   onLike,
   onDismiss,
@@ -15,6 +16,19 @@ export default function InsightCard({
 }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  function handleCtaClick() {
+    const cta = card.cta || '';
+    if (cta === 'Create Touchpoint' || cta === 'Schedule Follow-up') {
+      onCreateTouchpoint?.(card);
+    } else if (cta === 'Draft Outreach' || cta === 'Share Content') {
+      onDraftOutreach?.(card);
+    } else if (cta === 'Request Intro' || cta === 'View Connections') {
+      onViewConnections?.(card);
+    } else {
+      onCreateTouchpoint?.(card);
+    }
+  }
 
   return (
     <article className={`ins-card ${card.tone}`}>
@@ -117,7 +131,7 @@ export default function InsightCard({
         {expanded && (
           <div className="suggestion-row">
             <p>{card.suggestion}</p>
-            <button className="primary insights-cta" onClick={() => onCreateTouchpoint?.(card)}>
+            <button className="primary insights-cta" onClick={handleCtaClick}>
               <Icon name="send" className="btn-icon" />
               {card.cta}
             </button>

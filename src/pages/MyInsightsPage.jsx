@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import InsightCard from '../common/components/InsightCard';
-import { insightCards } from '../common/constants/insights';
+import { generateInsightCards } from '../common/constants/insights';
 import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 import AddContactNoteModal from '../common/components/AddContactNoteModal';
 import ManageContactTagsModal from '../common/components/ManageContactTagsModal';
@@ -17,7 +17,7 @@ import SearchBar from '../common/components/SearchBar';
 import FilterBar from '../common/components/FilterBar';
 import FilterViewButton from '../common/components/FilterViewButton';
 
-const SUB_TABS = ['Key Contacts', 'Referrals', 'Visits'];
+const SUB_TABS = ['Key Contacts', 'Referrals'];
 
 function addDaysIso(days) {
   const d = new Date();
@@ -46,8 +46,10 @@ export default function MyInsightsPage({ subPage }) {
     return contacts.find((x) => x.name === subject) || contacts.find((x) => x.company === subject) || contacts[0] || null;
   }
 
+  const allInsights = useMemo(() => generateInsightCards(), [contacts]);
+
   const filtered = useMemo(() => {
-    let result = [...insightCards].filter((c) => !insightState?.[c.id]?.dismissed);
+    let result = [...allInsights].filter((c) => !insightState?.[c.id]?.dismissed);
 
     // Sub-tab filtering
     if (activeTab === 'Key Contacts') {
@@ -57,8 +59,6 @@ export default function MyInsightsPage({ subPage }) {
       });
     } else if (activeTab === 'Referrals') {
       result = result.filter((c) => c.label === 'Internal Connection' || c.label === 'Cross-Sell Opportunity');
-    } else if (activeTab === 'Visits') {
-      result = result.filter((c) => c.label === 'Fading Relationship' || c.label === 'Client Engagement Trend');
     }
 
     if (highPriorityOnly) result = result.filter((c) => c.priority === 'High');
@@ -90,15 +90,6 @@ export default function MyInsightsPage({ subPage }) {
         </div>
       </FilterBar>
 
-      {/* Meeting Prep for Visits sub-tab */}
-      {activeTab === 'Visits' && <MeetingPrepPanel />}
-
-      {/* Trip planning button */}
-      {activeTab === 'Visits' && (
-        <div style={{ marginBottom: 16 }}>
-          <button className="tool-btn" onClick={() => setShowTripPlanning(true)}>Plan a Trip</button>
-        </div>
-      )}
 
       <section className="card-list">
         {filtered.map((card) => (
@@ -127,6 +118,20 @@ export default function MyInsightsPage({ subPage }) {
                 title: c.title || `Follow up: ${c.subject}`, notes: c.suggestion || '', source: 'insights',
               });
             }}
+            onDraftOutreach={(c) => {
+              if (field('aiDraft')) {
+                const chosen = findContact(c.subject);
+                setShowAiDraft(chosen);
+              } else {
+                const chosen = findContact(c.subject);
+                if (!chosen) return;
+                setTouchpointPreset({
+                  contactName: chosen.name, company: chosen.company, role: chosen.role,
+                  title: c.title || `Share content with ${chosen.name}`, notes: c.suggestion || '',
+                  source: 'insights:draft-outreach',
+                });
+              }
+            }}
             onAddNote={(c) => {
               const chosen = findContact(c.subject);
               if (chosen) setNoteForContact(chosen);
@@ -140,18 +145,17 @@ export default function MyInsightsPage({ subPage }) {
               if (chosen) setConnectionsForContact(chosen);
             }}
             onShareContent={(c) => {
-              if (field('aiDraft') && c.cta === 'Draft Outreach') {
-                const chosen = findContact(c.subject);
-                setShowAiDraft(chosen);
-                return;
-              }
               const chosen = findContact(c.subject);
               if (!chosen) return;
-              setTouchpointPreset({
-                contactName: chosen.name, company: chosen.company, role: chosen.role,
-                title: c.title || `Share content with ${chosen.name}`, notes: c.suggestion || 'Share relevant content based on this insight.',
-                source: 'insights:share-content',
-              });
+              if (field('aiDraft')) {
+                setShowAiDraft(chosen);
+              } else {
+                setTouchpointPreset({
+                  contactName: chosen.name, company: chosen.company, role: chosen.role,
+                  title: c.title || `Share content with ${chosen.name}`, notes: c.suggestion || 'Share relevant content based on this insight.',
+                  source: 'insights:share-content',
+                });
+              }
             }}
           />
         ))}
@@ -161,7 +165,7 @@ export default function MyInsightsPage({ subPage }) {
       <AddContactNoteModal contact={noteForContact} isOpen={Boolean(noteForContact)} onClose={() => setNoteForContact(null)} />
       <ManageContactTagsModal contact={tagsForContact} isOpen={Boolean(tagsForContact)} onClose={() => setTagsForContact(null)} />
       <FirmConnectionsModal contact={connectionsForContact} isOpen={Boolean(connectionsForContact)} onClose={() => setConnectionsForContact(null)} />
-      <AiDraftPanel isOpen={Boolean(showAiDraft)} contactName={showAiDraft?.name} companyName={showAiDraft?.company} onClose={() => setShowAiDraft(null)} />
+      <AiDraftPanel isOpen={Boolean(showAiDraft)} contactName={showAiDraft?.name} contactEmail={showAiDraft?.email} companyName={showAiDraft?.company} onClose={() => setShowAiDraft(null)} />
       <TripPlanningModal isOpen={showTripPlanning} onClose={() => setShowTripPlanning(false)} />
     </section>
   );

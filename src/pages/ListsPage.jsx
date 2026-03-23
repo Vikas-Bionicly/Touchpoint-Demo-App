@@ -22,6 +22,10 @@ export default function ListsPage() {
   const listNotes = useDemoStore((s) => s.listNotes || []);
   const touchpoints = useDemoStore((s) => s.touchpoints || []);
   const [tagFilter, setTagFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [visibilityFilter, setVisibilityFilter] = useState('');
+  const [ownerFilter, setOwnerFilter] = useState('');
+  const [memberSearch, setMemberSearch] = useState('');
   const tags = rawTags || [];
   const actions = demoStore.actions;
 
@@ -35,15 +39,21 @@ export default function ListsPage() {
       data = data.filter((row) => (row.visibility || 'Firm-wide') !== 'Personal');
     }
 
-    const tagFiltered = tagFilter ? data.filter((row) => row.tag === tagFilter) : data;
-    if (!query.trim()) return tagFiltered;
+    if (tagFilter) data = data.filter((row) => row.tag === tagFilter);
+    if (typeFilter) data = data.filter((row) => row.type === typeFilter);
+    if (visibilityFilter) data = data.filter((row) => (row.visibility || 'Firm-wide') === visibilityFilter);
+    if (ownerFilter) data = data.filter((row) => row.owner === ownerFilter);
+    if (!query.trim()) return data;
     const q = query.toLowerCase();
-    return tagFiltered.filter((row) => [row.name, row.owner, row.tag, row.lastEngagement].join(' ').toLowerCase().includes(q));
-  }, [lists, query, tagFilter, field]);
+    return data.filter((row) => [row.name, row.owner, row.tag, row.lastEngagement].join(' ').toLowerCase().includes(q));
+  }, [lists, query, tagFilter, typeFilter, visibilityFilter, ownerFilter, field]);
 
   const allChecked = rows.length > 0 && rows.every((row) => checkedRows[row.id]);
   const selectedList = selectedListId ? lists.find((l) => l.id === selectedListId) || null : null;
-  const selectedMembers = selectedList ? contacts.filter((c) => Array.isArray(selectedList.memberIds) && selectedList.memberIds.includes(c.id)) : [];
+  const selectedMembersRaw = selectedList ? contacts.filter((c) => Array.isArray(selectedList.memberIds) && selectedList.memberIds.includes(c.id)) : [];
+  const selectedMembers = memberSearch.trim()
+    ? selectedMembersRaw.filter((m) => [m.name, m.role, m.company, m.city].join(' ').toLowerCase().includes(memberSearch.toLowerCase()))
+    : selectedMembersRaw;
   const selectedListNotes = selectedList ? listNotes.filter((n) => n.listId === selectedList.id).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)) : [];
   const isDetailView = Boolean(selectedList);
 
@@ -64,6 +74,20 @@ export default function ListsPage() {
               <FilterSelect value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} className="lists-tag-filter">
                 <option value="">All Tags</option>
                 {tags.map((t) => <option key={t.id} value={t.label}>{t.label}</option>)}
+              </FilterSelect>
+              <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                <option value="">All Types</option>
+                {[...new Set(lists.map((l) => l.type))].filter(Boolean).map((t) => <option key={t} value={t}>{t}</option>)}
+              </FilterSelect>
+              <FilterSelect value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)}>
+                <option value="">All Visibility</option>
+                <option value="Firm-wide">Firm-wide</option>
+                <option value="Shared">Shared</option>
+                <option value="Personal">Personal</option>
+              </FilterSelect>
+              <FilterSelect value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
+                <option value="">All Owners</option>
+                {[...new Set(lists.map((l) => l.owner))].filter(Boolean).sort().map((o) => <option key={o} value={o}>{o}</option>)}
               </FilterSelect>
             </FilterControls>
           </FilterBar>
@@ -200,7 +224,15 @@ export default function ListsPage() {
             )}
 
             <section className="list-detail-members">
-              <p className="modal-label">Members</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <p className="modal-label">Members ({selectedMembers.length})</p>
+                <input
+                  placeholder="Filter members..."
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  style={{ border: '1px solid #d4d4d4', borderRadius: 8, padding: '6px 10px', fontSize: 13, width: 200 }}
+                />
+              </div>
               <div className="list-members-table">
                 <div className="list-members-head"><span>Contact</span><span>Status</span><span>Summary</span><span>Actions</span></div>
                 <div className="list-members-body">

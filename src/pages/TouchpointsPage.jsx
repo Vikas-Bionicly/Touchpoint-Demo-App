@@ -49,6 +49,9 @@ export default function TouchpointsPage({ view = '' }) {
   const touchpointNotes = rawTouchpointNotes || [];
   const [newNoteText, setNewNoteText] = useState('');
   const [tagFilter, setTagFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [dateRangeFilter, setDateRangeFilter] = useState('');
 
   const { can } = usePersona();
 
@@ -72,6 +75,27 @@ export default function TouchpointsPage({ view = '' }) {
         return contact ? (contactTags[contact.id] || []).includes(tagFilter) : false;
       });
     }
+    if (typeFilter) {
+      data = data.filter((row) => row.interactionType === typeFilter);
+    }
+    if (statusFilter) {
+      data = data.filter((row) => row.status === statusFilter);
+    }
+    if (dateRangeFilter) {
+      const now = Date.now();
+      const msPerDay = 86400000;
+      data = data.filter((row) => {
+        const dateStr = row.kind === 'task' ? row.dueAt : row.completedAt || row.createdAt;
+        if (!dateStr) return false;
+        const d = new Date(dateStr).getTime();
+        if (Number.isNaN(d)) return false;
+        const daysAgo = (now - d) / msPerDay;
+        if (dateRangeFilter === '7d') return daysAgo <= 7;
+        if (dateRangeFilter === '30d') return daysAgo <= 30;
+        if (dateRangeFilter === '90d') return daysAgo <= 90;
+        return true;
+      });
+    }
     if (sort.key && sort.direction) {
       const dir = sort.direction === 'asc' ? 1 : -1;
       data = [...data].sort((a, b) => {
@@ -82,7 +106,7 @@ export default function TouchpointsPage({ view = '' }) {
       });
     }
     return data;
-  }, [query, touchpoints, view, sort, tagFilter, contacts, contactTags]);
+  }, [query, touchpoints, view, sort, tagFilter, typeFilter, statusFilter, dateRangeFilter, contacts, contactTags]);
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -160,6 +184,23 @@ export default function TouchpointsPage({ view = '' }) {
         <FilterControls className="touchpoints-toolbar-v2">
           <button className="tool-btn" onClick={() => setIsLogOpen(true)}>Log Interaction</button>
           {can('export.csv') && <button className="filter-btn" type="button" onClick={exportCsv}>Export CSV</button>}
+          <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="">All Types</option>
+            {interactionTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+            <option value="Follow-up">Follow-up</option>
+          </FilterSelect>
+          <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="">All Status</option>
+            <option value="open">Open</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </FilterSelect>
+          <FilterSelect value={dateRangeFilter} onChange={(e) => setDateRangeFilter(e.target.value)}>
+            <option value="">All Dates</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+          </FilterSelect>
           <FilterSelect value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
             <option value="">All Tags</option>
             {tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
