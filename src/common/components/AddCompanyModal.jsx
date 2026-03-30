@@ -1,13 +1,24 @@
 import { useState } from 'react';
 import { demoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
 
 const ACCOUNT_TYPES = ['Client', 'Prospective', 'Former Client', 'Target'];
 const INDUSTRIES = ['Technology', 'Financial Services', 'Healthcare', 'Energy', 'Real Estate', 'Retail', 'Manufacturing'];
 
 export default function AddCompanyModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ name: '', accountType: 'Prospective', industry: '', catCode: '', clientCode: '', gics: '', billingLawyer: '' });
+  const { can, field } = usePersona();
+  const [form, setForm] = useState({
+    name: '',
+    accountType: 'Prospective',
+    industry: '',
+    catCode: '',
+    clientCode: '',
+    gics: '',
+    billingLawyer: '',
+  });
 
   if (!isOpen) return null;
+  if (!can('company.add')) return null;
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -37,10 +48,26 @@ export default function AddCompanyModal({ isOpen, onClose }) {
               {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
             </select>
           </label>
-          <label>Cat Code <input value={form.catCode} onChange={(e) => setForm((p) => ({ ...p, catCode: e.target.value }))} /></label>
-          <label>Client Code <input value={form.clientCode} onChange={(e) => setForm((p) => ({ ...p, clientCode: e.target.value }))} /></label>
-          <label>GICs <input value={form.gics} onChange={(e) => setForm((p) => ({ ...p, gics: e.target.value }))} /></label>
-          <label>Billing Lawyer <input value={form.billingLawyer} onChange={(e) => setForm((p) => ({ ...p, billingLawyer: e.target.value }))} /></label>
+          {field('catCode') && (
+            <label>
+              Cat Code <input value={form.catCode} onChange={(e) => setForm((p) => ({ ...p, catCode: e.target.value }))} />
+            </label>
+          )}
+          {field('clientCode') && (
+            <label>
+              Client Code <input value={form.clientCode} onChange={(e) => setForm((p) => ({ ...p, clientCode: e.target.value }))} />
+            </label>
+          )}
+          {field('gics') && (
+            <label>
+              GICs <input value={form.gics} onChange={(e) => setForm((p) => ({ ...p, gics: e.target.value }))} />
+            </label>
+          )}
+          {field('billingLawyer') && (
+            <label>
+              Billing Lawyer <input value={form.billingLawyer} onChange={(e) => setForm((p) => ({ ...p, billingLawyer: e.target.value }))} />
+            </label>
+          )}
           <div className="modal-actions">
             <button type="button" className="tool-btn" onClick={onClose}>Cancel</button>
             <button type="submit" className="primary">Add Company</button>

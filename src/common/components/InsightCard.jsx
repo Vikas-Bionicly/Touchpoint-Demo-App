@@ -3,6 +3,7 @@ import Icon from './Icon';
 
 export default function InsightCard({
   card,
+  taxonomyChips,
   onCreateTouchpoint,
   onDraftOutreach,
   state,
@@ -12,7 +13,10 @@ export default function InsightCard({
   onAddNote,
   onAddTag,
   onShareContent,
+  onShareToTeams,
   onViewConnections,
+  onViewRecentInteractions,
+  onCreateOpportunityList,
 }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,6 +29,8 @@ export default function InsightCard({
       onDraftOutreach?.(card);
     } else if (cta === 'Request Intro' || cta === 'View Connections') {
       onViewConnections?.(card);
+    } else if (cta === 'Create Opportunity List') {
+      onCreateOpportunityList?.(card);
     } else {
       onCreateTouchpoint?.(card);
     }
@@ -83,6 +89,12 @@ export default function InsightCard({
                 <button className="tool-btn" type="button" onClick={() => onShareContent?.(card)}>
                   Share content
                 </button>
+                <button className="tool-btn" type="button" onClick={() => onShareToTeams?.(card)}>
+                  Share to Teams
+                </button>
+                <button className="tool-btn" type="button" onClick={() => onViewRecentInteractions?.(card)}>
+                  Recent interactions
+                </button>
                 <button className="tool-btn" type="button" onClick={() => onDismiss?.(card)}>
                   Dismiss
                 </button>
@@ -113,6 +125,20 @@ export default function InsightCard({
             <p>{card.meta1}</p>
             <small>{card.meta2}</small>
             <small>{card.meta3}</small>
+            {card.lastTouchSource && (
+              <small className={`last-touch-source ${card.lastTouchSourceClass || ''}`}>
+                Last touch: {card.lastTouchSource}
+              </small>
+            )}
+            {taxonomyChips?.length ? (
+              <div className="ins-taxonomy-chips" aria-label="Contact taxonomy tags">
+                {taxonomyChips.map((chip) => (
+                  <span key={chip.id} className="ins-taxonomy-chip" title={chip.subtitle}>
+                    {chip.label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="actions">

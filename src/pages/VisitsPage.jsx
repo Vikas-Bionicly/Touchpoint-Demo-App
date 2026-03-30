@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Icon from '../common/components/Icon';
 import SubTabBar from '../common/components/SubTabBar';
 import PageHeader from '../common/components/PageHeader';
@@ -7,8 +7,14 @@ import FilterBar from '../common/components/FilterBar';
 import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 import { demoStore, useDemoStore } from '../common/store/demoStore';
 import { resolveContactAvatarUrl } from '../common/utils/avatars';
+import { usePersona } from '../common/hooks/usePersona';
+import { formatTagTaxonomyTitleAttr } from '../common/utils/tagTaxonomy';
+import { buildRowSecurityScope } from '../common/utils/rowSecurityScope';
+import { isVisitTouchpoint } from '../common/constants/visitWorkflow';
+import VisitWorkflowPanel from '../common/components/VisitWorkflowPanel';
+import CreateTouchpointTaskModal from '../common/components/CreateTouchpointTaskModal';
 
-const SUB_TABS = ['Plan a Visit', 'Visit History', 'Nearby Contacts'];
+const SUB_TABS = ['Plan a Visit', 'Visit workflow', 'Visit History', 'Nearby Contacts'];
 
 export default function VisitsPage({ subPage }) {
   const [activeTab, setActiveTab] = useState(subPage || 'Plan a Visit');
@@ -18,6 +24,7 @@ export default function VisitsPage({ subPage }) {
   const [companyFilter, setCompanyFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
   const [nearbyCity, setNearbyCity] = useState('');
+  const [visitCreateOpen, setVisitCreateOpen] = useState(false);
 
   const contacts = useDemoStore((s) => s.contacts || []);
   const companies = useDemoStore((s) => s.companies || []);
@@ -25,44 +32,73 @@ export default function VisitsPage({ subPage }) {
   const tags = useDemoStore((s) => s.tags || []);
   const contactTags = useDemoStore((s) => s.contactTags || {});
   const touchpoints = useDemoStore((s) => s.touchpoints || []);
+  const personaId = useDemoStore((s) => s.currentPersonaId || 'partner');
+  const { can } = usePersona();
+  const rowScope = useMemo(
+    () => buildRowSecurityScope({ personaId, companies, contacts }),
+    [personaId, companies, contacts]
+  );
+  const scopedContacts = useMemo(
+    () => contacts.filter((c) => rowScope.canSeeContact(c)),
+    [contacts, rowScope]
+  );
+
+  const contactsByName = useMemo(() => new Map(contacts.map((c) => [c.name, c])), [contacts]);
+
+  const activeVisitWorkflows = useMemo(
+    () =>
+      touchpoints
+        .filter((t) => t.kind === 'task' && t.status === 'open' && isVisitTouchpoint(t))
+        .filter((t) => rowScope.canSeeTouchpoint(t, contactsByName)),
+    [touchpoints, rowScope, contactsByName]
+  );
+
+  useEffect(() => {
+    setActiveTab(subPage || 'Plan a Visit');
+  }, [subPage]);
 
   // Unique cities for autocomplete
   const allCities = useMemo(() => {
     const citySet = new Set();
-    contacts.forEach((c) => { if (c.city) citySet.add(c.city); });
+    scopedContacts.forEach((c) => { if (c.city) citySet.add(c.city); });
     return Array.from(citySet).sort();
-  }, [contacts]);
+  }, [scopedContacts]);
 
   // Plan a Visit: filtered contacts by city + criteria
   const planContacts = useMemo(() => {
     if (!citySearch.trim()) return [];
     const q = citySearch.toLowerCase();
-    let data = contacts.filter((c) => (c.city || '').toLowerCase().includes(q));
+    let data = scopedContacts.filter((c) => (c.city || '').toLowerCase().includes(q));
     if (relationshipFilter) data = data.filter((c) => c.relationship === relationshipFilter);
     if (companyFilter) data = data.filter((c) => c.company === companyFilter);
     if (tagFilter) data = data.filter((c) => (contactTags[c.id] || []).includes(tagFilter));
     return data;
-  }, [contacts, citySearch, relationshipFilter, companyFilter, tagFilter, contactTags]);
+  }, [scopedContacts, citySearch, relationshipFilter, companyFilter, tagFilter, contactTags]);
 
   // Visit History: Trip Planning lists + visit-type touchpoints
   const visitHistory = useMemo(() => {
-    const tripLists = lists.filter((l) => l.type === 'Trip Planning');
-    const visitTouchpoints = touchpoints.filter((t) => t.visitStage || t.interactionType === 'Visit');
+    const contactsById = new Map(contacts.map((c) => [c.id, c]));
+    const tripLists = lists
+      .filter((l) => l.type === 'Trip Planning')
+      .filter((l) => rowScope.canSeeList(l, contactsById));
+    const visitTouchpoints = touchpoints
+      .filter((t) => t.visitStage || t.interactionType === 'Visit')
+      .filter((t) => rowScope.canSeeTouchpoint(t, new Map(contacts.map((c) => [c.name, c]))));
     return { tripLists, visitTouchpoints };
-  }, [lists, touchpoints]);
+  }, [lists, touchpoints, rowScope, contacts]);
 
   // Nearby Contacts
   const nearbyContacts = useMemo(() => {
     if (!nearbyCity.trim()) return [];
     const q = nearbyCity.toLowerCase();
-    return contacts
+    return scopedContacts
       .filter((c) => (c.city || '').toLowerCase().includes(q))
       .sort((a, b) => {
         // Sort by relationship score descending, then by days since last contact ascending
         if (b.relationshipScore !== a.relationshipScore) return b.relationshipScore - a.relationshipScore;
         return (a.metricsCurrent?.daysSinceLastInteraction || 999) - (b.metricsCurrent?.daysSinceLastInteraction || 999);
       });
-  }, [contacts, nearbyCity]);
+  }, [scopedContacts, nearbyCity]);
 
   function handleCreateVisitPlan() {
     const selected = Object.keys(selectedContacts).filter((id) => selectedContacts[id]);
@@ -119,11 +155,15 @@ export default function VisitsPage({ subPage }) {
               </FilterSelect>
               <FilterSelect value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)}>
                 <option value="">Company</option>
-                {companies.map((co) => <option key={co.id} value={co.name}>{co.name}</option>)}
+                {[...new Set(scopedContacts.map((c) => c.company).filter(Boolean))].sort().map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
               </FilterSelect>
               <FilterSelect value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
                 <option value="">Tag</option>
-                {tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+                {tags.map((t) => (
+                  <option key={t.id} value={t.id} title={formatTagTaxonomyTitleAttr(t)}>{t.label}</option>
+                ))}
               </FilterSelect>
             </FilterControls>
           </FilterBar>
@@ -132,22 +172,27 @@ export default function VisitsPage({ subPage }) {
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <p style={{ fontSize: 13, color: '#6b7280' }}>{planContacts.length} contacts found in "{citySearch}"</p>
-                <button
-                  className="primary"
-                  disabled={Object.values(selectedContacts).filter(Boolean).length === 0}
-                  onClick={handleCreateVisitPlan}
-                >
-                  Create Visit Plan ({Object.values(selectedContacts).filter(Boolean).length} selected)
-                </button>
+                {can('tripPlan.create') && (
+                  <button
+                    className="primary"
+                    disabled={Object.values(selectedContacts).filter(Boolean).length === 0}
+                    onClick={handleCreateVisitPlan}
+                  >
+                    Create Visit Plan ({Object.values(selectedContacts).filter(Boolean).length} selected)
+                  </button>
+                )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
                 {planContacts.map((contact) => (
                   <div key={contact.id} style={{
                     border: '1px solid #e5e7eb', borderRadius: 10, padding: 12,
                     background: selectedContacts[contact.id] ? '#f0f9ff' : '#fff',
-                    display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer',
-                  }} onClick={() => setSelectedContacts((p) => ({ ...p, [contact.id]: !p[contact.id] }))}>
-                    <input type="checkbox" checked={Boolean(selectedContacts[contact.id])} readOnly />
+                    display: 'flex', gap: 12, alignItems: 'center', cursor: can('tripPlan.create') ? 'pointer' : 'default',
+                  }} onClick={() => {
+                    if (!can('tripPlan.create')) return;
+                    setSelectedContacts((p) => ({ ...p, [contact.id]: !p[contact.id] }));
+                  }}>
+                    {can('tripPlan.create') && <input type="checkbox" checked={Boolean(selectedContacts[contact.id])} readOnly />}
                     <img src={avatarSrc(contact)} alt={contact.name} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <strong style={{ fontSize: 14 }}>{contact.name}</strong>
@@ -177,6 +222,54 @@ export default function VisitsPage({ subPage }) {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'Visit workflow' && (
+        <div style={{ padding: '0 16px' }}>
+          <p style={{ fontSize: 14, color: '#4b5563', marginBottom: 16, maxWidth: 640 }}>
+            Track client visits through <strong>Pre-visit</strong> (logistics and brief), <strong>Visit</strong> (in-person touchpoint),
+            and <strong>Post-visit</strong> (follow-up). Advance stages here or from any visit touchpoint on the Touchpoints page.
+          </p>
+          {can('touchpoint.create') && (
+            <div style={{ marginBottom: 16 }}>
+              <button type="button" className="primary" onClick={() => setVisitCreateOpen(true)}>
+                Create visit touchpoint
+              </button>
+            </div>
+          )}
+          {activeVisitWorkflows.length === 0 ? (
+            <p style={{ color: '#6b7280', fontSize: 13 }}>No open visit touchpoints. Create one above or from Touchpoints → Create with type Visit.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {activeVisitWorkflows.map((tp) => (
+                <div
+                  key={tp.id}
+                  style={{
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 10,
+                    padding: 12,
+                    background: '#fff',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                    <strong style={{ fontSize: 14 }}>{tp.title}</strong>
+                    <span style={{ fontSize: 12, color: '#6b7280' }}>{tp.contactName}</span>
+                  </div>
+                  <VisitWorkflowPanel touchpoint={tp} compact />
+                </div>
+              ))}
+            </div>
+          )}
+          <CreateTouchpointTaskModal
+            isOpen={visitCreateOpen}
+            onClose={() => setVisitCreateOpen(false)}
+            preset={{
+              interactionType: 'Visit',
+              title: 'Client visit',
+              source: 'visits-workflow-tab',
+            }}
+          />
         </div>
       )}
 

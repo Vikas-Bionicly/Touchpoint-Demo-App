@@ -13,6 +13,7 @@ const TYPE_ICONS = {
   'list.created': 'list',
   'tags.updated': 'sliders',
   'ai.summary.generated': 'sparkles',
+  'meeting_brief.viewed': 'note',
 };
 
 function relativeTime(isoString) {

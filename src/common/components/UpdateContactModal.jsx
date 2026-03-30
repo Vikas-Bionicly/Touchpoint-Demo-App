@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { demoStore, useDemoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
 
 export default function UpdateContactModal({ contact, isOpen, onClose }) {
   const companies = useDemoStore((s) => s.companies || []);
   const [form, setForm] = useState({ name: '', company: '', role: '', city: '', email: '', phone: '' });
+  const { can } = usePersona();
 
   useEffect(() => {
     if (contact) {
@@ -19,6 +21,7 @@ export default function UpdateContactModal({ contact, isOpen, onClose }) {
   }, [contact]);
 
   if (!isOpen || !contact) return null;
+  if (!can('contact.edit')) return null;
 
   function handleSubmit(e) {
     e.preventDefault();

@@ -5,10 +5,14 @@ import { demoStore, useDemoStore } from '../common/store/demoStore';
 import SearchBar from '../common/components/SearchBar';
 import { FilterControls, FilterSelect } from '../common/components/FilterControls';
 import AssignTaskModal from '../common/components/AssignTaskModal';
+import MeetingBriefModal from '../common/components/MeetingBriefModal';
 import { usePersona } from '../common/hooks/usePersona';
 import { resolveContactAvatarUrl } from '../common/utils/avatars';
+import { formatTagTaxonomyTitleAttr } from '../common/utils/tagTaxonomy';
+import { buildRowSecurityScope } from '../common/utils/rowSecurityScope';
 import DetailActionBar from '../common/components/DetailActionBar';
 import DetailTabBar from '../common/components/DetailTabBar';
+import VisitWorkflowPanel from '../common/components/VisitWorkflowPanel';
 
 const interactionTypes = ['Email', 'Meeting', 'Event', 'Call', 'Visit'];
 
@@ -46,22 +50,53 @@ export default function TouchpointsPage({ view = '' }) {
   const [sort, setSort] = useState({ key: '', direction: '' });
   const [showColumns, setShowColumns] = useState({ contact: true, interaction: true, status: true, relationship: true });
   const contacts = useDemoStore((s) => s.contacts || []);
-  const [form, setForm] = useState({ contactName: contacts[0]?.name || '', interactionType: 'Email', date: '', outcome: '', followUpDate: '', notes: '' });
+  const [form, setForm] = useState({ contactName: contacts[0]?.name || '', interactionType: 'Email', date: '', outcome: '', followUpDate: '', notes: '', onBehalfOf: '' });
   const rawTouchpoints = useDemoStore((s) => s.touchpoints);
   const rawTags = useDemoStore((s) => s.tags);
   const rawContactTags = useDemoStore((s) => s.contactTags);
   const touchpoints = rawTouchpoints || [];
   const tags = rawTags || [];
   const contactTags = rawContactTags || {};
+  const companies = useDemoStore((s) => s.companies || []);
+  const personaId = useDemoStore((s) => s.currentPersonaId || 'partner');
   const rawTouchpointNotes = useDemoStore((s) => s.touchpointNotes);
   const touchpointNotes = rawTouchpointNotes || [];
   const [newNoteText, setNewNoteText] = useState('');
+  const [meetingBriefContact, setMeetingBriefContact] = useState(null);
   const [tagFilter, setTagFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [dateRangeFilter, setDateRangeFilter] = useState('');
+  const [principalFilter, setPrincipalFilter] = useState('');
+  const [assignmentFilter, setAssignmentFilter] = useState('');
 
-  const { can } = usePersona();
+  const { can, persona } = usePersona();
+  const contactsByName = useMemo(() => new Map(contacts.map((c) => [c.name, c])), [contacts]);
+  const rowScope = useMemo(
+    () => buildRowSecurityScope({ personaId, companies, contacts }),
+    [personaId, companies, contacts]
+  );
+
+  const principalOptions = useMemo(() => {
+    const set = new Set(touchpoints.map((tp) => tp.principal).filter(Boolean));
+    return Array.from(set).sort();
+  }, [touchpoints]);
+
+  const viewLower = String(view).toLowerCase();
+  const isMissedView = viewLower.includes('missed');
+  const isKeyContactsView = viewLower.includes('key contacts');
+  const isReferralsView = viewLower.includes('referral');
+  const isVisitsView = viewLower.includes('visit');
+
+  const headerTitle = isMissedView
+    ? 'Missed Touchpoints'
+    : isKeyContactsView
+      ? 'Key Contacts'
+      : isReferralsView
+        ? 'Referrals'
+        : isVisitsView
+          ? 'Visits'
+          : 'Touchpoints';
 
   useEffect(() => {
     if (!contacts.length) return;
@@ -70,10 +105,37 @@ export default function TouchpointsPage({ view = '' }) {
 
   const rows = useMemo(() => {
     const q = query.toLowerCase();
-    const isMissedView = String(view).toLowerCase().includes('missed');
-    let data = touchpoints
-      .filter((t) => { if (!isMissedView) return true; return isOverdue(t); })
-      .filter((row) => {
+    let data = touchpoints;
+
+    // DT-07 prototype: row-level scoping aligned with persona/company/contact rules.
+    data = data.filter((tp) => rowScope.canSeeTouchpoint(tp, contactsByName));
+
+    // Sub-views (P0: Key Contacts / Referrals / Visits)
+    if (isMissedView) data = data.filter(isOverdue);
+    if (isKeyContactsView) {
+      data = data.filter((tp) => {
+        const contact = contactByName(contacts, tp.contactName);
+        return Boolean(contact?.isKeyContact);
+      });
+    }
+    if (isReferralsView) {
+      data = data.filter((tp) => {
+        const src = String(tp.source || '').toLowerCase();
+        const title = String(tp.title || '').toLowerCase();
+        return src.includes('firm-connections:request-intro') || title.includes('request intro');
+      });
+    }
+    if (isVisitsView) {
+      data = data.filter(
+        (tp) =>
+          Boolean(tp.visitStage) ||
+          tp.interactionType === 'Visit' ||
+          String(tp.title || '').toLowerCase().includes('visit') ||
+          String(tp.interactionType || '').toLowerCase().includes('visit')
+      );
+    }
+
+    data = data.filter((row) => {
         if (!query.trim()) return true;
         return [row.contactName, row.role, row.company, row.title, row.lastInteracted, row.relationshipStatus, row.dueAt ? formatDueLabel(row.dueAt) : '', row.interactionType, row.outcome, row.status].join(' ').toLowerCase().includes(q);
       });
@@ -88,6 +150,14 @@ export default function TouchpointsPage({ view = '' }) {
     }
     if (statusFilter) {
       data = data.filter((row) => row.status === statusFilter);
+    }
+    if (principalFilter) {
+      data = data.filter((row) => String(row.principal || '') === principalFilter);
+    }
+    if (assignmentFilter) {
+      data = data.filter((row) =>
+        assignmentFilter === 'assigned' ? Boolean(row.assignedTo) : !row.assignedTo
+      );
     }
     if (dateRangeFilter) {
       const now = Date.now();
@@ -114,18 +184,64 @@ export default function TouchpointsPage({ view = '' }) {
       });
     }
     return data;
-  }, [query, touchpoints, view, sort, tagFilter, typeFilter, statusFilter, dateRangeFilter, contacts, contactTags]);
+  }, [
+    query,
+    touchpoints,
+    view,
+    sort,
+    tagFilter,
+    typeFilter,
+    statusFilter,
+    dateRangeFilter,
+    principalFilter,
+    assignmentFilter,
+    contacts,
+    contactTags,
+    isMissedView,
+    isKeyContactsView,
+    isReferralsView,
+    isVisitsView,
+    rowScope,
+    contactsByName,
+  ]);
 
   const stats = useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     let open = 0, overdue = 0, completedThisMonth = 0;
-    touchpoints.forEach((t) => {
+
+    let data = touchpoints;
+    data = data.filter((tp) => rowScope.canSeeTouchpoint(tp, contactsByName));
+    if (isMissedView) data = data.filter(isOverdue);
+    if (isKeyContactsView) {
+      data = data.filter((tp) => {
+        const contact = contactByName(contacts, tp.contactName);
+        return Boolean(contact?.isKeyContact);
+      });
+    }
+    if (isReferralsView) {
+      data = data.filter((tp) => {
+        const src = String(tp.source || '').toLowerCase();
+        const title = String(tp.title || '').toLowerCase();
+        return src.includes('firm-connections:request-intro') || title.includes('request intro');
+      });
+    }
+    if (isVisitsView) {
+      data = data.filter(
+        (tp) =>
+          Boolean(tp.visitStage) ||
+          tp.interactionType === 'Visit' ||
+          String(tp.title || '').toLowerCase().includes('visit') ||
+          String(tp.interactionType || '').toLowerCase().includes('visit')
+      );
+    }
+
+    data.forEach((t) => {
       if (t.status === 'open') { open += 1; if (isOverdue(t)) overdue += 1; }
       else if (t.status === 'completed' && t.completedAt) { const d = new Date(t.completedAt); if (!Number.isNaN(d.getTime()) && d >= monthStart && d <= now) completedThisMonth += 1; }
     });
     return { open, overdue, completedThisMonth };
-  }, [touchpoints]);
+  }, [touchpoints, contacts, isMissedView, isKeyContactsView, isReferralsView, isVisitsView, rowScope, contactsByName]);
 
   const overdueTrendLabel = stats.overdue === 0 ? 'No overdue touchpoints' : stats.overdue <= 2 ? 'Light overdue load' : 'High overdue load';
   const contactParentOn = Boolean(showColumns.contact);
@@ -140,14 +256,22 @@ export default function TouchpointsPage({ view = '' }) {
   function exportCsv() {
     if (!rows.length || !can('export.csv')) return;
     const headers = ['Date'];
-    if (showColumns.contact) headers.push('Contact', 'Role', 'Company');
+    if (showColumns.contact) headers.push('Contact', 'Role', 'Company', 'Principal', 'Assigned To');
     if (showColumns.interaction) headers.push('Interaction type', 'Title');
     if (showColumns.status) headers.push('Status', 'Relationship status');
     const lines = [headers.join(',')];
     rows.forEach((row) => {
       const dateLabel = row.kind === 'task' ? formatDueLabel(row.dueAt) : row.completedAt ? formatDueLabel(row.completedAt) : '';
       const cols = [JSON.stringify(dateLabel)];
-      if (showColumns.contact) { cols.push(JSON.stringify(row.contactName), JSON.stringify(row.role), JSON.stringify(row.company)); }
+      if (showColumns.contact) {
+        cols.push(
+          JSON.stringify(row.contactName),
+          JSON.stringify(row.role),
+          JSON.stringify(row.company),
+          JSON.stringify(row.principal || ''),
+          JSON.stringify(row.assignedTo || '')
+        );
+      }
       if (showColumns.interaction) { cols.push(JSON.stringify(row.interactionType), JSON.stringify(row.title)); }
       if (showColumns.status) { cols.push(JSON.stringify(row.status), JSON.stringify(row.relationshipStatus)); }
       lines.push(cols.join(','));
@@ -178,14 +302,15 @@ export default function TouchpointsPage({ view = '' }) {
       avatarUrl: selectedContact?.avatarUrl || '', signalTone: selectedContact?.signalTone || 'blue',
       relationshipStatus: selectedContact?.relationship || 'Stable', relationshipScore: selectedContact?.relationshipScore || 50,
       lastInteracted: '0 days ago', source: 'touchpoints:log-interaction',
+      onBehalfOf: form.onBehalfOf || '',
     });
     setIsLogOpen(false);
-    setForm({ contactName: contacts[0]?.name || '', interactionType: 'Email', date: '', outcome: '', followUpDate: '', notes: '' });
+    setForm({ contactName: contacts[0]?.name || '', interactionType: 'Email', date: '', outcome: '', followUpDate: '', notes: '', onBehalfOf: '' });
   }
 
   return (
     <section className="touchpoints-view-v2">
-      <PageHeader title={String(view).toLowerCase().includes('missed') ? 'Missed Touchpoints' : 'Touchpoints'} showMore={false} />
+      <PageHeader title={headerTitle} showMore={false} />
 
       <section className="filterbar touchpoints-filterbar-v2">
         <SearchBar className="touchpoints-search-v2" value={query} onChange={(value) => setQuery(value)} />
@@ -203,6 +328,19 @@ export default function TouchpointsPage({ view = '' }) {
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </FilterSelect>
+          <FilterSelect value={assignmentFilter} onChange={(e) => setAssignmentFilter(e.target.value)}>
+            <option value="">Assignment</option>
+            <option value="assigned">Assigned</option>
+            <option value="unassigned">Unassigned</option>
+          </FilterSelect>
+          <FilterSelect value={principalFilter} onChange={(e) => setPrincipalFilter(e.target.value)}>
+            <option value="">Principal</option>
+            {principalOptions.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </FilterSelect>
           <FilterSelect value={dateRangeFilter} onChange={(e) => setDateRangeFilter(e.target.value)}>
             <option value="">All Dates</option>
             <option value="7d">Last 7 days</option>
@@ -211,12 +349,14 @@ export default function TouchpointsPage({ view = '' }) {
           </FilterSelect>
           <FilterSelect value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
             <option value="">All Tags</option>
-            {tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+            {tags.map((t) => (
+              <option key={t.id} value={t.id} title={formatTagTaxonomyTitleAttr(t)}>{t.label}</option>
+            ))}
           </FilterSelect>
         </FilterControls>
       </section>
 
-      {!String(view).toLowerCase().includes('missed') && (
+      {!isMissedView && (
         <section className="touchpoints-summary">
           <div className="touchpoints-summary-item"><p className="touchpoints-summary-label">Open</p><p className="touchpoints-summary-value">{stats.open}</p></div>
           <div className="touchpoints-summary-item"><p className="touchpoints-summary-label">Overdue</p><p className="touchpoints-summary-value">{stats.overdue}</p></div>
@@ -284,6 +424,7 @@ export default function TouchpointsPage({ view = '' }) {
                     <div className="contact-title-line-v2"><strong>{row.contactName}</strong><Icon name="signal" className={`network-icon tone-${row.signalTone}`} /></div>
                     <p>{row.role}</p>
                     <p>{row.company}</p>
+                    {row.principal && <p style={{ fontSize: 11, color: '#6b7280' }}>Principal: <strong>{row.principal}</strong></p>}
                     {row.assignedTo && <p style={{ fontSize: 11, color: '#6b7280' }}>Assigned to: <strong>{row.assignedTo}</strong></p>}
                     {row.onBehalfOf && <p style={{ fontSize: 11, color: '#6b7280' }}>On behalf of: <strong>{row.onBehalfOf}</strong></p>}
                   </div>
@@ -322,6 +463,7 @@ export default function TouchpointsPage({ view = '' }) {
                 <div className="touchpoint-card-contact-meta">
                   <strong>{row.contactName}</strong>
                   <p>{row.role}</p><p>{row.company}</p>
+                  {row.principal && <p style={{ fontSize: 11, color: '#6b7280' }}>Principal: {row.principal}</p>}
                   {row.assignedTo && <p style={{ fontSize: 11, color: '#6b7280' }}>Assigned to: {row.assignedTo}</p>}
                 </div>
               </div>
@@ -350,16 +492,56 @@ export default function TouchpointsPage({ view = '' }) {
             { label: 'Complete', icon: 'check', onClick: () => { demoStore.actions.completeTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'completed' } : p); }, disabled: selectedRow.status !== 'open' },
             { label: 'Cancel', icon: 'x', onClick: () => { demoStore.actions.cancelTouchpoint(selectedRow.id); setSelectedRow((p) => p ? { ...p, status: 'cancelled' } : p); }, disabled: selectedRow.status !== 'open' },
           ] : []),
-          ...(selectedRow.kind === 'task' && can('touchpoint.assign') ? [
+          ...(can('touchpoint.assign') ? [
             { divider: true },
-            { label: 'Assign', icon: 'user', onClick: () => { setAssignTarget(selectedRow); setSelectedRow(null); } },
+            { label: 'Assign / Principal', icon: 'user', onClick: () => { setAssignTarget(selectedRow); setSelectedRow(null); } },
+            {
+              label: 'Clear Assignment',
+              icon: 'x',
+              disabled: !selectedRow.assignedTo && !selectedRow.principal && !selectedRow.onBehalfOf,
+              onClick: () => {
+                demoStore.actions.assignTouchpoint(selectedRow.id, {
+                  assignedTo: '',
+                  assignedBy: '',
+                  principal: '',
+                  onBehalfOf: '',
+                });
+                setSelectedRow((p) =>
+                  p
+                    ? { ...p, assignedTo: '', assignedBy: '', principal: '', onBehalfOf: '' }
+                    : p
+                );
+              },
+            },
           ] : []),
           { divider: true },
+          {
+            label: 'Meeting brief',
+            icon: 'note',
+            onClick: () => {
+              const c = contacts.find((x) => x.name === selectedRow.contactName);
+              setMeetingBriefContact(
+                c || {
+                  id: '',
+                  name: selectedRow.contactName,
+                  role: selectedRow.role || '',
+                  company: selectedRow.company || '',
+                  lastInteraction:
+                    selectedRow.kind === 'task'
+                      ? `Open task: ${selectedRow.title}`
+                      : selectedRow.title || '',
+                  relationship: selectedRow.relationshipStatus || 'Stable',
+                  internalConnections: [],
+                }
+              );
+              setSelectedRow(null);
+            },
+          },
           { label: 'Add Note', icon: 'note', onClick: () => setDetailTab('notes') },
         ];
         return (
           <div className="modal-backdrop" onClick={() => setSelectedRow(null)}>
-            <div className="company-modal" onClick={(event) => event.stopPropagation()} style={{ maxWidth: 600 }}>
+            <div className="company-modal company-modal--md" onClick={(event) => event.stopPropagation()}>
               {/* Header */}
               <div className="detail-header" style={{ padding: '16px 16px 0' }}>
                 <img src={avatarSrc(selectedRow.avatarUrl)} alt={selectedRow.contactName} className={`detail-header-avatar tone-${selectedRow.signalTone}`} />
@@ -369,6 +551,16 @@ export default function TouchpointsPage({ view = '' }) {
                   <p style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                     <span className="tp-pill tp-pill-status" data-status={selectedRow.status}>{selectedRow.status}</span>
                     <span className="tp-pill tp-pill-relationship">Relationship <strong>{selectedRow.relationshipStatus}</strong></span>
+                    {selectedRow.principal && (
+                      <span className="tp-pill tp-pill-relationship">
+                        Principal <strong>{selectedRow.principal}</strong>
+                      </span>
+                    )}
+                    {selectedRow.assignedTo && (
+                      <span className="tp-pill tp-pill-status">
+                        Assigned <strong>{selectedRow.assignedTo}</strong>
+                      </span>
+                    )}
                   </p>
                 </div>
                 <button className="modal-close" onClick={() => setSelectedRow(null)} aria-label="close modal">x</button>
@@ -392,10 +584,20 @@ export default function TouchpointsPage({ view = '' }) {
                     <div><p className="modal-label">Status</p><p className="modal-value">{selectedRow.status}</p></div>
                     <div><p className="modal-label">Outcome</p><p className="modal-value">{selectedRow.outcome || '—'}</p></div>
                     <div><p className="modal-label">{selectedRow.kind === 'task' ? 'Due date' : 'Completed'}</p><p className="modal-value">{selectedRow.kind === 'task' ? formatDueLabel(selectedRow.dueAt) : formatDueLabel(selectedRow.completedAt)}</p></div>
+                    {selectedRow.principal && <div><p className="modal-label">Principal</p><p className="modal-value">{selectedRow.principal}</p></div>}
                     {selectedRow.assignedTo && <div><p className="modal-label">Assigned to</p><p className="modal-value">{selectedRow.assignedTo}</p></div>}
                     {selectedRow.assignedBy && <div><p className="modal-label">Assigned by</p><p className="modal-value">{selectedRow.assignedBy}</p></div>}
                     {selectedRow.onBehalfOf && <div><p className="modal-label">On behalf of</p><p className="modal-value">{selectedRow.onBehalfOf}</p></div>}
-                    {selectedRow.visitStage && <div><p className="modal-label">Visit stage</p><p className="modal-value">{selectedRow.visitStage}</p></div>}
+                    <VisitWorkflowPanel
+                      touchpoint={selectedRow}
+                      onUpdated={() =>
+                        setSelectedRow((p) => {
+                          if (!p) return p;
+                          const t = demoStore.getState().touchpoints.find((x) => x.id === p.id);
+                          return t ? { ...t } : p;
+                        })
+                      }
+                    />
                     {selectedRow.kind === 'task' && selectedRow.status === 'open' && (
                       <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
                         <p className="modal-label" style={{ margin: 0 }}>Reschedule</p>
@@ -451,6 +653,16 @@ export default function TouchpointsPage({ view = '' }) {
               <label>Outcome<input value={form.outcome} onChange={(e) => setForm((p) => ({ ...p, outcome: e.target.value }))} placeholder="Outcome summary" /></label>
               <label>Follow-up Date<input type="text" placeholder="MM/DD/YY" value={form.followUpDate} onChange={(e) => setForm((p) => ({ ...p, followUpDate: e.target.value }))} /></label>
               <label>Notes<textarea value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} rows={3} /></label>
+              {persona?.id === 'legal-assistant' && (
+                <label>
+                  On behalf of
+                  <input
+                    value={form.onBehalfOf}
+                    onChange={(e) => setForm((p) => ({ ...p, onBehalfOf: e.target.value }))}
+                    placeholder="Assigned lawyer"
+                  />
+                </label>
+              )}
               <div className="modal-actions">
                 <button type="button" className="tool-btn" onClick={() => setIsLogOpen(false)}>Cancel</button>
                 <button type="submit" className="primary">Save Interaction</button>
@@ -461,6 +673,11 @@ export default function TouchpointsPage({ view = '' }) {
       )}
 
       <AssignTaskModal touchpoint={assignTarget} isOpen={Boolean(assignTarget)} onClose={() => setAssignTarget(null)} />
+      <MeetingBriefModal
+        contact={meetingBriefContact}
+        isOpen={Boolean(meetingBriefContact)}
+        onClose={() => setMeetingBriefContact(null)}
+      />
     </section>
   );
 }

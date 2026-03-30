@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Icon from './Icon';
 import { demoStore, useDemoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
 
 const CAPTURE_TYPES = [
   { id: 'contact', label: 'Contact', icon: 'addressCard' },
@@ -103,6 +104,25 @@ const FORMS = {
 export default function QuickCapture() {
   const [open, setOpen] = useState(false);
   const [activeForm, setActiveForm] = useState(null);
+  const { can } = usePersona();
+
+  const allowedCaptureTypes = CAPTURE_TYPES.filter((type) => {
+    if (type.id === 'contact') return can('contact.add');
+    if (type.id === 'company') return can('company.add');
+    if (type.id === 'touchpoint') return can('touchpoint.create');
+    if (type.id === 'note') return can('note.add');
+    if (type.id === 'list') return can('list.create');
+    return false;
+  });
+
+  useEffect(() => {
+    if (!activeForm) return;
+    const stillAllowed = allowedCaptureTypes.some((t) => t.id === activeForm);
+    if (!stillAllowed) {
+      setActiveForm(null);
+      setOpen(false);
+    }
+  }, [activeForm, allowedCaptureTypes]);
 
   function handleDone() {
     setActiveForm(null);
@@ -120,7 +140,7 @@ export default function QuickCapture() {
           boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)', minWidth: 180,
           display: 'flex', flexDirection: 'column', gap: 2,
         }}>
-          {CAPTURE_TYPES.map((type) => (
+          {allowedCaptureTypes.map((type) => (
             <button
               key={type.id}
               className="tool-btn"
@@ -141,13 +161,14 @@ export default function QuickCapture() {
           boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)', minWidth: 260, maxWidth: 320,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <strong style={{ fontSize: 14 }}>New {CAPTURE_TYPES.find((t) => t.id === activeForm)?.label}</strong>
+            <strong style={{ fontSize: 14 }}>New {allowedCaptureTypes.find((t) => t.id === activeForm)?.label}</strong>
             <button type="button" style={{ all: 'unset', cursor: 'pointer', fontSize: 16, color: '#6b7280' }} onClick={() => setActiveForm(null)}>x</button>
           </div>
           <FormComponent onDone={handleDone} />
         </div>
       )}
 
+      {allowedCaptureTypes.length > 0 && (
       <button
         type="button"
         onClick={() => { setOpen((p) => !p); if (open) setActiveForm(null); }}
@@ -164,6 +185,7 @@ export default function QuickCapture() {
       >
         <Icon name="plus" />
       </button>
+      )}
     </div>
   );
 }

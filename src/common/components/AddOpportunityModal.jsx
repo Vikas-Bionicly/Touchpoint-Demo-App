@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { demoStore, useDemoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
 
 const OPP_TYPES = ['Pitch', 'RFP', 'Panel', 'Proposal'];
 const OPP_STATUSES = ['Pending', 'Won', 'Lost'];
 
 export default function AddOpportunityModal({ isOpen, onClose, preselectedCompanyId }) {
   const companies = useDemoStore((s) => s.companies || []);
+  const { can } = usePersona();
   const [form, setForm] = useState({ companyId: preselectedCompanyId || '', name: '', type: 'Pitch', status: 'Pending' });
 
   if (!isOpen) return null;
+  if (!can('opportunity.add')) return null;
 
   function handleSubmit(e) {
     e.preventDefault();

@@ -10,6 +10,10 @@ import { FilterControls, FilterSelect } from '../common/components/FilterControl
 import FilterViewButton from '../common/components/FilterViewButton';
 import DetailActionBar from '../common/components/DetailActionBar';
 import DetailTabBar from '../common/components/DetailTabBar';
+import UpdateListModal from '../common/components/UpdateListModal';
+import MarketingEngagementModal from '../common/components/MarketingEngagementModal';
+import { formatTagTaxonomyTitleAttr } from '../common/utils/tagTaxonomy';
+import { buildRowSecurityScope } from '../common/utils/rowSecurityScope';
 
 export default function ListsPage() {
   const [query, setQuery] = useState('');
@@ -17,6 +21,11 @@ export default function ListsPage() {
   const [selectedListId, setSelectedListId] = useState(null);
   const [newNoteText, setNewNoteText] = useState('');
   const [showCreateList, setShowCreateList] = useState(false);
+  const [editList, setEditList] = useState(null);
+  const [marketingTarget, setMarketingTarget] = useState(null);
+  const [pullThroughMessage, setPullThroughMessage] = useState('');
+  const [targetingMessage, setTargetingMessage] = useState('');
+  const [crossPracticeMessage, setCrossPracticeMessage] = useState('');
   const [showColumns, setShowColumns] = useState({ name: true, owner: true, tag: true, visibility: true });
   const lists = useDemoStore((s) => s.lists || []);
   const rawTags = useDemoStore((s) => s.tags);
@@ -31,11 +40,18 @@ export default function ListsPage() {
   const [listDetailTab, setListDetailTab] = useState('members');
   const tags = rawTags || [];
   const actions = demoStore.actions;
+  const companies = useDemoStore((s) => s.companies || []);
+  const personaId = useDemoStore((s) => s.currentPersonaId || 'partner');
 
   const { can, field, tier } = usePersona();
+  const rowScope = useMemo(
+    () => buildRowSecurityScope({ personaId, companies, contacts }),
+    [personaId, companies, contacts]
+  );
+  const contactsById = useMemo(() => new Map(contacts.map((c) => [c.id, c])), [contacts]);
 
   const rows = useMemo(() => {
-    let data = lists;
+    let data = lists.filter((row) => rowScope.canSeeList(row, contactsById));
 
     // Tier 3 can't see personal lists
     if (!field('personalLists')) {
@@ -49,24 +65,154 @@ export default function ListsPage() {
     if (!query.trim()) return data;
     const q = query.toLowerCase();
     return data.filter((row) => [row.name, row.owner, row.tag, row.lastEngagement].join(' ').toLowerCase().includes(q));
-  }, [lists, query, tagFilter, typeFilter, visibilityFilter, ownerFilter, field]);
+  }, [lists, query, tagFilter, typeFilter, visibilityFilter, ownerFilter, field, rowScope, contactsById]);
 
   const allChecked = rows.length > 0 && rows.every((row) => checkedRows[row.id]);
   const selectedList = selectedListId ? lists.find((l) => l.id === selectedListId) || null : null;
-  const selectedMembersRaw = selectedList ? contacts.filter((c) => Array.isArray(selectedList.memberIds) && selectedList.memberIds.includes(c.id)) : [];
+  const selectedMembersRaw = selectedList ? contacts.filter((c) => rowScope.canSeeContact(c) && Array.isArray(selectedList.memberIds) && selectedList.memberIds.includes(c.id)) : [];
   const selectedMembers = memberSearch.trim()
     ? selectedMembersRaw.filter((m) => [m.name, m.role, m.company, m.city].join(' ').toLowerCase().includes(memberSearch.toLowerCase()))
     : selectedMembersRaw;
   const selectedListNotes = selectedList ? listNotes.filter((n) => n.listId === selectedList.id).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)) : [];
+  const selectedMarketingSummary = selectedList ? getMarketingSummary(selectedList) : { count: 0, recipients: 0, latestType: '', latestDate: '' };
   const isDetailView = Boolean(selectedList);
+  const selectedListMembers = selectedList && Array.isArray(selectedList.memberIds) ? selectedList.memberIds : [];
+  const existingOpenFollowUpByMemberId = useMemo(() => {
+    if (!selectedList || selectedList.type !== 'Event-based') return new Set();
+    const set = new Set();
+    (touchpoints || []).forEach((tp) => {
+      if (tp.kind !== 'task' || tp.status !== 'open') return;
+      const source = String(tp.source || '');
+      if (!source.startsWith('lists:event-followup')) return;
+      if (!source.includes(`:${selectedList.id}:`)) return;
+      const maybeMemberId = source.split(':').pop();
+      if (maybeMemberId) set.add(maybeMemberId);
+    });
+    return set;
+  }, [touchpoints, selectedList]);
+  const selectedListEventEligibleCount =
+    selectedList?.type === 'Event-based'
+      ? selectedListMembers.filter((id) => !existingOpenFollowUpByMemberId.has(id)).length
+      : 0;
+  const selectedListEventExistingCount =
+    selectedList?.type === 'Event-based'
+      ? selectedListMembers.length - selectedListEventEligibleCount
+      : 0;
+  const companiesByName = useMemo(() => new Map(companies.map((c) => [c.name, c])), [companies]);
+
+  function getMarketingSummary(list) {
+    const items = Array.isArray(list.marketingActivity) ? list.marketingActivity : [];
+    if (!items.length) return { count: 0, recipients: 0, latestType: '', latestDate: '' };
+    const last = items[0];
+    const recipients = items.reduce((sum, item) => sum + Number(item?.recipients || 0), 0);
+    return {
+      count: items.length,
+      recipients,
+      latestType: last?.type || '',
+      latestDate: last?.date || '',
+    };
+  }
+
+  function renderMarketingSummary(list) {
+    const summary = getMarketingSummary(list);
+    if (!summary.count) return null;
+    return (
+      <p style={{ marginTop: 2, fontSize: 11, color: '#6b7280' }}>
+        Marketing: <strong>{summary.count}</strong> activities
+        {summary.latestType ? ` · Last ${summary.latestType}` : ''}
+        {summary.latestDate ? ` (${summary.latestDate})` : ''}
+        {summary.recipients ? ` · Reach ${summary.recipients}` : ''}
+      </p>
+    );
+  }
+
+  function getTargetingReason(contact) {
+    const company = companiesByName.get(contact.company);
+    const staleDays = Number(contact.metricsCurrent?.daysSinceLastInteraction || 0);
+    const score = Number(contact.relationshipScore ?? 50);
+    const reasons = [];
+    if (company?.isStrategicAccount) reasons.push('strategic account');
+    if (staleDays >= 35) reasons.push(`${staleDays} days since last interaction`);
+    if (score <= 62) reasons.push(`relationship score ${score}`);
+    return reasons.length ? reasons.join(' · ') : 'targeting signal';
+  }
+
+  const selectedTargetingMetrics = useMemo(() => {
+    if (!selectedList || selectedList.type !== 'Targeting') return null;
+    const members = selectedMembersRaw;
+    const strategic = members.filter((m) => Boolean(companiesByName.get(m.company)?.isStrategicAccount)).length;
+    const stale = members.filter((m) => Number(m.metricsCurrent?.daysSinceLastInteraction || 0) >= 35).length;
+    const avgScore = members.length
+      ? Math.round(members.reduce((sum, m) => sum + Number(m.relationshipScore ?? 50), 0) / members.length)
+      : 0;
+    return { strategic, stale, avgScore };
+  }, [selectedList, selectedMembersRaw, companiesByName]);
+  const selectedCrossPracticeMetrics = useMemo(() => {
+    if (!selectedList?.crossPracticeMeta) return null;
+    return {
+      practiceCount: Number(selectedList.crossPracticeMeta.gapPracticeCount || 0),
+      topGapPractices: selectedList.crossPracticeMeta.topGapPractices || [],
+    };
+  }, [selectedList]);
 
   return (
     <section className="lists-view-v2">
       {!isDetailView && (
         <>
-          <PageHeader title="Lists" showMore={false} right={
-            can('list.create') ? <button className="primary" style={{ fontSize: 13 }} onClick={() => setShowCreateList(true)}>+ Create List</button> : null
-          } />
+          <PageHeader
+            title="Lists"
+            showMore={false}
+            right={
+              can('list.create') ? (
+                <>
+                  <button
+                    className="tool-btn"
+                    style={{ fontSize: 13 }}
+                    onClick={() => actions.syncMarketingEventLists()}
+                  >
+                    Sync Event Lists
+                  </button>
+                  <button
+                    className="tool-btn"
+                    style={{ fontSize: 13 }}
+                    onClick={() => {
+                      const created = actions.createTargetingList({ maxMembers: 15 });
+                      setTargetingMessage(
+                        created?.membersAdded
+                          ? `Created firm-wide targeting list with ${created.membersAdded} contacts.`
+                          : 'No targeting list created: no eligible candidates were found.'
+                      );
+                    }}
+                  >
+                    Build Targeting List
+                  </button>
+                  <button
+                    className="tool-btn"
+                    style={{ fontSize: 13 }}
+                    onClick={() => {
+                      const created = actions.createCrossPracticeInitiativeList({ maxMembers: 18 });
+                      setCrossPracticeMessage(
+                        created?.membersAdded
+                          ? `Created cross-practice initiative list with ${created.membersAdded} contacts across ${created.gapPractices} gap practice area(s).`
+                          : 'No cross-practice list created: no coverage-gap candidates found.'
+                      );
+                    }}
+                  >
+                    Build Cross-Practice Initiative
+                  </button>
+                  <button className="primary" style={{ fontSize: 13 }} onClick={() => setShowCreateList(true)}>
+                    + Create List
+                  </button>
+                </>
+              ) : null
+            }
+          />
+          {targetingMessage && (
+            <p style={{ margin: '4px 0 8px', fontSize: 12, color: '#4b5563', padding: '0 16px' }}>{targetingMessage}</p>
+          )}
+          {crossPracticeMessage && (
+            <p style={{ margin: '4px 0 8px', fontSize: 12, color: '#4b5563', padding: '0 16px' }}>{crossPracticeMessage}</p>
+          )}
 
           <FilterBar className="lists-filterbar-v2">
             <div className="search-with-filter">
@@ -76,7 +222,9 @@ export default function ListsPage() {
             <FilterControls>
               <FilterSelect value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} className="lists-tag-filter">
                 <option value="">All Tags</option>
-                {tags.map((t) => <option key={t.id} value={t.label}>{t.label}</option>)}
+                {tags.map((t) => (
+                  <option key={t.id} value={t.label} title={formatTagTaxonomyTitleAttr(t)}>{t.label}</option>
+                ))}
               </FilterSelect>
               <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
                 <option value="">All Types</option>
@@ -86,7 +234,7 @@ export default function ListsPage() {
                 <option value="">All Visibility</option>
                 <option value="Firm-wide">Firm-wide</option>
                 <option value="Shared">Shared</option>
-                <option value="Personal">Personal</option>
+                {field('personalLists') && <option value="Personal">Personal</option>}
               </FilterSelect>
               <FilterSelect value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
                 <option value="">All Owners</option>
@@ -142,6 +290,8 @@ export default function ListsPage() {
                         <div className="list-main-meta-v2">
                           <strong>{row.name}</strong>
                           <p>Members <strong>{memberCount}</strong><span>Last engagement <strong>{row.lastEngagement}</strong></span></p>
+                          {row.type && <div className="list-type-pill-v2">{row.type}</div>}
+                          {field('marketingActivity') && renderMarketingSummary(row)}
                         </div>
                       </div>
                     )}
@@ -152,7 +302,17 @@ export default function ListsPage() {
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                           {row.visibility === 'Personal' && <span style={{ fontSize: 10 }}>🔒</span>}
                           {row.visibility === 'Shared' && <span style={{ fontSize: 10 }}>👥</span>}
-                          {row.visibility || 'Firm-wide'}
+                          {row.visibility === 'Shared' ? (
+                            row.sharedPracticeGroup ? `Shared · Practice group: ${row.sharedPracticeGroup}` : (
+                              (row.sharedWithUserIds && row.sharedWithUserIds.length)
+                                ? (() => {
+                                    const shown = row.sharedWithUserIds.slice(0, 2).join(', ');
+                                    const extra = row.sharedWithUserIds.length - 2;
+                                    return extra > 0 ? `Shared · ${shown} +${extra}` : `Shared · ${shown}`;
+                                  })()
+                                : 'Shared'
+                            )
+                          ) : row.visibility === 'Personal' ? 'Private' : (row.visibility || 'Firm-wide')}
                         </span>
                       </div>
                     )}
@@ -177,7 +337,24 @@ export default function ListsPage() {
                       <strong>{row.name}</strong>
                       <div className="list-card-meta"><span>{row.owner}</span>{' • '}<span>{row.tag}</span></div>
                       <div className="list-card-meta">Members <strong>{memberCount}</strong>{' • '}Last engagement <strong>{row.lastEngagement}</strong></div>
-                      <div className="list-card-meta">Visibility <strong>{row.visibility || 'Firm-wide'}</strong></div>
+                      <div className="list-card-meta">
+                        Visibility{' '}
+                        <strong>
+                          {row.visibility === 'Shared'
+                            ? (row.sharedPracticeGroup
+                              ? `Shared · ${row.sharedPracticeGroup}`
+                              : (row.sharedWithUserIds && row.sharedWithUserIds.length
+                                ? (() => {
+                                    const shown = row.sharedWithUserIds.slice(0, 2).join(', ');
+                                    const extra = row.sharedWithUserIds.length - 2;
+                                    return extra > 0 ? `Shared · ${shown} +${extra}` : `Shared · ${shown}`;
+                                  })()
+                                : 'Shared'))
+                            : (row.visibility === 'Personal' ? 'Private' : (row.visibility || 'Firm-wide'))}
+                        </strong>
+                      </div>
+                    {row.type && <div className="list-card-meta">Type <strong>{row.type}</strong></div>}
+                      {field('marketingActivity') && renderMarketingSummary(row)}
                     </div>
                   </div>
                 </article>
@@ -196,8 +373,42 @@ export default function ListsPage() {
         const listActions = [
           { label: 'Add Note', onClick: () => setListDetailTab('notes') },
           { divider: true },
-          ...(selectedList.type === 'Event-based' ? [{ label: 'Pull Through Follow-ups', icon: 'send', onClick: () => window.alert('Event pull-through: Creating follow-up touchpoints for all attendees...') }] : []),
-          ...(can('list.create') ? [{ label: 'Edit', onClick: () => window.alert('Edit list coming soon') }] : []),
+          ...(selectedList.type === 'Event-based'
+            ? [
+                {
+                  label: 'Pull Through Follow-ups',
+                  icon: 'send',
+                  onClick: () => {
+                    const eligibleBefore = selectedListEventEligibleCount;
+                    const existingBefore = selectedListEventExistingCount;
+                    setPullThroughMessage('');
+                    const created = actions.pullThroughEventFollowUps(selectedList.id);
+                    setPullThroughMessage(
+                      created > 0
+                        ? `Created ${created} event follow-up touchpoint${created === 1 ? '' : 's'} (${existingBefore} member${existingBefore === 1 ? '' : 's'} already had open pull-through tasks).`
+                        : (eligibleBefore === 0
+                          ? 'No new follow-ups created. All members already have open pull-through follow-up tasks (or list has no members).'
+                          : 'No new follow-ups created due to validation constraints.')
+                    );
+                  },
+                },
+              ]
+            : []),
+          ...(can('list.create')
+            ? [
+                { label: 'Edit', onClick: () => setEditList(selectedList) },
+                {
+                  label: 'Delete',
+                  onClick: () => {
+                    const confirmed = window.confirm(`Delete list "${selectedList.name}"?`);
+                    if (!confirmed) return;
+                    actions.deleteList(selectedList.id);
+                    setSelectedListId(null);
+                    setListDetailTab('members');
+                  },
+                },
+              ]
+            : []),
         ];
         return (
           <section className="list-detail-page">
@@ -221,12 +432,105 @@ export default function ListsPage() {
                   <div><p className="modal-label">List type</p><p className="modal-value">{selectedList.type}</p></div>
                   <div><p className="modal-label">Date created</p><p className="modal-value">{selectedList.createdAt}</p></div>
                   <div><p className="modal-label">Primary tag</p><p className="modal-value">{selectedList.tag}</p></div>
-                  <div><p className="modal-label">Visibility</p><p className="modal-value">{selectedList.visibility || 'Firm-wide'}</p></div>
+                  <div>
+                    <p className="modal-label">Visibility</p>
+                    <p className="modal-value">
+                      {selectedList.visibility === 'Shared'
+                        ? (selectedList.sharedPracticeGroup
+                          ? `Shared · Practice group: ${selectedList.sharedPracticeGroup}`
+                          : ((selectedList.sharedWithUserIds && selectedList.sharedWithUserIds.length)
+                            ? (() => {
+                                const shown = selectedList.sharedWithUserIds.slice(0, 3).join(', ');
+                                const extra = selectedList.sharedWithUserIds.length - 3;
+                                return extra > 0 ? `Shared · Users: ${shown} +${extra}` : `Shared · Users: ${shown}`;
+                              })()
+                            : 'Shared'))
+                        : (selectedList.visibility === 'Personal' ? 'Private' : (selectedList.visibility || 'Firm-wide'))}
+                    </p>
+                  </div>
+                  {selectedList.type === 'Event-based' && (
+                    <>
+                      <div>
+                        <p className="modal-label">Eligible for pull-through</p>
+                        <p className="modal-value">{selectedListEventEligibleCount}</p>
+                      </div>
+                      <div>
+                        <p className="modal-label">Already assigned follow-ups</p>
+                        <p className="modal-value">{selectedListEventExistingCount}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedList.type === 'Targeting' && selectedTargetingMetrics && (
+                    <>
+                      <div>
+                        <p className="modal-label">Strategic-account targets</p>
+                        <p className="modal-value">{selectedTargetingMetrics.strategic}</p>
+                      </div>
+                      <div>
+                        <p className="modal-label">Stale relationships (35+ days)</p>
+                        <p className="modal-value">{selectedTargetingMetrics.stale}</p>
+                      </div>
+                      <div>
+                        <p className="modal-label">Average relationship score</p>
+                        <p className="modal-value">{selectedTargetingMetrics.avgScore}</p>
+                      </div>
+                    </>
+                  )}
                 </section>
+                {selectedList.type === 'Event-based' && (
+                  <div style={{ marginTop: 10 }}>
+                    <p className="modal-label">Event list pull-through status</p>
+                    <p className="modal-value">
+                      {selectedListMembers.length === 0
+                        ? 'No members available for pull-through.'
+                        : `${selectedListEventEligibleCount} member(s) eligible, ${selectedListEventExistingCount} already have open follow-up tasks.`}
+                    </p>
+                    {pullThroughMessage && (
+                      <p className="modal-value" style={{ marginTop: 6 }}>{pullThroughMessage}</p>
+                    )}
+                  </div>
+                )}
+                {selectedList.type === 'Targeting' && selectedTargetingMetrics && (
+                  <div style={{ marginTop: 10 }}>
+                    <p className="modal-label">Targeting summary</p>
+                    <p className="modal-value">
+                      {selectedMembersRaw.length} contacts prioritized. {selectedTargetingMetrics.strategic} are strategic-account
+                      contacts and {selectedTargetingMetrics.stale} have stale relationship coverage.
+                    </p>
+                  </div>
+                )}
+                {selectedCrossPracticeMetrics && (
+                  <div style={{ marginTop: 10 }}>
+                    <p className="modal-label">Cross-practice coverage gaps</p>
+                    <p className="modal-value">
+                      Gap practices identified: {selectedCrossPracticeMetrics.practiceCount}
+                      {selectedCrossPracticeMetrics.topGapPractices.length
+                        ? ` (${selectedCrossPracticeMetrics.topGapPractices.join(', ')})`
+                        : ''}
+                    </p>
+                  </div>
+                )}
 
                 {field('marketingActivity') && selectedList.marketingActivity?.length > 0 && (
                   <section style={{ marginTop: 16 }}>
                     <p className="modal-label">Marketing Activity</p>
+                    <div className="list-stats-row" style={{ marginTop: 8, marginBottom: 10 }}>
+                      <article className="list-stat-card">
+                        <p>Total activities</p>
+                        <strong>{selectedMarketingSummary.count}</strong>
+                        <small>Campaigns and event actions</small>
+                      </article>
+                      <article className="list-stat-card">
+                        <p>Total recipients</p>
+                        <strong>{selectedMarketingSummary.recipients.toLocaleString()}</strong>
+                        <small>Estimated marketing reach</small>
+                      </article>
+                      <article className="list-stat-card">
+                        <p>Latest activity</p>
+                        <strong>{selectedMarketingSummary.latestType || '—'}</strong>
+                        <small>{selectedMarketingSummary.latestDate || 'No recent date'}</small>
+                      </article>
+                    </div>
                     <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', marginTop: 8 }}>
                       <thead><tr><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Date</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Type</th><th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Description</th><th style={{ textAlign: 'center', padding: '6px 8px', borderBottom: '1px solid #e5e7eb' }}>Recipients</th></tr></thead>
                       <tbody>
@@ -268,10 +572,20 @@ export default function ListsPage() {
                             <div className="list-member-meta"><strong>{member.name}</strong><p>{member.title} • {member.company}</p></div>
                           </div>
                           <div className="list-member-status">{status}</div>
-                          <div className="list-member-summary">Recent engagement summary placeholder</div>
+                          <div className="list-member-summary">
+                            {selectedList.type === 'Targeting'
+                              ? getTargetingReason(member)
+                              : 'Recent engagement summary placeholder'}
+                          </div>
                           <div className="list-member-actions">
                             <button aria-label="open contact"><Icon name="user" /></button>
-                            <button aria-label="add touchpoint"><Icon name="docPlus" /></button>
+                            <button
+                              aria-label="log marketing engagement"
+                              onClick={() => setMarketingTarget(member)}
+                              title="Log marketing engagement"
+                            >
+                              <Icon name="docPlus" />
+                            </button>
                           </div>
                         </div>
                       );
@@ -302,6 +616,13 @@ export default function ListsPage() {
       })()}
 
       <CreateListModal isOpen={showCreateList} onClose={() => setShowCreateList(false)} />
+      <UpdateListModal list={editList} isOpen={Boolean(editList)} onClose={() => setEditList(null)} />
+      <MarketingEngagementModal
+        isOpen={Boolean(marketingTarget) && Boolean(selectedList)}
+        onClose={() => setMarketingTarget(null)}
+        list={selectedList}
+        contact={marketingTarget}
+      />
     </section>
   );
 }

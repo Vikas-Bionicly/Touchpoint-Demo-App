@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Icon from './Icon';
 import { contactRows } from '../constants/contacts';
-import { demoStore } from '../store/demoStore';
+import { demoStore, useDemoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
+import { VISIT_WORKFLOW_STAGES } from '../constants/visitWorkflow';
 
-function byName(name) {
-  return contactRows.find((c) => c.name === name) || null;
-}
+const INTERACTION_TYPES = ['Email', 'Meeting', 'Event', 'Call', 'Visit', 'Follow-up'];
 
 function toDueIso(dateOnly) {
   if (!dateOnly) return null;
@@ -15,15 +15,53 @@ function toDueIso(dateOnly) {
 }
 
 export default function CreateTouchpointTaskModal({ isOpen, onClose, preset }) {
-  const presetContact = preset?.contactName ? byName(preset.contactName) : null;
-  const [contactName, setContactName] = useState(presetContact?.name || contactRows[0]?.name || '');
-  const [title, setTitle] = useState(preset?.title || 'Touchpoint follow-up');
-  const [notes, setNotes] = useState(preset?.notes || '');
-  const [dueDate, setDueDate] = useState(preset?.dueDate || '');
+  const { can, persona } = usePersona();
+  const storeContacts = useDemoStore((s) => s.contacts || []);
+  const contactOptions = storeContacts.length ? storeContacts : contactRows;
 
-  const contact = useMemo(() => byName(contactName), [contactName]);
+  const [contactName, setContactName] = useState('');
+  const [title, setTitle] = useState('Touchpoint follow-up');
+  const [notes, setNotes] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [onBehalfOf, setOnBehalfOf] = useState('');
+  const [interactionType, setInteractionType] = useState('Call');
+  const [visitStage, setVisitStage] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const list = storeContacts.length ? storeContacts : contactRows;
+    const next =
+      (preset?.contactName && list.find((c) => c.name === preset.contactName)) || list[0] || null;
+    setContactName(next?.name || '');
+    setTitle(preset?.title ?? 'Touchpoint follow-up');
+    setNotes(preset?.notes ?? '');
+    setDueDate(preset?.dueDate ?? '');
+    setOnBehalfOf(preset?.onBehalfOf ?? '');
+    const nextType = preset?.interactionType || 'Call';
+    setInteractionType(nextType);
+    setVisitStage(
+      preset?.visitStage || (String(nextType).toLowerCase() === 'visit' ? VISIT_WORKFLOW_STAGES[0] : '')
+    );
+  }, [
+    isOpen,
+    storeContacts,
+    preset?.contactName,
+    preset?.title,
+    preset?.notes,
+    preset?.dueDate,
+    preset?.onBehalfOf,
+    preset?.interactionType,
+    preset?.visitStage,
+    preset?.source,
+  ]);
+
+  const contact = useMemo(
+    () => contactOptions.find((c) => c.name === contactName) || null,
+    [contactOptions, contactName]
+  );
 
   if (!isOpen) return null;
+  if (!can('touchpoint.create')) return null;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -48,6 +86,9 @@ export default function CreateTouchpointTaskModal({ isOpen, onClose, preset }) {
               title,
               notes,
               dueAt: toDueIso(dueDate),
+              onBehalfOf,
+              interactionType,
+              visitStage: String(interactionType).toLowerCase() === 'visit' ? visitStage || VISIT_WORKFLOW_STAGES[0] : '',
               avatarUrl: contact?.avatarUrl || '',
               signalTone: contact?.signalTone || 'blue',
               relationshipStatus: contact?.relationship || preset?.relationshipStatus || 'Stable',
@@ -62,13 +103,45 @@ export default function CreateTouchpointTaskModal({ isOpen, onClose, preset }) {
           <label>
             Contact
             <select value={contactName} onChange={(e) => setContactName(e.target.value)}>
-              {contactRows.map((c) => (
+              {contactOptions.map((c) => (
                 <option key={c.id} value={c.name}>
                   {c.name}
                 </option>
               ))}
             </select>
           </label>
+
+          <label>
+            Type
+            <select
+              value={interactionType}
+              onChange={(e) => {
+                const v = e.target.value;
+                setInteractionType(v);
+                if (String(v).toLowerCase() === 'visit') setVisitStage((s) => s || VISIT_WORKFLOW_STAGES[0]);
+                else setVisitStage('');
+              }}
+            >
+              {INTERACTION_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {String(interactionType).toLowerCase() === 'visit' && (
+            <label>
+              Visit stage
+              <select value={visitStage || VISIT_WORKFLOW_STAGES[0]} onChange={(e) => setVisitStage(e.target.value)}>
+                {VISIT_WORKFLOW_STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label>
             Due date
@@ -85,6 +158,17 @@ export default function CreateTouchpointTaskModal({ isOpen, onClose, preset }) {
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="Context and talking points" />
           </label>
 
+          {(persona?.id === 'legal-assistant' || onBehalfOf || preset?.onBehalfOf) && (
+            <label style={{ gridColumn: '1 / -1' }}>
+              On behalf of
+              <input
+                value={onBehalfOf}
+                onChange={(e) => setOnBehalfOf(e.target.value)}
+                placeholder="Assigned lawyer or client team member"
+              />
+            </label>
+          )}
+
           <div className="modal-actions">
             <button type="button" className="tool-btn" onClick={onClose}>
               Cancel
@@ -99,4 +183,3 @@ export default function CreateTouchpointTaskModal({ isOpen, onClose, preset }) {
     </div>
   );
 }
-

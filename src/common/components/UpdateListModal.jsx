@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { demoStore } from '../store/demoStore';
 import { usePersona } from '../hooks/usePersona';
 
@@ -10,7 +10,7 @@ const PRACTICE_GROUPS = ['Corporate', 'Litigation', 'Regulatory'];
 const LAWYER_PERSONA_IDS = ['partner', 'non-equity-partner', 'associate', 'group-lead', 'billing-lawyer'];
 const BD_PERSONA_IDS = ['bd-superuser', 'bd-standard'];
 
-export default function CreateListModal({ isOpen, onClose }) {
+export default function UpdateListModal({ list, isOpen, onClose }) {
   const { can, field, persona } = usePersona();
   const isLegalAssistant = persona?.id === 'legal-assistant';
   const isBdPersona = BD_PERSONA_IDS.includes(persona?.id);
@@ -22,15 +22,12 @@ export default function CreateListModal({ isOpen, onClose }) {
       : isLawyerPersona
         ? ['You', ...USER_POOL.filter((u) => u !== 'You')]
         : ['You', 'BD Team', ...USER_POOL];
-  const canPersonalLists = field('personalLists');
-  const initialVisibility = canPersonalLists ? 'Personal' : 'Firm-wide';
-  const initialType = canPersonalLists ? 'Personal' : 'Practice-based';
   const [form, setForm] = useState({
     name: '',
-    type: initialType,
-    owner: ownerOptions[0],
+    type: 'Personal',
+    owner: 'You',
     tag: '',
-    visibility: initialVisibility,
+    visibility: 'Personal',
     color: 'bg-blue',
     sharedScope: 'Users',
     sharedWithUserIds: [],
@@ -38,25 +35,32 @@ export default function CreateListModal({ isOpen, onClose }) {
     sharedPracticeGroup: PRACTICE_GROUPS[0] || 'Corporate',
   });
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!list) return;
+    const hasPracticeGroup = Boolean(list.sharedPracticeGroup);
+    const hasUsers = Array.isArray(list.sharedWithUserIds) ? list.sharedWithUserIds.length > 0 : false;
+    const sharedScope = hasPracticeGroup ? 'Practice group' : 'Users';
+    setForm({
+      name: list.name || '',
+      type: list.type || 'Personal',
+      owner: list.owner || 'You',
+      tag: list.tag || '',
+      visibility: list.visibility || 'Personal',
+      color: list.color || 'bg-blue',
+      sharedScope,
+      sharedWithUserIds: list.sharedWithUserIds || [],
+      sharedWithUsers: list.sharedWithUsers || list.sharedWithUserIds || [],
+      sharedPracticeGroup: list.sharedPracticeGroup || (PRACTICE_GROUPS[0] || 'Corporate'),
+    });
+  }, [list]);
+
+  if (!isOpen || !list) return null;
   if (!can('list.create')) return null;
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!form.name.trim()) return;
-    demoStore.actions.createList(form);
-    setForm({
-      name: '',
-      type: initialType,
-      owner: ownerOptions[0],
-      tag: '',
-      visibility: initialVisibility,
-      color: 'bg-blue',
-      sharedScope: 'Users',
-      sharedWithUserIds: [],
-      sharedWithUsers: [],
-      sharedPracticeGroup: PRACTICE_GROUPS[0] || 'Corporate',
-    });
+    demoStore.actions.updateList(list.id, form);
     onClose();
   }
 
@@ -64,7 +68,7 @@ export default function CreateListModal({ isOpen, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="company-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h2>Create List</h2>
+          <h2>Edit List</h2>
           <button className="modal-close" onClick={onClose} aria-label="close">x</button>
         </div>
         <form className="touchpoint-form" onSubmit={handleSubmit}>
@@ -89,12 +93,12 @@ export default function CreateListModal({ isOpen, onClose }) {
           </label>
           <label>{isLegalAssistant ? 'Assign owner (on behalf of)' : 'Owner'}
             <select value={form.owner} onChange={(e) => setForm((p) => ({ ...p, owner: e.target.value }))}>
-              {ownerOptions.map((owner) => (
+              {[...new Set([form.owner, ...ownerOptions])].filter(Boolean).map((owner) => (
                 <option key={owner} value={owner}>{owner}</option>
               ))}
             </select>
           </label>
-          <label>Tag <input value={form.tag} onChange={(e) => setForm((p) => ({ ...p, tag: e.target.value }))} placeholder="e.g., Privacy & Security" /></label>
+          <label>Tag <input value={form.tag} onChange={(e) => setForm((p) => ({ ...p, tag: e.target.value }))} /></label>
           <label>Visibility
             <select
               value={form.visibility}
@@ -178,7 +182,7 @@ export default function CreateListModal({ isOpen, onClose }) {
           </label>
           <div className="modal-actions">
             <button type="button" className="tool-btn" onClick={onClose}>Cancel</button>
-            <button type="submit" className="primary">Create List</button>
+            <button type="submit" className="primary">Save Changes</button>
           </div>
         </form>
       </div>

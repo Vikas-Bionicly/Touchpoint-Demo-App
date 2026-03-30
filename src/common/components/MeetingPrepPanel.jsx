@@ -1,9 +1,12 @@
 import { useDemoStore } from '../store/demoStore';
 import { calendarEntries } from '../constants/calendar';
+import { formatLastTouchSourceLine } from '../utils/lastInteractionAttribution';
+import { buildMeetingPrepAiNarrow, pickCompanyNewsForPrep } from '../utils/meetingPrepSummary';
 
 export default function MeetingPrepPanel() {
   const contacts = useDemoStore((s) => s.contacts || []);
   const companies = useDemoStore((s) => s.companies || []);
+  const touchpoints = useDemoStore((s) => s.touchpoints || []);
 
   const resolved = calendarEntries.map((entry) => {
     const contact = contacts[entry.contactIndex] || contacts[0];
@@ -22,6 +25,17 @@ export default function MeetingPrepPanel() {
           const date = new Date(entry.startAt);
           const dateStr = date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
           const timeStr = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+          const co =
+            companies.find((c) => c.name === entry.contact?.company) || entry.company || null;
+          const openTasks = touchpoints.filter(
+            (tp) =>
+              tp.contactName === entry.contact?.name &&
+              tp.status === 'open' &&
+              tp.kind === 'task'
+          );
+          const newsItems =
+            co?.newsItems?.length ? pickCompanyNewsForPrep(co.newsItems, 2) : [];
+          const aiPrepLine = buildMeetingPrepAiNarrow(entry.contact, co, { openTasks, newsItems });
 
           return (
             <div key={entry.id} style={{
@@ -44,11 +58,15 @@ export default function MeetingPrepPanel() {
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>Prep Summary</div>
                 <div>Relationship: <strong>{entry.contact?.relationship || 'N/A'}</strong> (Score: {entry.contact?.relationshipScore || 'N/A'})</div>
                 <div>Last interacted: <strong>{entry.contact?.lastInteracted || 'N/A'}</strong></div>
+                {entry.contact?.lastInteractionAttribution && (
+                  <div>Last touch source: {formatLastTouchSourceLine(entry.contact.lastInteractionAttribution)}</div>
+                )}
                 {entry.contact?.recentInteractions?.[0] && (
                   <div style={{ marginTop: 4, color: '#4b5563' }}>Recent: {entry.contact.recentInteractions[0]}</div>
                 )}
-                <div style={{ marginTop: 6 }}>
-                  <em style={{ color: '#6b7280' }}>Suggested talking points: Recent matter updates, relationship health check, upcoming opportunities</em>
+                <div className="meeting-prep-ai-strip" style={{ marginTop: 8 }}>
+                  <span className="meeting-prep-ai-strip-label">AI prep</span>
+                  {aiPrepLine}
                 </div>
               </div>
             </div>

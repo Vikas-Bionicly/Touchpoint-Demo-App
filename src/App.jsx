@@ -13,12 +13,15 @@ import ListsPage from './pages/ListsPage';
 import TouchpointsPage from './pages/TouchpointsPage';
 import VisitsPage from './pages/VisitsPage';
 import QuickCapture from './common/components/QuickCapture';
+import TransparencyMatrixModal from './common/components/TransparencyMatrixModal';
 
 export default function App() {
   const [activePage, setActivePage] = useState('My Insights');
   const [activeSubPage, setActiveSubPage] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMatrixOpen, setIsMatrixOpen] = useState(false);
   const personaId = useDemoStore((s) => s.currentPersonaId || 'partner');
+  const associateTier2UpgradeStatus = useDemoStore((s) => s.associateTier2UpgradeStatus ?? 'none');
   const { persona, tier } = usePersona();
   const actions = demoStore.actions;
 
@@ -98,34 +101,72 @@ export default function App() {
           </div>
 
           <div className="role-switcher">
-            <span className="role-label">Viewing as</span>
             <div className="role-card">
-              <div className="role-avatar">JD</div>
-              <div className="role-meta">
-                <span className="role-name">John Doe</span>
-                <span className="role-title">{persona.label}</span>
-                <span className="role-tier" style={{ fontSize: 11, opacity: 0.7 }}>Tier {tier}</span>
+              <div className="role-profile-row">
+                <div className="role-avatar">JD</div>
+                <div className="role-meta">
+                  <span className="role-name">John Doe</span>
+                  <span className="role-title">{persona.label}</span>
+                  <span className="role-tier">Tier {tier}</span>
+                </div>
               </div>
-              <select
-                className="persona-select"
-                value={personaId}
-                onChange={(e) => actions.setCurrentPersona(e.target.value)}
-                style={{
-                  border: '1px solid #d4d4d4',
-                  borderRadius: 6,
-                  padding: '4px 6px',
-                  fontSize: 12,
-                  background: '#fff',
-                  cursor: 'pointer',
-                  maxWidth: 120,
-                }}
-              >
-                {PERSONAS.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label} (T{p.tier})
-                  </option>
-                ))}
-              </select>
+              <div className="role-viewing-block">
+                <span className="role-label">Viewing as</span>
+                <select
+                  className="persona-select"
+                  value={personaId}
+                  onChange={(e) => actions.setCurrentPersona(e.target.value)}
+                >
+                  {PERSONAS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label} (T{p.tier})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button type="button" className="role-matrix-btn" onClick={() => setIsMatrixOpen(true)}>
+                Visibility matrix
+              </button>
+              {personaId === 'associate' && associateTier2UpgradeStatus !== 'approved' && (
+                <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', fontSize: 11, lineHeight: 1.45, color: '#334155' }}>
+                  <strong style={{ display: 'block', marginBottom: 6 }}>Tier 2 data access</strong>
+                  {associateTier2UpgradeStatus === 'pending' ? (
+                    <span>Pending Group Lead approval.</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="primary"
+                      style={{ width: '100%', marginTop: 6, fontSize: 11, padding: '6px 8px' }}
+                      onClick={() => actions.requestAssociateTier2Upgrade()}
+                    >
+                      Request upgrade
+                    </button>
+                  )}
+                </div>
+              )}
+              {personaId === 'group-lead' && associateTier2UpgradeStatus === 'pending' && (
+                <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: '#fffbeb', border: '1px solid #fcd34d', fontSize: 11, lineHeight: 1.45, color: '#78350f' }}>
+                  <strong style={{ display: 'block', marginBottom: 6 }}>Associate Tier 2 request</strong>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      type="button"
+                      className="primary"
+                      style={{ flex: 1, fontSize: 11, padding: '6px 8px' }}
+                      onClick={() => actions.approveAssociateTier2Upgrade()}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      className="tool-btn"
+                      style={{ flex: 1, fontSize: 11, padding: '6px 8px' }}
+                      onClick={() => actions.rejectAssociateTier2Upgrade()}
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -199,6 +240,9 @@ export default function App() {
         {activePage === 'Touchpoints' && <TouchpointsPage view={activeSubPage} />}
       </main>
       <QuickCapture />
+      {isMatrixOpen && (
+        <TransparencyMatrixModal onClose={() => setIsMatrixOpen(false)} />
+      )}
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { demoStore, useDemoStore } from '../store/demoStore';
+import { usePersona } from '../hooks/usePersona';
 
 export default function TripPlanningModal({ isOpen, onClose }) {
   const contacts = useDemoStore((s) => s.contacts || []);
+  const { can } = usePersona();
   const [cityFilter, setCityFilter] = useState('');
   const [selected, setSelected] = useState({});
   const [tripName, setTripName] = useState('');
@@ -18,6 +20,7 @@ export default function TripPlanningModal({ isOpen, onClose }) {
   }, [contacts, cityFilter]);
 
   if (!isOpen) return null;
+  if (!can('tripPlan.create')) return null;
 
   function handleCreate() {
     const ids = Object.keys(selected).filter((k) => selected[k]);
@@ -37,7 +40,7 @@ export default function TripPlanningModal({ isOpen, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="company-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+      <div className="company-modal company-modal--md-wide" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h2>Plan a Trip</h2>
           <button className="modal-close" onClick={onClose} aria-label="close">x</button>
