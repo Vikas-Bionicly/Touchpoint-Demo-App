@@ -1,0 +1,11 @@
+{
+  "name": "Touchpoint Demo App",
+  "short_name": "Touchpoints",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "description": "Prototype client-intelligence workflow app with offline shell support.",
+  "icons": []
+}

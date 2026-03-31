@@ -9,6 +9,7 @@ const contacts = [
     city: 'Toronto',
     region: 'Canada',
     lastInteraction: 'Assistant sent an email on 12/15 about Holiday...',
+    lastInteractionAttribution: { system: 'introhive', channel: 'Email (relationship)' },
     avatarUrl: 'https://i.pravatar.cc/96?img=47',
     signalTone: 'green',
     recentInteractions: [
@@ -41,6 +42,7 @@ const contacts = [
     city: 'Calgary',
     region: 'Canada',
     lastInteraction: 'You met Jeff for lunch last month...',
+    lastInteractionAttribution: { system: 'introhive', channel: 'Meeting' },
     avatarUrl: 'https://i.pravatar.cc/96?img=12',
     signalTone: 'yellow',
     recentInteractions: [
@@ -73,6 +75,7 @@ const contacts = [
     city: 'Vancouver',
     region: 'Canada',
     lastInteraction: 'Assistant sent an email on 11/30 about an U...',
+    lastInteractionAttribution: { system: 'vuture', channel: 'Bulletin distribution' },
     avatarUrl: 'https://i.pravatar.cc/96?img=5',
     signalTone: 'orange',
     recentInteractions: [

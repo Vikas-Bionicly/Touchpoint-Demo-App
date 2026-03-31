@@ -40,5 +40,35 @@
     "description": "When contact has an upcoming meeting with a principal",
     "category": "Trigger",
     "priorityWeighting": "0.098"
+  },
+  {
+    "insightTypeName": "Misalignment Alert",
+    "description": "When relationship engagement trend and financial/matter momentum diverge",
+    "category": "Risk",
+    "priorityWeighting": "0.096"
+  },
+  {
+    "insightTypeName": "Cross-Sell Opportunity",
+    "description": "When active matter count and practice mix suggest expanding or rebalancing cross-practice work",
+    "category": "Match",
+    "priorityWeighting": "0.094"
+  },
+  {
+    "insightTypeName": "Introduction Opportunity",
+    "description": "When a contact is overdue for outreach and colleagues at the firm already know them (Who Knows Whom)",
+    "category": "Match",
+    "priorityWeighting": "0.095"
+  },
+  {
+    "insightTypeName": "Team Coordination Alert",
+    "description": "When two or more lawyers have recent or parallel touchpoints with the same contact",
+    "category": "Risk",
+    "priorityWeighting": "0.095"
+  },
+  {
+    "insightTypeName": "Value-Add Coverage Gap",
+    "description": "When a strategic account shows thin proactive outreach relative to firm value-add expectations",
+    "category": "Match",
+    "priorityWeighting": "0.095"
   }
 ]

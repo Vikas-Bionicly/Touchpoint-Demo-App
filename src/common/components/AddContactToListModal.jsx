@@ -14,6 +14,11 @@ export default function AddContactToListModal({ contact, isOpen, onClose }) {
     return lists.filter((l) => [l.name, l.tag, l.owner].join(' ').toLowerCase().includes(q));
   }, [lists, query]);
 
+  const colleagueLists = useMemo(() => {
+    if (!contact) return [];
+    return lists.filter((l) => (l.memberIds || []).includes(contact.id) && String(l.owner || '').trim().toLowerCase() !== 'you');
+  }, [lists, contact]);
+
   if (!isOpen || !contact) return null;
 
   return (
@@ -27,6 +32,13 @@ export default function AddContactToListModal({ contact, isOpen, onClose }) {
         </div>
 
         <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {colleagueLists.length > 0 && (
+            <div style={{ fontSize: 12, color: '#4b5563', background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 10px' }}>
+              Already in {colleagueLists.length} colleague list{colleagueLists.length > 1 ? 's' : ''}:{' '}
+              {colleagueLists.slice(0, 3).map((l) => `${l.name} (${l.owner})`).join(', ')}
+              {colleagueLists.length > 3 ? '...' : ''}
+            </div>
+          )}
           <label className="search lists-search-v2">
             <input
               placeholder="Search lists"
@@ -54,7 +66,7 @@ export default function AddContactToListModal({ contact, isOpen, onClose }) {
                     <span>
                       <strong>{list.name}</strong> — {list.tag}{' '}
                       <span style={{ color: '#6b7280', fontSize: 12 }}>
-                        Members {list.memberIds.length} · Last engagement {list.lastEngagement}
+                        Owner {list.owner || 'You'} · Members {list.memberIds.length} · Last engagement {list.lastEngagement}
                       </span>
                     </span>
                   </label>
