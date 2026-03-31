@@ -715,7 +715,7 @@ export default function CompaniesPage({ subPage }) {
           ...(can('company.edit') ? [{ label: 'Edit', onClick: () => setEditCompany(selectedCompany) }] : []),
           { label: 'Recent Interactions', onClick: () => setShowInteractions(selectedCompany) },
           { divider: true },
-          ...(can('opportunity.add') ? [{ label: '+ Opportunity', onClick: () => setShowAddOpp(selectedCompany) }] : []),
+          ...(can('opportunity.add') ? [{ label: 'Opportunity', icon: 'plus', onClick: () => setShowAddOpp(selectedCompany) }] : []),
           { label: 'Create Touchpoint', primary: true, onClick: () => { const c = guessContactForCompany(selectedCompany.name); setTouchpointPreset({ contactName: c?.name || contacts[0]?.name || '', company: selectedCompany.name, role: c?.role || '', title: `Touchpoint for ${selectedCompany.name}`, notes: '', source: 'companies:detail' }); } },
         ];
         return (
@@ -921,6 +921,44 @@ export default function CompaniesPage({ subPage }) {
                     <span>{engagementBreakdown.relationshipPct}</span>
                   </article>
                 </div>
+                <div className="company-engagement-cards">
+                  {engagementRows.map((row) => (
+                    <article key={`card-${row.id}`} className="company-row-card">
+                      <div className="company-row-card-top">
+                        <div style={{ minWidth: 0 }}>
+                          <div className="company-row-card-title">{row.type || 'Engagement'}</div>
+                          <div className="company-row-card-subtitle">
+                            {row.date || '—'} · {row.contact || '—'}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          {row.importance ? (
+                            <span className={`engagement-pill importance-${String(row.importance || '').toLowerCase()}`}>
+                              {row.importance}
+                            </span>
+                          ) : null}
+                          {row.sourceType ? (
+                            <span className={`engagement-pill source-${String(row.sourceType || '').toLowerCase()}`}>
+                              {row.sourceType}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="company-row-card-grid">
+                        <div><span className="company-row-card-label">Internal</span><span className="company-row-card-value">{row.internal || '—'}</span></div>
+                        <div><span className="company-row-card-label">Client job level</span><span className="company-row-card-value">{row.clientJobLevel || '—'}</span></div>
+                        <div><span className="company-row-card-label">Relationship</span><span className="company-row-card-value">{row.relationshipStrength || '—'}</span></div>
+                        <div><span className="company-row-card-label">Event type</span><span className="company-row-card-value">{row.eventType || '—'}</span></div>
+                      </div>
+                      {row.summary ? (
+                        <div className="company-row-card-summary">{row.summary}</div>
+                      ) : null}
+                    </article>
+                  ))}
+                  {engagementRows.length === 0 && (
+                    <div style={{ padding: 12, color: '#6b7280', fontSize: 13 }}>No engagement found for the current filters.</div>
+                  )}
+                </div>
                 <table className="company-engagement-table">
                   <thead><tr><th>When</th><th>What</th><th>Who</th><th>Client Job Level</th><th>Relationship</th><th>Event Type</th><th>Importance</th><th>Source</th><th>Summary</th></tr></thead>
                   <tbody>
@@ -1009,6 +1047,35 @@ export default function CompaniesPage({ subPage }) {
                     {field('matters.table') ? ' · Practice area includes Aderant taxonomy code' : ''}.
                   </div>
                   {field('matters.table') ? (
+                    <>
+                      <div className="company-matters-cards">
+                        {matterRows.map((m) => (
+                          <article key={`mcard-${m.id}`} className="company-row-card">
+                            <div className="company-row-card-top">
+                              <div style={{ minWidth: 0 }}>
+                                <div className="company-row-card-title">{m.name || 'Matter'}</div>
+                                <div className="company-row-card-subtitle">{m.status || '—'} · Opened {m.openDate || '—'}</div>
+                              </div>
+                            </div>
+                            <div className="company-row-card-grid">
+                              <div><span className="company-row-card-label">Practice</span><span className="company-row-card-value">{m.practiceArea || '—'}</span></div>
+                              <div><span className="company-row-card-label">Hierarchy</span><span className="company-row-card-value">{m.hierarchyNode || '—'}</span></div>
+                              {field('matterRank') && <div><span className="company-row-card-label">Rank</span><span className="company-row-card-value">{m.matterRank || '—'}</span></div>}
+                              {field('wip') && <div><span className="company-row-card-label">WIP</span><span className="company-row-card-value">${(m.wip || 0).toLocaleString()}</span></div>}
+                              <div><span className="company-row-card-label">Lead</span><span className="company-row-card-value">{m.leadLawyer || '—'}</span></div>
+                              <div><span className="company-row-card-label">Referral</span><span className="company-row-card-value">{m.referralSourceContactName || '—'}</span></div>
+                            </div>
+                            {m.aderantPracticeCode ? (
+                              <div className="company-row-card-summary">
+                                <span className="company-row-card-label">Taxonomy</span> {m.aderantPracticeCode}
+                              </div>
+                            ) : null}
+                          </article>
+                        ))}
+                        {matterRows.length === 0 && (
+                          <div style={{ padding: 12, color: '#6b7280', fontSize: 13 }}>No matters found for the selected filters.</div>
+                        )}
+                      </div>
                     <table className="company-matters-table">
                       <thead>
                         <tr>
@@ -1067,6 +1134,7 @@ export default function CompaniesPage({ subPage }) {
                         )}
                       </tbody>
                     </table>
+                    </>
                   ) : field('matters.summary') ? (
                     <p className="modal-value">{matterRows.length} matters total ({matterRows.filter((m) => m.status === 'Active').length} active)</p>
                   ) : null}
@@ -1144,6 +1212,23 @@ export default function CompaniesPage({ subPage }) {
                     <button type="button" className="tool-btn">Open Dashboard</button>
                     <button type="button" className="primary">Generate Snapshot</button>
                   </div>
+                </div>
+                <div className="company-ci-cards">
+                  {ciReports.map((report) => (
+                    <article key={`cicard-${report.id}`} className="company-row-card">
+                      <div className="company-row-card-top">
+                        <div style={{ minWidth: 0 }}>
+                          <div className="company-row-card-title">{report.name}</div>
+                          <div className="company-row-card-subtitle">{report.type} · {report.status} · {report.lastUpdated}</div>
+                        </div>
+                      </div>
+                      <div className="company-row-card-grid">
+                        <div><span className="company-row-card-label">Owner</span><span className="company-row-card-value">{report.owner || '—'}</span></div>
+                        <div><span className="company-row-card-label">Status</span><span className="company-row-card-value">{report.status || '—'}</span></div>
+                      </div>
+                      {report.summary ? <div className="company-row-card-summary">{report.summary}</div> : null}
+                    </article>
+                  ))}
                 </div>
                 <table className="company-opportunities-table">
                   <thead>

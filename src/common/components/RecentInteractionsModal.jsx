@@ -23,7 +23,6 @@ export default function RecentInteractionsModal({ company, contact, isOpen, onCl
 
   const targetName = contact?.name || company?.name || '';
   const targetCompany = contact?.company || company?.name || '';
-  if (!isOpen || (!company && !contact)) return null;
 
   const yourInteractions = useMemo(() => {
     const scopedTouchpoints = touchpoints
@@ -101,6 +100,9 @@ export default function RecentInteractionsModal({ company, contact, isOpen, onCl
     const [head] = v.split('—');
     return head.trim() || v.slice(0, 64);
   }
+
+  // Important: do not return before hooks run (Rules of Hooks).
+  if (!isOpen || (!company && !contact)) return null;
 
   if (!showDetail) {
     const lastDate = rows[0]?.date || '';
