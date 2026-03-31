@@ -691,6 +691,9 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-detail-header {
@@ -699,6 +702,9 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-detail-back {
@@ -735,6 +741,9 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-detail-summary {
@@ -774,6 +783,8 @@ h1 {
   background: #fff;
   border-radius: 12px;
   border: 1px solid var(--line);
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-detail-section {
@@ -782,12 +793,17 @@ h1 {
   background: #fff;
   border-radius: 12px;
   border: 1px solid var(--line);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-detail-panels {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
   gap: 24px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .company-engagement-section {
@@ -796,10 +812,24 @@ h1 {
   background: #fff;
   border-radius: 12px;
   border: 1px solid var(--line);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .heatmap-wrapper {
   overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Heatmap legend/header/footer should wrap on small screens */
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .heatmap-table {
@@ -957,6 +987,82 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+}
+
+.company-engagement-cards,
+.company-matters-cards,
+.company-ci-cards {
+  display: none;
+}
+
+.company-row-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px 14px;
+  margin: 10px 0;
+  max-width: 100%;
+}
+
+.company-row-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.company-row-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.company-row-card-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b7280;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.company-row-card-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px 12px;
+}
+
+.company-row-card-grid > div {
+  min-width: 0;
+}
+
+.company-row-card-label {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.company-row-card-value {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: #111827;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.company-row-card-summary {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .company-engagement-table th,
@@ -1153,19 +1259,18 @@ h1 {
     width: 100%;
   }
 
-  /* Long tab labels (e.g. Matters & Opportunities): scroll instead of squashing */
+  /* Mobile: wrap tabs into multiple lines (no horizontal scroll) */
   .detail-tab-bar {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    gap: 0;
+    flex-wrap: wrap;
+    overflow: visible;
+    gap: 4px;
+    padding-bottom: 6px;
   }
 
   .detail-tab {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 10px 14px;
+    white-space: normal;
+    padding: 10px 12px;
+    text-align: center;
   }
 
   .company-engagement-breakdown {
@@ -1219,6 +1324,74 @@ h1 {
 
   .company-engagement-section {
     padding: 12px;
+  }
+}
+
+/* Company detail: make wide tables usable on mobile */
+@media (max-width: 768px) {
+  .company-engagement-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .company-engagement-filters {
+    width: 100%;
+  }
+
+  .company-engagement-filters select {
+    flex: 1 1 180px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .company-engagement-table,
+  .company-matters-table,
+  .company-opportunities-table {
+    display: none;
+  }
+
+  .company-engagement-cards,
+  .company-matters-cards,
+  .company-ci-cards {
+    display: block;
+  }
+
+  .company-row-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Company detail: prevent horizontal overflow from CTAs + panel footers */
+@media (max-width: 480px) {
+  .company-detail-header .detail-action-btn {
+    /* allow "Create Touchpoint" etc to wrap instead of forcing overflow */
+    white-space: normal;
+    max-width: 100%;
+  }
+
+  .company-detail-header .detail-action-btn span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .panel-footer {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .panel-footer > button {
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+}
+
+/* Company detail: make action CTAs wrap sooner (no horizontal scroll) */
+@media (max-width: 640px) {
+  .company-detail-header .detail-action-btn {
+    white-space: normal;
+    max-width: 100%;
   }
 }
 
@@ -3800,6 +3973,7 @@ h1 {
   display: flex;
   gap: 6px;
   margin-top: 12px;
+  margin-bottom: 10px;
   padding: 4px;
   border-radius: 10px;
   background: #f3f4f6;
@@ -3830,10 +4004,15 @@ h1 {
 
 /* ── AlertBanner ── */
 .alert-banner {
-  margin-top: 12px;
+  margin: 12px 0 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* ── Tiny spacing utilities (used by a few pages) ── */
+.mb-4 {
+  margin-bottom: 16px !important;
 }
 
 .alert-banner-item {
@@ -4432,6 +4611,15 @@ h1 {
   border: 1px solid #e5e7eb;
   transition: all 0.15s ease;
   white-space: nowrap;
+}
+
+/* Default footer layout used in some panels */
+.panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .detail-action-btn:hover {

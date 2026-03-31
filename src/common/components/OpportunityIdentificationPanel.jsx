@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePersona } from '../hooks/usePersona';
 
 const PRACTICE_COLORS = {
@@ -12,6 +12,14 @@ export function OpportunityIdentificationPanel({ company, onCreateOpportunityLis
 
   const { field } = usePersona({ company });
   const showExactFinancials = field('revenue.exact');
+  const [isNarrow, setIsNarrow] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 520 : false));
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const onResize = () => setIsNarrow(window.innerWidth <= 520);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const matrix = company.revenueByPracticeOffice;
   const practices = Object.keys(matrix);
@@ -87,44 +95,75 @@ export function OpportunityIdentificationPanel({ company, onCreateOpportunityLis
         </div>
       </div>
 
-      <div className="heatmap-wrapper">
-        <table className="heatmap-table">
-          <thead>
-            <tr>
-              <th>Practice \\ Office</th>
-              {offices.map((office) => (
-                <th key={office}>{office}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {practices.map((practice) => (
-              <tr key={practice}>
-                <td>
-                  <span
-                    className="practice-pill"
-                    style={{ backgroundColor: PRACTICE_COLORS[practice] || '#4b5563' }}
-                  >
-                    {practice}
-                  </span>
-                </td>
+      {isNarrow ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {practices.map((practice) => (
+            <div key={practice} style={{ border: '1px solid #e5e7eb', borderRadius: 12, background: '#fff', padding: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+                <span className="practice-pill" style={{ backgroundColor: PRACTICE_COLORS[practice] || '#4b5563' }}>
+                  {practice}
+                </span>
+                <span style={{ fontSize: 12, color: '#6b7280' }}>By office</span>
+              </div>
+              <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 8, alignItems: 'center' }}>
                 {offices.map((office) => {
-                  const value = matrix[practice]?.[office] ?? 0;
+                  const value = Number(matrix[practice]?.[office] ?? 0);
+                  const label = showExactFinancials ? (value ? `$${value.toFixed(1)}M` : '—') : (value ? intensityLabel(value) : '—');
                   return (
-                    <td key={office}>
-                      <div className={getCellClass(value)}>
-                        {showExactFinancials
-                          ? (value ? `$${value.toFixed(1)}M` : '—')
-                          : (value ? intensityLabel(value) : '—')}
+                    <React.Fragment key={`${practice}-${office}`}>
+                      <div style={{ minWidth: 0, overflowWrap: 'anywhere', wordBreak: 'break-word', fontSize: 13, color: '#111827' }}>
+                        {office}
                       </div>
-                    </td>
+                      <div className={getCellClass(value)} style={{ justifySelf: 'end' }}>
+                        {label}
+                      </div>
+                    </React.Fragment>
                   );
                 })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="heatmap-wrapper">
+          <table className="heatmap-table">
+            <thead>
+              <tr>
+                <th>Practice \\ Office</th>
+                {offices.map((office) => (
+                  <th key={office}>{office}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {practices.map((practice) => (
+                <tr key={practice}>
+                  <td>
+                    <span
+                      className="practice-pill"
+                      style={{ backgroundColor: PRACTICE_COLORS[practice] || '#4b5563' }}
+                    >
+                      {practice}
+                    </span>
+                  </td>
+                  {offices.map((office) => {
+                    const value = matrix[practice]?.[office] ?? 0;
+                    return (
+                      <td key={office}>
+                        <div className={getCellClass(value)}>
+                          {showExactFinancials
+                            ? (value ? `$${value.toFixed(1)}M` : '—')
+                            : (value ? intensityLabel(value) : '—')}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="geo-gap-section">
         <h4 className="panel-card-title">Geographic gap identification</h4>
